@@ -57,4 +57,4 @@ add_components!(ntw, edge = [(1,2),(2,7),(3,4),(4,7),(5,6),(6,7),(7,8)],
                      std = stdᶜᵇˡ)
 
 # Solve the problem
-@time solve!(ntw, type = :steady)
+solve!(ntw, type = :steady)
