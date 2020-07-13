@@ -152,7 +152,7 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
         expr = usr[:str]
         exrp = quote function structure_function(idx,val) $expr end end
         eval(exrp)
-        
+
         for ni in idx_itr push!(Val,Base.invokelatest(structure_function,ni,vl)) end
 
         prb, val = reduce(Prb,Val)

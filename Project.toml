@@ -7,8 +7,6 @@ version = "0.1.0"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 Multigraphs = "7ebac608-6c66-46e6-9856-b5f43e107bac"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-PMD4W = "b90b3d84-8688-4551-8b3a-969a5e7d0f67"
-StochasticPowerModels = "50afc394-810e-406f-916c-f931837647ce"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
