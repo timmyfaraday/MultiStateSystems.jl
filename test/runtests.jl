@@ -1,6 +1,7 @@
 using MultiStateSystems
 using Test
 
-@testset "MultiStateSystems.jl" begin
-    # Write your own tests here.
+@testset "State Transition Diagram" begin
+    stdᵗᵉˢᵗ = STD()
+    @test add_state!(stdᵗᵉˢᵗ) == true
 end

@@ -1,0 +1,202 @@
+################################################################################
+#  Copyright 2020, Tom Van Acker                                               #
+################################################################################
+# MultiStateSystems.jl                                                         #
+# A Julia package to solve multi-state system models.                          #
+# See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
+################################################################################
+
+"""
+# State-Transition Diagram
+"""
+# structs
+struct STD{I<:Int} <: AbstractSTD{I}
+    graph::_LG.DiGraph{I}
+
+    props::PropDict
+    sprops::Dict{I,PropDict}
+    tprops::Dict{_LG.Edge{I},PropDict}
+end
+
+# constructors
+function STD(Ns::Int)
+    graph = _LG.DiGraph(Ns)
+
+    props = PropDict(:info => STDInfo())
+    sprops = Dict{Int,PropDict}(ns => PropDict() for ns in 1:Ns)
+    tprops = Dict{_LG.Edge{Int},PropDict}()
+
+    return STD(graph, props, sprops, tprops)
+end
+function STD(;prob::Array, kwargs...)
+    std = STD(length(prob))
+    set_info!(std,:solved,true)
+    set_prop!(std,:msr,intersect(MsrSet,keys(kwargs)))
+    set_prop!(std,states(std),:prob,prob)
+    for ns in states(std) set_props!(std, ns, reduce(kwargs,ns)) end
+
+    return std
+end
+################################################################################
+# WARNING:  The empty constructor needs to be last in order to overwrite the   #
+#           empty constructor created by other contructors, see: discourse -   #
+#           keyword argument contructor breaks incomplete constructor.         #                                               #
+################################################################################
+function STD()
+    graph = _LG.DiGraph()
+
+    props = PropDict(:info => STDInfo())
+    sprops = Dict{Int,PropDict}()
+    tprops = Dict{_LG.Edge{Int},PropDict}()
+
+    return STD(graph, props, sprops, tprops)
+end
+
+# functions
+is_directed(::Type{STD}) = true
+is_directed(::Type{STD{I}}) where I = true
+is_directed(std::STD) = true
+
+props(std::AbstractSTD) = std.props
+props(std::AbstractSTD, s::Int) = get(std.sprops, s, PropDict())
+props(std::AbstractSTD, t::_LG.Edge) = get(std.tprops, t, PropDict())
+
+get_info(std::AbstractSTD, info::Symbol) = getproperty(std.props[:info],info)
+set_info!(std::AbstractSTD, info::Symbol, value::Bool) =
+    setproperty!(std.props[:info],info,value)
+
+get_prop(std::AbstractSTD, prop::Symbol) =
+    haskey(props(std), prop) ? props(std)[prop] : ~ ;
+has_prop(std::AbstractSTD, prop::Symbol) = haskey(std.props, prop)
+set_prop!(std::AbstractSTD, prop::Symbol, value) =
+    set_props!(std, Dict(prop => value))
+set_props!(std::AbstractSTD, dict::Dict) = merge!(std.props, dict)
+
+"""
+## Info
+"""
+# structs
+abstract type AbstractInfo end
+mutable struct STDInfo{B<:Bool} <: AbstractInfo
+    solved::B
+    renewal::B
+    markovian::B
+    time_homogeneous::B
+
+    # constructor
+    STDInfo() = new{Bool}(false,true,true,true)
+end
+mutable struct StateInfo{B<:Bool} <: AbstractInfo
+    renewal::B
+    trapping::B
+
+    # constructor
+    StateInfo() = new{Bool}(true,false)
+end
+mutable struct TransInfo{B<:Bool} <: AbstractInfo
+    renewal::B
+    markovian::B
+    time_homogeneous::B
+
+    # constructor
+    TransInfo() = new{Bool}(true,true,true)
+end
+
+# functions
+# is_markovian(std::AbstractSTD,nt::_LG.Edge) = isa(get_prop(std,nt,:rate),Number)
+# is_time_homogeneous(std::AbstractSTD,nt::_LG.Edge) =
+#     isa(get_prop(std,nt,:rate),Number)
+# function update_info(std::AbstractSTD,nt::_LG.Edge)
+#     # markovian
+#     mrk = is_markovian(std,nt)
+#     get_info(std,:markovian) *= mrk
+#     get_info(std,nt,:markovian) *= mrk
+#     get_info(std,_LG.src(nt),:markovian) *= mrk
+#     # time homogeneous
+#     thg = is_time_homogeneous(std,nt)
+#     get_info(std,:time_homogeneous) *= thg
+#     get_info(std,nt,:time_homogeneous) *= thg
+#     # trapping
+#     get_info(std,_LG.src(nt),:trapping) *= false
+# end
+
+"""
+## State
+"""
+# functions
+ns(std::AbstractSTD) = _LG.nv(std.graph)
+states(std::AbstractSTD) = _LG.vertices(std.graph)
+add_vertex!(std::AbstractSTD) = _LG.add_vertex!(std.graph)
+has_vertex(std::AbstractSTD, x...) = _LG.has_vertex(std.graph, x...)
+
+get_info(std::AbstractSTD, ns::Int, info::Symbol) =
+    getproperty(std.sprops[ns][:info],info)
+set_info!(std::AbstractSTD, ns::Int, info::Symbol, value::Bool) =
+    setproperty!(std.sprops[ns][:info],info,value)
+
+get_sprop(std::AbstractSTD, prop::Symbol) =
+    [get_prop(std, ns, prop) for ns in states(std)]
+get_prop(std::AbstractSTD, ns::Int, prop::Symbol) = props(std, ns)[prop]
+has_prop(std::AbstractSTD, ns::Int, prop::Symbol) = haskey(props(std,ns), prop)
+set_prop!(std::AbstractSTD, ns::Int, prop::Symbol, value::Any) =
+    set_props!(std,ns,Dict{Symbol,Any}(prop => value))
+set_prop!(std::AbstractSTD, states::Base.OneTo{Int}, prop::Symbol, value::Any) =
+    for ns in states set_props!(std,ns,Dict{Symbol,Any}(prop => value[ns])) end
+set_props!(std::AbstractSTD, ns::Int, prop_dict::Dict) =
+    haskey(std.sprops,ns) ? merge!(std.sprops[ns],prop_dict) :
+                            std.sprops[ns] = prop_dict ;
+
+function add_state!(std::AbstractSTD, prop_dict::Dict)
+    add_vertex!(std) || return false
+    set_prop!(std, ns(std), :info, StateInfo())                                 # TODO auto capture info prop
+    set_props!(std, ns(std), prop_dict)
+    return true
+end                                                                             # TODO add add_state with kwargs...
+function add_states!(std::AbstractSTD; kwargs...)
+    test(kwargs) || return false
+    set_prop!(std, :msr, intersect(MsrSet,keys(kwargs)))                        # TODO auto capture info prop
+    for ni in indices_of(kwargs) add_state!(std,reduce(kwargs,ni)) end
+    return true
+end
+
+"""
+## Transition
+"""
+# functions
+nt(std::AbstractSTD) = _LG.ne(std.graph)
+transitions(std::AbstractSTD) = _LG.edges(std.graph)
+has_edge(std::AbstractSTD, x...) = _LG.has_edge(std.graph, x...)
+add_edge!(std::AbstractSTD, x...) = _LG.add_edge!(std.graph, x...)
+
+get_info(std::AbstractSTD, nt::_LG.Edge, info::Symbol) =
+    getproperty(std.tprops[nt][:info],info)
+set_info!(std::AbstractSTD, nt::_LG.Edge, info::Symbol, value::Bool) =
+    setproperty!(std.tprops[nt][:info],info,value)
+
+get_tprop(std::AbstractSTD, prop::Symbol) =
+    Dict(nt => get_prop(std,nt,prop) for nt in transitions(std))
+get_prop(std::AbstractSTD, nt::_LG.Edge, prop::Symbol) = props(std,nt)[prop]
+has_prop(std::AbstractSTD, nt::_LG.Edge, prop::Symbol) =
+    haskey(props(std,nt), prop)
+set_prop!(std::AbstractSTD, nt::_LG.Edge, prop::Symbol, value::Any) =
+    set_props!(std,nt,Dict{Symbol,Any}(prop => value))
+set_props!(std::AbstractSTD, nt::_LG.Edge, prop_dict::Dict) =
+    haskey(std.tprops,nt) ? merge!(std.tprops[nt],prop_dict) :
+                            std.tprops[nt] = prop_dict ;
+
+function add_transition!(std::AbstractSTD, crd::Tuple{Int,Int}, prop_dict::Dict)
+    edge = _LG.Edge(crd)
+    add_edge!(std, edge) || return false
+    set_prop!(std, edge, :info, TransInfo())                                    # TODO auto capture info prop
+    set_props!(std, edge, prop_dict)
+    # update_info!(std, edge)
+    return true
+end
+function add_transitions!(std::AbstractSTD; kwargs...)
+    test(kwargs) || return false
+    for ni in indices_of(kwargs)
+        crd = haskey(kwargs,:states) ? kwargs[:states][ni] : (ni[1],ni[2]) ;
+        add_transition!(std,crd,reduce(kwargs,ni,exclude=[:states]))            # TODO auto capture info prop
+    end
+    return true
+end
