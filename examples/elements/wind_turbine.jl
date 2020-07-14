@@ -53,3 +53,6 @@ add_transitions!(stdʷᵗʳ, states = [(1,10),(10,1)],
 # Solve the problems
 solve!(stdʷᵗᵒ, 1.0u"yr")
 solve!(stdʷᵗʳ, 1.0u"yr")
+
+# Plots.plot(ustrip.(stdʷᵗᵒ.props[:time]),[stdʷᵗᵒ.sprops[ns][:prob] for ns in 1:7],
+#                        labels = reshape([string(stdʷᵗᵒ.sprops[ns][:flow]) for ns in 1:7],1,7))

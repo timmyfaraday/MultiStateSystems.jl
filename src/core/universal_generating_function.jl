@@ -155,15 +155,18 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
 
         for ni in idx_itr push!(Val,Base.invokelatest(structure_function,ni,vl)) end
 
-        prb, val = reduce(Prb,Val)
+        n_prb, n_val = reduce(Prb,Val)
 
         if haskey(ntw.src[1],:dep)
-            ugf = UGF(:flow,ntw.src[1][:std])
-            Prb, Val = kron(prb,[pr[end] for pr in ugf.prb]), kron(val,_UF.ustrip.(ugf.val))
-            prb, val = reduce(Prb,Val)
+            s_ugf = UGF(:flow,ntw.src[1][:std])
+            s_prb, s_val = [pr[end] for pr in s_ugf.prb], s_ugf.val
+            usr[:mat] = s_prb*n_prb'
+            prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
+            usr[:std] = STD(prob = prb,flow = val)
+            usr[:ugf] = UGF(get_msr(ntw),prb,val)
+        else
+            usr[:std] = STD(prob = n_prb,flow = n_val)
+            usr[:ugf] = UGF(get_msr(ntw),n_prb,n_val)
         end
-
-        usr[:std] = STD(prob = prb,flow = val)
-        usr[:ugf] = UGF(get_msr(ntw),prb,val)
     end
 end

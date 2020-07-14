@@ -1,3 +1,7 @@
 """
-# Expected Energy Not Served
+# Expected Energy Not Supplied
+"""
+
+"""
+# Generation Ratio Availability
 """

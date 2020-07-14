@@ -13,7 +13,6 @@ function cluster_wind_power(input::Array; number_of_clusters::Int=10)
 
     temp = zeros(Float64,number_of_clusters,number_of_clusters)
     for ni in 1:number_of_samples-1 temp[assign[ni],assign[ni+1]] += 1 end
-    println((sum(temp,dims=2)/number_of_samples))
     temp ./= (sum(temp,dims=2)/number_of_samples)
     temp[_LA.diagind(temp)] .= 0
 

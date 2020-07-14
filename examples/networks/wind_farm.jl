@@ -27,8 +27,8 @@ wind farm with six wind turbines is considered (Fig. 1).
    n₅   c₅     n₆   c₆     n₇
 Fig. 1: Tree-like wind farm with six wind turbines.
 
-The output of the wind turbines is governed by the stochastic model presented
-by A.S. Dobakhshari et al. (2009) and may be found in the file titled:
+The output of the wind turbines is governed by the stochastic model which may be
+found in the file titled:
 > ../examples/elements/wind_turbine.jl
 The reliability of the wind turbines is governed by the stochastic model which
 may be found in the file titled:
