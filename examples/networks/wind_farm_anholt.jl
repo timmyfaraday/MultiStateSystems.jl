@@ -32,10 +32,20 @@ add_sources!(ntwᶠ², node = 2:10, ntw = (ntwʷᵗ,1))
 add_components!(ntwᶠ², edge = [(1,2),(2,3),(3,4),(4,5),(5,6),(6,7),(7,8),(8,9),(9,10)],
                        std = stdᶜᵇˡ)
 
-# Overall Wind Farm
+# Feeders 1-6
+ntwᶠ¹⁻⁶ = Network()
+add_user!(ntwᶠ¹⁻⁶, node = 1)
+add_sources!(ntwᶠ¹⁻⁶, node = 1, ntw = [(ntwᶠ¹,1),(ntwᶠ²,1),(ntwᶠ¹,1),(ntwᶠ²,1),(ntwᶠ¹,1),(ntwᶠ²,1)])
+
+# Feeders 7-12
+ntwᶠ⁷⁻¹² = Network()
+add_user!(ntwᶠ⁷⁻¹², node = 1)
+add_sources!(ntwᶠ⁷⁻¹², node = 1, ntw = [(ntwᶠ¹,1),(ntwᶠ²,1),(ntwᶠ¹,1),(ntwᶠ²,1),(ntwᶠ¹,1),(ntwᶠ²,1)])
+
+# Overall network
 ntw = Network()
 add_user!(ntw, node = 1)
-add_sources!(ntw, node = 1, ntw = [(ntwᶠ¹,1),(ntwᶠ²,1)])
+add_sources!(ntw, node = 1, ntw = [(ntwᶠ¹⁻⁶,1),(ntwᶠ⁷⁻¹²,1)])
 
 # Solve the problem
 solve!(ntw, type = :steady)

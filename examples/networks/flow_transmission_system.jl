@@ -58,4 +58,4 @@ add_components!(ntw,edge = [(1,2),(1,2),(2,3)],
                                 prob = [0.1,0.2,0.7])])
 
 # Solve the problem
-@time solve!(ntw)
+solve!(ntw)
