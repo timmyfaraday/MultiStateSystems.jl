@@ -20,7 +20,7 @@ end
 # constructors
 function UGF(msr::Symbol)
     prb = [1.0]
-    val = [(Inf)u"kg/hr"]
+    val = [(Inf)u"MW"]
 
     return UGF(msr,prb,val)
 end

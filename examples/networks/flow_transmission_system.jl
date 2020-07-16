@@ -26,9 +26,9 @@ The pipes' performance is measured by their transmission capacity (kg/min)
 Table 1: Transmission capacity of the pipes in the flow transmission system.
 | pipe 1               | pipe 2               | pipe 3               |
 |----------------------|----------------------|----------------------|
-| g¹₁ = 0    kg/hr     | g²₁ = 0    kg/hr     | g³₁ = 0    kg/hr     |
-| g¹₂ = 1500 kg/hr     | g²₂ = 2000 kg/hr     | g³₂ = 1800 kg/hr     |
-|                      |                      | g³₃ = 4000 kg/hr     |
+| g¹₁ = 0    MW        | g²₁ = 0    MW        | g³₁ = 0    MW        |
+| g¹₂ = 1500 MW        | g²₂ = 2000 MW        | g³₂ = 1800 MW        |
+|                      |                      | g³₃ = 4000 MW        |
 
 Table 2: Associated probabilities of the pipes in the flow transmission system.
 | pipe 1               | pipe 2               | pipe 3               |
@@ -50,11 +50,11 @@ add_user!(ntw,node = 3)
 add_source!(ntw,node = 1)
 add_components!(ntw,edge = [(1,2),(1,2),(2,3)],
                     name = ["pipe 1","pipe 2","pipe 3"],
-                    std  = [STD(flow = [0u"kg/hr",1500u"kg/hr"],
+                    std  = [STD(flow = [0u"MW",1500u"MW"],
                                 prob = [0.2,0.8]),
-                            STD(flow = [0u"kg/hr",2000u"kg/hr"],
+                            STD(flow = [0u"MW",2000u"MW"],
                                 prob = [0.4,0.6]),
-                            STD(flow = [0u"kg/hr",1800u"kg/hr",4000u"kg/hr"],
+                            STD(flow = [0u"MW",1800u"MW",4000u"MW"],
                                 prob = [0.1,0.2,0.7])])
 
 # Solve the problem
