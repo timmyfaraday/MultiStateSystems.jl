@@ -10,7 +10,6 @@
 # Network
 """
 # structs
-abstract type AbstractNetwork{T} <: _LG.AbstractGraph{T} end
 struct Network{I<:Int} <: AbstractNetwork{I}
     graph::_MG.Multigraph{I,I}
 
@@ -33,7 +32,7 @@ end
 ################################################################################
 function Network()
     graph = _MG.Multigraph(0)
-    props = PropDict()
+    props = PropDict(:info => NetworkInfo())
     cmp, src, usr = PropDict[], PropDict[], PropDict[]
     clib, slib, ulib = LibDict(), LibDict(), LibDict()
 
@@ -46,6 +45,10 @@ is_directed(::Type{Network{Int}}) = false
 is_directed(ntw::Network) = false
 
 props(ntw::AbstractNetwork) = ntw.props
+
+get_info(ntw::AbstractNetwork, info::Symbol) = getproperty(ntw.props[:info],info)
+set_info!(ntw::AbstractNetwork, info::Symbol, value::Bool) =
+    setproperty!(ntw.props[:info],info,value)
 
 get_prop(ntw::AbstractNetwork, prop::Symbol) =
     haskey(props(ntw), prop) ? props(ntw)[prop] : ~ ;
@@ -74,22 +77,32 @@ update_lib!(type::Symbol,array::Array,lib::Dict) =
     haskey(lib,array[end][type]) ? push!(lib[array[end][type]],length(array)) :
                                    lib[array[end][type]] = [length(array)] ;
 
+function ntws(ntw::AbstractNetwork)
+    cntr = 1
+    ntws = Vector{AbstractNetwork}([ntw])
+    while length(ntws) >= cntr
+        push!(ntws,setdiff(get_ntw(ntws[cntr]),ntws)...)
+        cntr += 1
+    end
+    for nn in ntws set_msr!(nn) end
+    if any(x -> get_info(x,:dependent_sources),ntws)
+        ni = findlast(x -> get_info(x,:dependent_sources),ntws)
+        ntws[1].props[:source_ugf] = UGF(ntws[ni].props[:msr],ntws[ni].src[1][:std])
+        for nn in ntws set_info!(nn,:dependent_sources,true) end
+    end
+    return reverse(ntws)
+end
+
 """
 ## Info
 """
 # structs
-abstract type AbstractInfo end
-mutable struct NtwInfo{B<:Bool} <: AbstractInfo
+mutable struct NetworkInfo{B<:Bool} <: AbstractInfo
+    solved::B
     dependent_sources::B
 
     # constructor
-    NetworkInfo() = new{Bool}(false)
-end
-mutable struct SrcInfo{B<:Bool} <: AbstractInfo
-   dependent_sources::B
-
-   # constructor
-   SrcInfo() = new{Bool}(false)
+    NetworkInfo() = new{Bool}(false,false)
 end
 
 """
@@ -99,13 +112,15 @@ end
 elements(ntw::AbstractNetwork) = Iterators.flatten((ntw.cmp,ntw.src))
 
 get_idx(ntw::AbstractNetwork) = [1:length(elm[:ugf].prb) for elm in elements(ntw)]
+get_idx_itr(ntw::AbstractNetwork) = Iterators.product(get_idx(ntw)...)
 get_val(ntw::AbstractNetwork) = [elm[:ugf].val for elm in elements(ntw)]
 get_steady_prb(elm::PropDict) =
     dim(elm[:ugf].prb) > 0 ? [prb[end] for prb in elm[:ugf].prb] : elm[:ugf].prb ;
 get_prb(ntw::AbstractNetwork; type::Symbol) =
     return type==:steady ? [get_steady_prb(elm) for elm in elements(ntw)] :
                            [elm[:ugf].prb for elm in elements(ntw)] ;
-
+get_ntw(ntw::AbstractNetwork) =
+    [elm[:ntw][1] for elm in elements(ntw) if haskey(elm,:ntw)]
 """
 ### Component
 """
@@ -132,7 +147,7 @@ function add_component!(ntw::AbstractNetwork; kwargs...)
         add_vertex!(ntw,maximum(edge))
         add_edge!(ntw,edge[1],edge[2])
         edge = _MG.MultipleEdge(edge[1],edge[2],mul_edge(ntw,edge))
-        push!(ntw.cmp,Dict(kwargs...))
+        push!(ntw.cmp,Dict(:edge => edge, reduce(kwargs,1,exclude=[:edge])...))
         update_lib!(:edge,ntw.cmp,ntw.clib)
     end
 end
@@ -177,6 +192,7 @@ src_nodes(ntw::AbstractNetwork) = keys(ntw.slib)
 
 function add_source!(ntw::AbstractNetwork; node::Int, kwargs...)
     add_vertex!(ntw,node)
+    if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
     push!(ntw.src,Dict(:node => node, kwargs...))
     update_lib!(:node,ntw.src,ntw.slib)
 end
@@ -188,9 +204,13 @@ end
 function add_sources!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
     node = kwargs[:node]
-    for ni in 1:length(node)
+    if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
+    if dim(node) > 0 for ni in 1:length(node)
         add_source!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
     end
+    else for ni in indices_of(kwargs)
+        add_source!(ntw, node, reduce(kwargs,ni,exclude=[:node]))
+    end end
 end
 
 """
@@ -224,7 +244,7 @@ function add_users!(ntw::AbstractNetwork; kwargs...)
 end
 
 """
-## Paths
+## Pathså
 """
 # functions
 weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
@@ -241,8 +261,10 @@ function paths(ntw::AbstractNetwork, s_node::Int, u_node::Int)
             cpath = Array{Expr,1}()
             for nn in 1:length(npath)-1
                 node = npath[nn]
-                edge = _MG.MultipleEdge(npath[nn],npath[nn+1],mul[nn])
                 haskey(ntw.clib,node) ? push!(cpath,cmp_expr(ntw.clib[node][1])) : ~ ;
+                edge = _MG.MultipleEdge(npath[nn],npath[nn+1],mul[nn])
+                haskey(ntw.clib,edge) ? push!(cpath,cmp_expr(ntw.clib[edge][1])) : ~ ;
+                edge = _MG.MultipleEdge(npath[nn+1],npath[nn],mul[nn])
                 haskey(ntw.clib,edge) ? push!(cpath,cmp_expr(ntw.clib[edge][1])) : ~ ;
             end
             node = npath[end]

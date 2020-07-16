@@ -76,7 +76,6 @@ set_props!(std::AbstractSTD, dict::Dict) = merge!(std.props, dict)
 ## Info
 """
 # structs
-abstract type AbstractInfo end
 mutable struct STDInfo{B<:Bool} <: AbstractInfo
     solved::B
     renewal::B

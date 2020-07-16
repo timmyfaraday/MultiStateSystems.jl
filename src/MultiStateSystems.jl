@@ -33,13 +33,15 @@ module MultiStateSystems
     const MsrSet = Set([:flow])
 
     # abstract types
+    abstract type AbstractInfo end
     abstract type AbstractSTD{T} <: _LG.AbstractGraph{T} end
+    abstract type AbstractNetwork{T} <: _LG.AbstractGraph{T} end
 
     # types
     const UIE = Union{Int,_LG.AbstractEdge}
     const LibDict = Dict{UIE,Vector{Int}}
     const PropDict = Dict{Symbol,Any}
-    const Single = Union{Bool,Number,String,Symbol,AbstractSTD}
+    const Single = Union{Bool,Number,String,Symbol,AbstractSTD,Tuple{AbstractNetwork,Int}}
 
     include("io/cluster.jl")
     include("io/core.jl")

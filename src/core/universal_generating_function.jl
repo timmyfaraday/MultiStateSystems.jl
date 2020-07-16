@@ -50,6 +50,7 @@ end
 function src_ugf(msr::Symbol,src::PropDict)
     if haskey(src,:dep) return UGF(msr,[1.0],[1.0u"MW"]) end
     if haskey(src,:std) return UGF(msr,src[:std]) end
+    if haskey(src,:ntw) ntw, id = src[:ntw]; return ntw.usr[id][:ugf] end
     return UGF(msr)
 end
 function set_ugf!(ntw::AbstractNetwork)
@@ -69,6 +70,7 @@ probability_function(pr::Vector,idx_itr) =
 """
 function cmp_structure_function(ntw::AbstractNetwork,s_node::Int,u_node::Int)
     npaths, cpaths = paths(ntw, s_node, u_node)
+    cpaths != [[]] || return nothing
     while length(npaths[1]) ≠ 0
         has_duplicate_paths(npaths) ? vertical_reduction!(npaths,cpaths) :
                                       horizontal_reduction!(npaths,cpaths) ;
@@ -86,7 +88,8 @@ function set_structure_function!(ntw::Network)
         for s_node in src_nodes(ntw)
             exrp_src = src_structure_function(ntw,s_node)
             exrp_cmp = cmp_structure_function(ntw,s_node,u_node)
-            exrp = :(min($exrp_src,$exrp_cmp))
+            exrp_cmp == nothing ? exrp = :($exrp_src) :
+                                  exrp = :(min($exrp_src,$exrp_cmp)) ;
             expr == nothing ? expr = :($exrp) : expr = :($expr + $exrp) ;
         end
         for nu in ntw.ulib[u_node] ntw.usr[nu][:str] = expr end
@@ -129,7 +132,9 @@ function horizontal_reduction!(npaths::Array,cpaths::Array)
             deleteat!(npaths[ni],idx)
             # clean-up of the component paths TODO enumerate over seperate sequences larger than one
             idx = findall(in(unique_elements(ni,cpaths)),cpaths[ni])
-            cpaths[ni][idx[1]] = ser([cpaths[ni][id] for id in idx])
+            if length(idx) > 1
+                cpaths[ni][idx[1]] = ser([cpaths[ni][id] for id in idx])
+            end
             deleteat!(cpaths[ni],idx[2:end])
     end end
 end
@@ -137,14 +142,10 @@ end
 """
 # Solve
 """
-function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
-    set_msr!(ntw)
+function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
     set_ugf!(ntw)
-
     set_structure_function!(ntw)
-
-    pr, vl = get_prb(ntw,type = type), get_val(ntw)
-    idx_itr = Iterators.product(get_idx(ntw)...)
+    pr, vl, idx_itr = get_prb(ntw,type = type), get_val(ntw), get_idx_itr(ntw)
     Prb = probability_function(pr,idx_itr)
     for usr in ntw.usr
         Val = Number[]
@@ -157,16 +158,22 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
 
         n_prb, n_val = reduce(Prb,Val)
 
-        if haskey(ntw.src[1],:dep)
-            s_ugf = UGF(:flow,ntw.src[1][:std])
-            s_prb, s_val = [pr[end] for pr in s_ugf.prb], s_ugf.val
+        usr[:std] = STD(prob = n_prb,flow = n_val)
+        usr[:ugf] = UGF(get_msr(ntw),n_prb,n_val)
+    end
+    set_info!(ntw,:solved,true)
+end
+function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
+    for nn in ntws(ntw) solve_network!(nn,type = type) end
+    if get_info(ntw, :dependent_sources)
+        s_ugf = ntw.props[:source_ugf]
+        s_prb, s_val = [pr[end] for pr in s_ugf.prb], s_ugf.val
+        for usr in ntw.usr
+            n_ugf = usr[:ugf]
+            n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
             usr[:mat] = s_prb*n_prb'
             prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
             usr[:std] = STD(prob = prb,flow = val)
             usr[:ugf] = UGF(get_msr(ntw),prb,val)
-        else
-            usr[:std] = STD(prob = n_prb,flow = n_val)
-            usr[:ugf] = UGF(get_msr(ntw),n_prb,n_val)
-        end
-    end
+    end end
 end

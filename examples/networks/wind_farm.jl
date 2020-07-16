@@ -5,10 +5,9 @@
 # A Julia package to solve multi-state system models.                          #
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
+
 """
 Example considering a tree-like wind farm with six wind turbines taken from:
-
-> XXX by XXX
 
 The goal of this example is to show the effectiveness of solving tree-like
 systems iteratively compared to solving it as a single system. To this end, a

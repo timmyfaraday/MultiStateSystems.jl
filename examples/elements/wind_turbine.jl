@@ -11,6 +11,7 @@ using XLSX
 using Unitful
 using MultiStateSystems
 
+## STD
 # Read in the wind power output data, and determine the clustered outputs and
 # corresponding rates.
 path = joinpath(BASE_DIR,"examples/data/Anholt.xlsx")
@@ -54,5 +55,11 @@ add_transitions!(stdʷᵗʳ, states = [(1,10),(10,1)],
 solve!(stdʷᵗᵒ, 1.0u"yr")
 solve!(stdʷᵗʳ, 1.0u"yr")
 
-# Plots.plot(ustrip.(stdʷᵗᵒ.props[:time]),[stdʷᵗᵒ.sprops[ns][:prob] for ns in 1:7],
-#                        labels = reshape([string(stdʷᵗᵒ.sprops[ns][:flow]) for ns in 1:7],1,7))
+## Network
+# Initialize the wind turbine network
+ntwʷᵗ = Network()
+
+# Add the user, sources and components to the wind turbine network ntwʷᵗᵒ
+add_user!(ntwʷᵗ, node = 1)
+add_source!(ntwʷᵗ, node = 2, std = stdʷᵗᵒ, dep = true)
+add_component!(ntwʷᵗ, edge = (1,2), std = stdʷᵗʳ)
