@@ -44,7 +44,7 @@ add_sources!(ntwᶠ⁷⁻¹², node = 1, ntw = [(ntwᶠ¹,1),(ntwᶠ²,1),(ntw�
 
 # Overall network
 ntw = Network()
-add_user!(ntw, node = 1)
+add_user!(ntw, node = 1, ind = [:GRA,:EENS])
 add_sources!(ntw, node = 1, ntw = [(ntwᶠ¹⁻⁶,1),(ntwᶠ⁷⁻¹²,1)])
 
 # Solve the problem

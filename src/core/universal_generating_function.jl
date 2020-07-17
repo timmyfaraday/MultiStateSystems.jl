@@ -165,6 +165,10 @@ function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
 end
 function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
     for nn in ntws(ntw) solve_network!(nn,type = type) end
+    for usr in ntw.usr if haskey(usr,:ind)
+        for ind in usr[:ind]
+            if ind == :GRA usr[:GRA] = GRA(usr) end
+    end end end
     if get_info(ntw, :dependent_sources)
         s_ugf = ntw.props[:source_ugf]
         s_prb, s_val = [pr[end] for pr in s_ugf.prb], s_ugf.val
@@ -176,4 +180,8 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
             usr[:std] = STD(prob = prb,flow = val)
             usr[:ugf] = UGF(get_msr(ntw),prb,val)
     end end
+    for usr in ntw.usr if haskey(usr,:ind)
+        for ind in usr[:ind]
+            if ind == :EENS usr[:EENS] = EENS(usr) end
+    end end end
 end

@@ -48,6 +48,7 @@ module MultiStateSystems
     include("io/network.jl")
     include("io/state_transition_diagram.jl")
 
+    include("core/indices.jl")
     include("core/stochastic_process.jl")
     include("core/universal_generating_function.jl")
 
