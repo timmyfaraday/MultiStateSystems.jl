@@ -24,13 +24,13 @@ ntwᶠ¹ = Network()
 add_user!(ntwᶠ¹, node = 1)
 add_sources!(ntwᶠ¹, node = 2:10, ntw = (ntwʷᵗ,1))
 add_components!(ntwᶠ¹, edge = [(1,2),(2,3),(3,4),(4,5),(5,6),(5,7),(3,8),(8,9),(9,10)],
-                       std = stdᶜᵇˡ)
+                       std = stdᶜᵇˡ[(10u"km",240u"mm^2")])
 # Feeder 2 - Nodes 23:29, 42, 61
 ntwᶠ² = Network()
 add_user!(ntwᶠ², node = 1)
 add_sources!(ntwᶠ², node = 2:10, ntw = (ntwʷᵗ,1))
 add_components!(ntwᶠ², edge = [(1,2),(2,3),(3,4),(4,5),(5,6),(6,7),(7,8),(8,9),(9,10)],
-                       std = stdᶜᵇˡ)
+                       std = stdᶜᵇˡ[(20u"km",240u"mm^2")])
 
 # Feeders 1-6
 ntwᶠ¹⁻⁶ = Network()

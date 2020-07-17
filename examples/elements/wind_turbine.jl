@@ -25,7 +25,7 @@ stdʷᵗʳ = STD()
 
 # Add the states to the std's
 add_states!(stdʷᵗᵒ, flow = (output)u"MW",
-                    init = [0.0,0.0,0.0,0.0,0.0,0.0,1.0])
+                    init = [0.0,0.0,0.0,0.0,0.0,0.0,1.0]) # TODO - has to change if you change the number of clusters
 add_states!(stdʷᵗʳ, flow = [(Inf)u"MW",0.0u"MW",0.0u"MW",0.0u"MW",0.0u"MW",
                             0.0u"MW",0.0u"MW",0.0u"MW",0.0u"MW",0.0u"MW"],
                     init = [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
