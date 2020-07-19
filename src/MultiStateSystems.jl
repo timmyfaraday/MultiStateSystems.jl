@@ -9,7 +9,7 @@
 module MultiStateSystems
 
     # import Pkgs
-    import Clustering
+    import Jenks
     import LightGraphs
     import LinearAlgebra
     import Multigraphs
@@ -19,9 +19,9 @@ module MultiStateSystems
     using  Unitful
 
     # pkg const
-    const _CL  = Clustering
     const _LA  = LinearAlgebra
     const _LG  = LightGraphs
+    const _JR  = Jenks
     const _MG  = Multigraphs
     const _ODE = OrdinaryDiffEq
     const _UF  = Unitful

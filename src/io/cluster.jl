@@ -5,30 +5,31 @@
 # A Julia package to solve multi-state system models.                          #
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
-# Contributor: Gayan Abeynayake (@gayan86)                                     #
+# Contributor: Gayan Abeynayake ([@gayan86](https://github.com/gayan86))       #
 ################################################################################
 
 """
 # Wind Power
 """
 function cluster_wind_power(input::Array; number_of_clusters::Int=10)
-    if !isa(input,Matrix{Float64}) input = convert(Matrix{Float64},input) end
-    if size(input)[2] < number_of_clusters input = transpose(input) end
+    if !isa(input,Vector{Float64}) input = convert(Vector{Float64},vec(input)) end
+    if any(x->x.<=0.0,input) input[input.<=0.0] .= 0.0 end
 
+    temp = copy(input) # the classification sorts the data
     number_of_samples = length(input)
-    clusters = _CL.kmeans(input,number_of_clusters; maxiter=200, tol=1e-10)
+    clusters = _JR.JenksClassification(number_of_clusters-2,input,errornorm=2)
 
-    output = round.(vec(clusters.centers), digits = 3)
-    assign = clusters.assignments
+    output = round.([minimum(temp),clusters.centres...,maximum(temp)], digits = 3)
+    bounds = clusters.bounds
+    assign = zeros(Int,number_of_samples)
+    assign[temp.==bounds[1]] .= 1
+    for nc in 2:number_of_clusters-1 assign[bounds[nc-1].<temp.<=bounds[nc]] .= nc end
+    assign[temp.==bounds[end]] .= number_of_clusters
 
-    temp = zeros(Float64,number_of_clusters,number_of_clusters)
-    for ni in 1:number_of_samples-1 temp[assign[ni],assign[ni+1]] += 1 end
-    temp ./= (sum(temp,dims=2)/number_of_samples)
-    temp[_LA.diagind(temp)] .= 0
-
-    idx = sortperm(output)
     rate = zeros(Float64,number_of_clusters,number_of_clusters)
-    for nc in CartesianIndices(temp) rate[idx[nc[1]],idx[nc[2]]] = temp[nc] end
+    for ni in 1:number_of_samples-1 rate[assign[ni],assign[ni+1]] += 1 end
+    rate ./= (sum(rate,dims=2)/number_of_samples)
+    rate[_LA.diagind(rate)] .= 0
 
-    return output[idx], rate
+    return output, rate
 end
