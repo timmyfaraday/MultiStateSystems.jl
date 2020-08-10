@@ -9,7 +9,6 @@
 module MultiStateSystems
 
 # import Pkgs
-import Jenks
 import LightGraphs
 import LinearAlgebra
 import Multigraphs
@@ -21,7 +20,6 @@ using  Unitful
 # pkg const
 const _LA  = LinearAlgebra
 const _LG  = LightGraphs
-const _JR  = Jenks
 const _MG  = Multigraphs
 const _ODE = OrdinaryDiffEq
 const _UF  = Unitful

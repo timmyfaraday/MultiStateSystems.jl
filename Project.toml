@@ -4,7 +4,6 @@ authors = ["Tom Van Acker"]
 version = "0.1.0"
 
 [deps]
-Jenks = "ea09bcba-b530-11e9-285d-9b3245f059b3"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Multigraphs = "7ebac608-6c66-46e6-9856-b5f43e107bac"
