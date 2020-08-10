@@ -9,6 +9,7 @@
 module MultiStateSystems
 
 # import Pkgs
+import Jenks
 import LightGraphs
 import LinearAlgebra
 import Multigraphs
@@ -20,6 +21,7 @@ using  Unitful
 # pkg const
 const _LA  = LinearAlgebra
 const _LG  = LightGraphs
+const _JR  = Jenks
 const _MG  = Multigraphs
 const _ODE = OrdinaryDiffEq
 const _UF  = Unitful
@@ -30,6 +32,7 @@ const BASE_DIR = dirname(@__DIR__)
 # include
 include("core/types.jl")
 
+include("io/cluster.jl")
 include("io/measure.jl")
 include("io/network.jl")
 include("io/state_transition_diagram.jl")
