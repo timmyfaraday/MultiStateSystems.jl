@@ -8,6 +8,7 @@
 
 # Load Pkgs
 using XLSX
+using Jenks
 using Unitful
 using MultiStateSystems
 

@@ -30,6 +30,7 @@ const BASE_DIR = dirname(@__DIR__)
 # include
 include("core/types.jl")
 
+include("io/cluster.jl")
 include("io/measure.jl")
 include("io/network.jl")
 include("io/state_transition_diagram.jl")
@@ -42,6 +43,7 @@ include("prob/universal_generating_operator.jl")
 
 # export
 export  BASE_DIR
+export  cluster_wind_power
 export  Network, add_source!, add_sources!, add_user!, add_users!,
         add_component!, add_components!
 export  STD, add_state!, add_states!, add_transition!, add_transitions!

@@ -1,6 +1,6 @@
 # MultiStateSystems
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://timmyfaraday.github.io/MultiStateSystems.jl/stable/)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://timmyfaraday.github.io/MultiStateSystems.jl/dev/)
 [![Build Status](https://travis-ci.com/timmyfaraday/MultiStateSystems.jl.svg?branch=master)](https://travis-ci.com/timmyfaraday/MultiStateSystems.jl)
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/timmyfaraday/MultiStateSystems.jl?svg=true)](https://ci.appveyor.com/project/timmyfaraday/MultiStateSystems-jl)
 [![Codecov](https://codecov.io/gh/timmyfaraday/MultiStateSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/timmyfaraday/MultiStateSystems.jl)
