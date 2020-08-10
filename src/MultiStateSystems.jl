@@ -30,7 +30,6 @@ const BASE_DIR = dirname(@__DIR__)
 # include
 include("core/types.jl")
 
-include("io/cluster.jl")
 include("io/measure.jl")
 include("io/network.jl")
 include("io/state_transition_diagram.jl")

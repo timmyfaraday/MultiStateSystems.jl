@@ -6,6 +6,39 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
+# Universal Generating Operator
+"""
+    solve!(ntw::MultiStateSystems.AbstractNetwork; type::Symbol=:steady)
+
+This function determines the universal generating function related to the output
+of all users `usr` of a network `ntw`.
+
+Optionally, the type
+"""
+function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
+    for nn in ntws(ntw) solve_network!(nn,type = type) end
+    for usr in ntw.usr if haskey(usr,:ind)
+        for ind in usr[:ind]
+            if ind == :GRA usr[:GRA] = GRA(usr) end
+    end end end
+    if get_info(ntw, :dependent_sources)
+        s_ugf = ntw.props[:source_ugf]
+        s_prb, s_val = [pr[end] for pr in s_ugf.prb], s_ugf.val
+        for usr in ntw.usr
+            n_ugf = usr[:ugf]
+            n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
+            usr[:mat] = s_prb*n_prb'
+            prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
+            usr[:std] = STD(prob = prb,flow = val)
+            usr[:ugf] = UGF(get_msr(ntw),prb,val)
+    end end
+    for usr in ntw.usr if haskey(usr,:ind)
+        for ind in usr[:ind]
+            if ind == :EENS usr[:EENS] = EENS(usr) end
+    end end end
+end
+
+
 ## Probability Function
 probability_function(pr::Vector,idx_itr) =
     vec([prod([pr[ne][ni[ne]] for ne in 1:length(pr)])[1] for ni in idx_itr])
@@ -102,31 +135,4 @@ function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
         usr[:ugf] = UGF(get_msr(ntw),n_prb,n_val)
     end
     set_info!(ntw,:solved,true)
-end
-"""
-    solve!(ntw::MultiStateSystems.AbstractNetwork; type::Symbol=:steady)
-
-
-"""
-function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
-    for nn in ntws(ntw) solve_network!(nn,type = type) end
-    for usr in ntw.usr if haskey(usr,:ind)
-        for ind in usr[:ind]
-            if ind == :GRA usr[:GRA] = GRA(usr) end
-    end end end
-    if get_info(ntw, :dependent_sources)
-        s_ugf = ntw.props[:source_ugf]
-        s_prb, s_val = [pr[end] for pr in s_ugf.prb], s_ugf.val
-        for usr in ntw.usr
-            n_ugf = usr[:ugf]
-            n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
-            usr[:mat] = s_prb*n_prb'
-            prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
-            usr[:std] = STD(prob = prb,flow = val)
-            usr[:ugf] = UGF(get_msr(ntw),prb,val)
-    end end
-    for usr in ntw.usr if haskey(usr,:ind)
-        for ind in usr[:ind]
-            if ind == :EENS usr[:EENS] = EENS(usr) end
-    end end end
 end
