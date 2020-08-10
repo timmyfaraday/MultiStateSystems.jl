@@ -3,5 +3,5 @@ using Test
 
 @testset "State Transition Diagram" begin
     stdᵗᵉˢᵗ = STD()
-    @test add_state!(stdᵗᵉˢᵗ) == true
+    @test length(stdᵗᵉˢᵗ.sprops) == 0
 end

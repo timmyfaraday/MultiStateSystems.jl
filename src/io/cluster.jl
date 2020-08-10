@@ -8,22 +8,20 @@
 # Contributor: Gayan Abeynayake ([@gayan86](https://github.com/gayan86))       #
 ################################################################################
 
-"""
-# Wind Power
-"""
-function cluster_wind_power(input::Array; number_of_clusters::Int=10)
-    if !isa(input,Vector{Float64}) input = convert(Vector{Float64},vec(input)) end
+function cluster_wind_power(input::Vector{Float64}; number_of_clusters::Int=10)
     if any(x->x.<=0.0,input) input[input.<=0.0] .= 0.0 end
 
-    temp = copy(input) # the classification sorts the data
+    temp = copy(input)
     number_of_samples = length(input)
     clusters = _JR.JenksClassification(number_of_clusters-2,input,errornorm=2)
 
-    output = round.([minimum(temp),clusters.centres...,maximum(temp)], digits = 3)
+    output = round.([minimum(temp),clusters.centres...,maximum(temp)],digits=3)
     bounds = clusters.bounds
     assign = zeros(Int,number_of_samples)
     assign[temp.==bounds[1]] .= 1
-    for nc in 2:number_of_clusters-1 assign[bounds[nc-1].<temp.<=bounds[nc]] .= nc end
+    for nc in 2:number_of_clusters-1
+        assign[bounds[nc-1].<temp.<=bounds[nc]] .= nc
+    end
     assign[temp.==bounds[end]] .= number_of_clusters
 
     rate = zeros(Float64,number_of_clusters,number_of_clusters)

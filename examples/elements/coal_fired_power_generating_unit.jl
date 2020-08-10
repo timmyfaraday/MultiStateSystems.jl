@@ -49,8 +49,8 @@ using MultiStateSystems
 stdᵃᵐ = STD()
 
 # Add the states to the std
-add_states!(stdᵃᵐ, flow = [0u"MW", 247u"MW", 482u"MW", 576u"MW"],
-                   init = [0.0,0.0,0.0,1.0])
+add_states!(stdᵃᵐ, power = [0u"MW", 247u"MW", 482u"MW", 576u"MW"],
+                   init  = [0.0,0.0,0.0,1.0])
 
 # Add the transitions to the std
 add_transitions!(stdᵃᵐ, states = [(1,2),(1,3)],

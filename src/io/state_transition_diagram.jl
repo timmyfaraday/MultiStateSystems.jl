@@ -6,9 +6,7 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-"""
-# State-Transition Diagram
-"""
+## State-Transition Diagram
 # structs
 struct STD{I<:Int} <: AbstractSTD{I}
     graph::_LG.DiGraph{I}
@@ -28,6 +26,21 @@ function STD(Ns::Int)
 
     return STD(graph, props, sprops, tprops)
 end
+"""
+    STD(;prob::Array, kwargs...)
+
+An state-transition diagram constructor with given state probabilities `prob`
+and any number of other arguments `kwargs`.
+
+Sets `solved` of the STDInfo to true.
+
+# Example
+```julia-repl
+julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
+                    flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
+
+```
+"""
 function STD(;prob::Array, kwargs...)
     std = STD(length(prob))
     set_info!(std,:solved,true)
@@ -37,11 +50,22 @@ function STD(;prob::Array, kwargs...)
 
     return std
 end
+
 ################################################################################
 # WARNING:  The empty constructor needs to be last in order to overwrite the   #
 #           empty constructor created by other contructors, see: discourse -   #
 #           keyword argument contructor breaks incomplete constructor.         #                                               #
 ################################################################################
+"""
+    STD()
+
+An empty state-transition diagram constructor.
+
+# Example
+```julia-repl
+julia> stdᵍᵉⁿ = STD()
+```
+"""
 function STD()
     graph = _LG.DiGraph()
 
@@ -61,10 +85,6 @@ props(std::AbstractSTD) = std.props
 props(std::AbstractSTD, s::Int) = get(std.sprops, s, PropDict())
 props(std::AbstractSTD, t::_LG.Edge) = get(std.tprops, t, PropDict())
 
-get_info(std::AbstractSTD, info::Symbol) = getproperty(std.props[:info],info)
-set_info!(std::AbstractSTD, info::Symbol, value::Bool) =
-    setproperty!(std.props[:info],info,value)
-
 get_prop(std::AbstractSTD, prop::Symbol) =
     haskey(props(std), prop) ? props(std)[prop] : ~ ;
 has_prop(std::AbstractSTD, prop::Symbol) = haskey(std.props, prop)
@@ -72,9 +92,7 @@ set_prop!(std::AbstractSTD, prop::Symbol, value) =
     set_props!(std, Dict(prop => value))
 set_props!(std::AbstractSTD, dict::Dict) = merge!(std.props, dict)
 
-"""
 ## Info
-"""
 # structs
 mutable struct STDInfo{B<:Bool} <: AbstractInfo
     solved::B
@@ -102,6 +120,18 @@ mutable struct TransInfo{B<:Bool} <: AbstractInfo
 end
 
 # functions
+get_info(std::AbstractSTD, info::Symbol) = getproperty(std.props[:info],info)
+set_info!(std::AbstractSTD, info::Symbol, value::Bool) =
+    setproperty!(std.props[:info],info,value)
+get_info(std::AbstractSTD, ns::Int, info::Symbol) =
+    getproperty(std.sprops[ns][:info],info)
+set_info!(std::AbstractSTD, ns::Int, info::Symbol, value::Bool) =
+    setproperty!(std.sprops[ns][:info],info,value)
+get_info(std::AbstractSTD, nt::_LG.Edge, info::Symbol) =
+    getproperty(std.tprops[nt][:info],info)
+set_info!(std::AbstractSTD, nt::_LG.Edge, info::Symbol, value::Bool) =
+    setproperty!(std.tprops[nt][:info],info,value)
+# functions
 # is_markovian(std::AbstractSTD,nt::_LG.Edge) = isa(get_prop(std,nt,:rate),Number)
 # is_time_homogeneous(std::AbstractSTD,nt::_LG.Edge) =
 #     isa(get_prop(std,nt,:rate),Number)
@@ -119,19 +149,12 @@ end
 #     get_info(std,_LG.src(nt),:trapping) *= false
 # end
 
-"""
 ## State
-"""
 # functions
 ns(std::AbstractSTD) = _LG.nv(std.graph)
 states(std::AbstractSTD) = _LG.vertices(std.graph)
 add_vertex!(std::AbstractSTD) = _LG.add_vertex!(std.graph)
 has_vertex(std::AbstractSTD, x...) = _LG.has_vertex(std.graph, x...)
-
-get_info(std::AbstractSTD, ns::Int, info::Symbol) =
-    getproperty(std.sprops[ns][:info],info)
-set_info!(std::AbstractSTD, ns::Int, info::Symbol, value::Bool) =
-    setproperty!(std.sprops[ns][:info],info,value)
 
 get_sprop(std::AbstractSTD, prop::Symbol) =
     [get_prop(std, ns, prop) for ns in states(std)]
@@ -145,12 +168,51 @@ set_props!(std::AbstractSTD, ns::Int, prop_dict::Dict) =
     haskey(std.sprops,ns) ? merge!(std.sprops[ns],prop_dict) :
                             std.sprops[ns] = prop_dict ;
 
+"""
+    add_state!(std::MultiStateSystems.AbstractSTD; kwargs...)
+
+Adds a single state to the state-transition diagram `std` and fills its
+corresponding `PropDict` with the named arguments `kwargs`.
+
+# Example
+```julia-repl
+julia> stdᵍᵉⁿ = STD()
+julia> add_state!(stdᵍᵉⁿ, name  = "normal operation state",
+                          power = 100u"MW",
+                          init  = 1.0)
+```
+"""
+function add_state!(std::AbstractSTD; kwargs...)
+    test(kwargs) || return false
+    add_vertex!(std) || return false
+    set_prop!(std, ns(std), :info, StateInfo())
+    set_props!(std, ns(std), Dict(kwargs...))
+    return true
+end
 function add_state!(std::AbstractSTD, prop_dict::Dict)
     add_vertex!(std) || return false
     set_prop!(std, ns(std), :info, StateInfo())                                 # TODO auto capture info prop
     set_props!(std, ns(std), prop_dict)
     return true
-end                                                                             # TODO add add_state with kwargs...
+end
+
+"""
+    add_states!(std::MultiStateSystems.AbstractSTD; kwargs...)
+
+Adds multiple states to the state-transition diagram `std` and fills their
+corresponding `PropDict` with the named arguments `kwargs`. Either an uniform
+argument is given which holds for all states or an array is given with the
+specific argument for each state.
+
+# Example
+```julia-repl
+julia> stdᵍᵉⁿ = STD()
+julia> add_states!(stdᵍᵉⁿ, name  = ["normal operation state","failed state"],
+                           power = [100.0u"MW",0.0u"MW"],
+                           init  = [1.0,0.0],
+                           markovian = true)
+```
+"""
 function add_states!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
     set_prop!(std, :msr, intersect(MsrSet,keys(kwargs)))                        # TODO auto capture info prop
@@ -158,19 +220,12 @@ function add_states!(std::AbstractSTD; kwargs...)
     return true
 end
 
-"""
 ## Transition
-"""
 # functions
 nt(std::AbstractSTD) = _LG.ne(std.graph)
 transitions(std::AbstractSTD) = _LG.edges(std.graph)
 has_edge(std::AbstractSTD, x...) = _LG.has_edge(std.graph, x...)
 add_edge!(std::AbstractSTD, x...) = _LG.add_edge!(std.graph, x...)
-
-get_info(std::AbstractSTD, nt::_LG.Edge, info::Symbol) =
-    getproperty(std.tprops[nt][:info],info)
-set_info!(std::AbstractSTD, nt::_LG.Edge, info::Symbol, value::Bool) =
-    setproperty!(std.tprops[nt][:info],info,value)
 
 get_tprop(std::AbstractSTD, prop::Symbol) =
     Dict(nt => get_prop(std,nt,prop) for nt in transitions(std))
@@ -183,6 +238,33 @@ set_props!(std::AbstractSTD, nt::_LG.Edge, prop_dict::Dict) =
     haskey(std.tprops,nt) ? merge!(std.tprops[nt],prop_dict) :
                             std.tprops[nt] = prop_dict ;
 
+"""
+    add_transition!(std::MultiStateSystems.AbstractSTD; kwargs...)
+
+Adds a single transitions to the state-transition diagram `std` and fills its
+corresponding `PropDict` with the named arguments `kwargs`. One obligatory named
+argument is `:states`, describing the tuple (fr,to) of the from- and to-state.
+
+# Example
+```julia-repl
+julia> stdᵍᵉⁿ = STD()
+julia> add_states!(stdᵍᵉⁿ, name  = ["normal operation state","failed state"],
+                           power = [100.0u"MW",0.0u"MW"],
+                           init  = [1.0,0.0],
+                           markovian = true)
+julia> add_transition!(stdᵍᵉⁿ, rate = 0.001u"1/hr",
+                               states = (1,2))
+```
+"""
+function add_transition!(std::AbstractSTD; kwargs...)
+    test(kwargs) || return false
+    haskey(kwargs,:states) || return false
+    edge = _LG.Edge(kwargs[:states])
+    add_edge!(std, edge) || return false
+    set_prop!(std, edge, :info, TransInfo())                                    # TODO auto capture info prop
+    set_props!(std, edge, Dict(kwargs...))
+    return true
+end
 function add_transition!(std::AbstractSTD, crd::Tuple{Int,Int}, prop_dict::Dict)
     edge = _LG.Edge(crd)
     add_edge!(std, edge) || return false
@@ -191,6 +273,34 @@ function add_transition!(std::AbstractSTD, crd::Tuple{Int,Int}, prop_dict::Dict)
     # update_info!(std, edge)
     return true
 end
+"""
+    add_transitions!(std::MultiStateSystems.AbstractSTD; kwargs...)
+
+Adds multiple transitions to the state-transition diagram `std` and fills their
+corresponding `PropDict` with the named arguments `kwargs`. Either an uniform
+argument is given which holds for all transitions or an array is given with the
+specific argument for each transition.
+
+# Example
+```julia-repl
+julia> stdᵍᵉⁿ = STD()
+julia> add_states!(stdᵍᵉⁿ, name  = ["normal operation state","failed state"],
+                           power = [100.0u"MW",0.0u"MW"],
+                           init  = [1.0,0.0],
+                           markovian = true)
+julia> add_transitions!(stdᵍᵉⁿ, rate = [0.001u"1/hr",0.01u"1/hr"],
+                                states = [(1,2),(2,1)])
+```
+!!! note
+    If the `:states` argument is not provided in the `add_transitions!`
+    function, the from- and to-states will be determined based on the other
+    arguments.
+# Example (Alternative)
+```julia-repl
+julia> add_transitions!(stdᵍᵉⁿ, rate = [0.000u"1/hr" 0.010u"1/hr"
+                                        0.001u"1/hr" 0.000u"1/hr"])
+```
+"""
 function add_transitions!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
     for ni in indices_of(kwargs)

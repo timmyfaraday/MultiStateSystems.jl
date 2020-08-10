@@ -21,8 +21,8 @@ ld = [(10u"km",240u"mm^2"),(20u"km",240u"mm^2")]
 function solve_cable(nld::Tuple,λ::Dict,μ::Dict)
     nl, nd = nld[1], nld[2]
     std = STD()
-    add_states!(std, flow = [(Inf)u"MW",0.0u"MW",0.0u"MW",0.0u"MW"],
-                     init = [1.0,0.0,0.0,0.0])
+    add_states!(std, power = [(Inf)u"MW",0.0u"MW",0.0u"MW",0.0u"MW"],
+                     init  = [1.0,0.0,0.0,0.0])
     add_transitions!(std, states = [(1,2),(2,1)],
                           rate = [λ[nd]*nl,μ[nd]])
     add_transitions!(std, states = [(1,3),(3,1)],                   #cable termination1

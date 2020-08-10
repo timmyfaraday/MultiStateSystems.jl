@@ -20,15 +20,15 @@ The oil flow is transmitted from a source S to a user U (Fig. 1).
             pipe 2
 Fig. 1: Flow transmission system.
 
-The pipes' performance is measured by their transmission capacity (kg/min)
+The pipes' performance is measured by their transmission capacity (MW)
 (Table 1). The associated probabilities are given Table 2.
 
 Table 1: Transmission capacity of the pipes in the flow transmission system.
 | pipe 1               | pipe 2               | pipe 3               |
 |----------------------|----------------------|----------------------|
-| g¹₁ = 0    MW        | g²₁ = 0    MW        | g³₁ = 0    MW        |
-| g¹₂ = 1500 MW        | g²₂ = 2000 MW        | g³₂ = 1800 MW        |
-|                      |                      | g³₃ = 4000 MW        |
+| g¹₁ = 0    m³/hr     | g²₁ = 0    m³/hr     | g³₁ = 0    m³/hr     |
+| g¹₂ = 1500 m³/hr     | g²₂ = 2000 m³/hr     | g³₂ = 1800 m³/hr     |
+|                      |                      | g³₃ = 4000 m³/hr     |
 
 Table 2: Associated probabilities of the pipes in the flow transmission system.
 | pipe 1               | pipe 2               | pipe 3               |
@@ -50,11 +50,11 @@ add_user!(ntw,node = 3)
 add_source!(ntw,node = 1)
 add_components!(ntw,edge = [(1,2),(1,2),(2,3)],
                     name = ["pipe 1","pipe 2","pipe 3"],
-                    std  = [STD(flow = [0u"MW",1500u"MW"],
+                    std  = [STD(flow = [0u"m^3/hr",1500u"m^3/hr"],
                                 prob = [0.2,0.8]),
-                            STD(flow = [0u"MW",2000u"MW"],
+                            STD(flow = [0u"m^3/hr",2000u"m^3/hr"],
                                 prob = [0.4,0.6]),
-                            STD(flow = [0u"MW",1800u"MW",4000u"MW"],
+                            STD(flow = [0u"m^3/hr",1800u"m^3/hr",4000u"m^3/hr"],
                                 prob = [0.1,0.2,0.7])])
 
 # Solve the problem

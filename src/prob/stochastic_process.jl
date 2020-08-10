@@ -5,41 +5,32 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl
 ################################################################################
 
+# Stochastic Process
 """
-# Stochastic processes
+    solve!(std::MultiStateSystems.AbstractSTD, tsim::Number; alg::Symbol=:nothing)
+
+This function determines the state probabilities of the state-transition diagram
+`std` for a given simulation horizon `tsim`.
+
+Optionally, the prefered stochastic process may be provided through the named
+argument `alg`, otherwise the appropriate stochastic process is determined using
+the properties of the state-transition diagram.
+
+# Example
+```julia-repl
+julia> solve!(stdᵍᵉⁿ, 1000u"hr", alg = :markov_process)
+```
 """
-function solve!(std::AbstractSTD, tsim::Number)
+function solve!(std::AbstractSTD, tsim::Number; alg::Symbol=:nothing)
     # TODO - update_std_info!(std)
-    is_a_markov_process(std) ? solve_markov_process!(std, tsim) : ~ ;
+    if is_a_markov_process(std,alg) solve_markov_process!(std, tsim) end
+    set_info!(std,:solved,true)
 end
 
-"""
 ## Markov Process
-
-State-space:     discrete
-Time-space:      continuous
-Renewal process: TRUE
-Markov property: TRUE
-
-A Markov process is described by a random variable Xₜ, where t denotes the
-calendar time. The possible values of Xₜ is represented by the discrete state-
-space 𝓢 of the process.
-
-A Markov process respects the Markov property, which means it respects
-    ℙ(Xₜ ∈ 𝓢 | 𝓕ₛ) = ℙ(Xₜ ∈ 𝓢 | Xₛ), ∀ s,t ∈ 𝕀: s < t,
-where 𝓕ₛ represents a filtration of a probability space (Ω,𝓕,ℙ) and 𝕀 a totally
-ordered index set. A Markov process is described by Kolmogorov equations, more
-specifically the Kolmogorov forward equations:
-    δpᵢⱼ(s;t)/δt = ∑ₖ pᵢₖ(s;t) ⋅ Aₖⱼ(t), ∀ i,j ∈ 𝓢, s,t ∈ 𝕀: s < t,
-where A(t) represents the transition matrix, syn., generator matrix.
-
-The latter describe an initial value problem for finding the state
-probabilities, given transition rates ρᵢⱼ(t) and initial values δᵢ:
-    dpᵢ(t)/dt = - ∑ⱼ ρᵢⱼ(t)pᵢ(t) + ∑ⱼ ρⱼᵢ(t)pⱼ(t),  ∀ i ∈ 𝓢.
-"""
 const markov_props = [:renewal,:markovian]
-is_a_markov_process(std::AbstractSTD) =
-    prod(getfield(std.props[:info],prop) for prop in markov_props)
+is_a_markov_process(std::AbstractSTD,alg::Symbol) =
+    alg==:markov_process || prod(getfield(std.props[:info],prop) for prop in markov_props)
 
 function homogeneous_markov_process(du, u, p, t)
     G, ρ, info = p
@@ -73,7 +64,6 @@ function inhomogeneous_markov_process(du, u, p, t)
                             if ns ≠ nt)
     end end
 end
-
 function solve_markov_process!(std::STD, tsim::Number; tol::Real = 1e-8)
     p   = [std.graph,get_tprop(std,:rate),get_sprop(std,:info)]
     u₀  = get_sprop(std,:init)
@@ -88,6 +78,4 @@ function solve_markov_process!(std::STD, tsim::Number; tol::Real = 1e-8)
 
     set_prop!(std,:time,sol.t)
     set_prop!(std,states(std),:prob,[sol[ns,:] for ns in states(std)])
-
-    set_info!(std,:solved,true)
 end

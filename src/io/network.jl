@@ -6,9 +6,7 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-"""
-# Network
-"""
+## Network
 # structs
 struct Network{I<:Int} <: AbstractNetwork{I}
     graph::_MG.Multigraph{I,I}
@@ -30,9 +28,20 @@ end
 #           empty constructor created by other contructors, see: discourse -   #
 #           keyword argument contructor breaks incomplete constructor.         #                                               #
 ################################################################################
+"""
+    Network()
+
+An network constructor.
+
+# Example
+```julia-repl
+julia> ntw = Network()
+```
+"""
 function Network()
     graph = _MG.Multigraph(0)
-    props = PropDict(:info => NetworkInfo())
+    props = PropDict(:info => NetworkInfo(),
+                     :msr  => Set{Symbol}())
     cmp, src, usr = PropDict[], PropDict[], PropDict[]
     clib, slib, ulib = LibDict(), LibDict(), LibDict()
 
@@ -45,10 +54,6 @@ is_directed(::Type{Network{Int}}) = false
 is_directed(ntw::Network) = false
 
 props(ntw::AbstractNetwork) = ntw.props
-
-get_info(ntw::AbstractNetwork, info::Symbol) = getproperty(ntw.props[:info],info)
-set_info!(ntw::AbstractNetwork, info::Symbol, value::Bool) =
-    setproperty!(ntw.props[:info],info,value)
 
 get_prop(ntw::AbstractNetwork, prop::Symbol) =
     haskey(props(ntw), prop) ? props(ntw)[prop] : ~ ;
@@ -70,9 +75,6 @@ has_edge(ntw::AbstractNetwork, x...) = _MG.has_edge(ntw.graph, x...)
 mul_edge(ntw::AbstractNetwork,edge::Tuple{Int,Int}) =
     ntw.graph.adjmx[edge[1],edge[2]]
 
-get_msr(ntw::AbstractNetwork) = ntw.props[:msr]
-set_msr!(ntw::AbstractNetwork) = set_prop!(ntw,:msr,:flow)
-
 update_lib!(type::Symbol,array::Array,lib::Dict) =
     haskey(lib,array[end][type]) ? push!(lib[array[end][type]],length(array)) :
                                    lib[array[end][type]] = [length(array)] ;
@@ -93,9 +95,7 @@ function ntws(ntw::AbstractNetwork)
     return reverse(ntws)
 end
 
-"""
 ## Info
-"""
 # structs
 mutable struct NetworkInfo{B<:Bool} <: AbstractInfo
     solved::B
@@ -105,9 +105,12 @@ mutable struct NetworkInfo{B<:Bool} <: AbstractInfo
     NetworkInfo() = new{Bool}(false,false)
 end
 
-"""
+# functions
+get_info(ntw::AbstractNetwork, info::Symbol) = getproperty(ntw.props[:info],info)
+set_info!(ntw::AbstractNetwork, info::Symbol, value::Bool) =
+    setproperty!(ntw.props[:info],info,value)
+
 ## Elements
-"""
 # functions
 elements(ntw::AbstractNetwork) = Iterators.flatten((ntw.cmp,ntw.src))
 
@@ -121,9 +124,8 @@ get_prb(ntw::AbstractNetwork; type::Symbol) =
                            [elm[:ugf].prb for elm in elements(ntw)] ;
 get_ntw(ntw::AbstractNetwork) =
     [elm[:ntw][1] for elm in elements(ntw) if haskey(elm,:ntw)]
-"""
-### Component
-"""
+
+### Component (abbr: cmp)
 # functions
 nc(ntw::AbstractNetwork) = length(ntw.cmp)
 nc(ntw::AbstractNetwork,c_key::UIE) = length(ntw.clib[c_key])
@@ -134,6 +136,21 @@ cmp_ids(ntw::AbstractNetwork,c_key::UIE) = ntw.clib[c_key]
 cmp_expr(nc::Int) = :(val[$nc][idx[$nc]])
 cmp_keys(ntw::AbstractNetwork) = keys(ntw.clib)
 
+"""
+    add_components!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds a single component to the network `ntw` and fills their corresponding
+`PropDict` with the named arguments `kwargs`.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = ntw()
+julia> add_components!(ntwᵖʷʳ, edge = (1,2),
+                               name = "cable 1",
+                               std  = STD(power = [0u"MW",1500u"MW"],
+                                          prob  = [0.2,0.8]))
+```
+"""
 function add_component!(ntw::AbstractNetwork; kwargs...)
     (haskey(kwargs,:node) || haskey(kwargs,:edge)) || return false
     if haskey(kwargs,:node)
@@ -163,6 +180,27 @@ function add_component!(ntw::AbstractNetwork, edge::Tuple{Int,Int}, dict::Dict=P
     push!(ntw.cmp,Dict(:edge => edge, dict...))
     update_lib!(:edge,ntw.cmp,ntw.clib)
 end
+"""
+    add_components!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds multiple components to the network `ntw` and fills their corresponding
+`PropDict` with the named arguments `kwargs`. Either an uniform arguments is
+given which holds for all components or an array is given whith specific
+argument for each component.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = ntw()
+julia> add_components!(ntwᵖʷʳ, edge = [(1,2),(1,2),(2,3)],
+                               name = ["cable 1","cable 2","cable 3"],
+                               std  = [STD(power = [0u"MW",1500u"MW"],
+                                           prob  = [0.2,0.8]),
+                                       STD(power = [0u"MW",2000u"MW"],
+                                           prob  = [0.4,0.6]),
+                                       STD(power = [0u"MW",1800u"MW",4000u"MW"],
+                                           prob = [0.1,0.2,0.7])])
+```
+"""
 function add_components!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && (haskey(kwargs,:node) || haskey(kwargs,:edge))) || return false
     if haskey(kwargs,:node)
@@ -177,9 +215,7 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
     end end
 end
 
-"""
-### Source
-"""
+### Source (abbr: src)
 # functions
 ns(ntw::AbstractNetwork) = length(ntw.src)
 ns(ntw::AbstractNetwork,s_node::Int) = length(ntw.slib[s_node])
@@ -190,10 +226,26 @@ src_ids(ntw::AbstractNetwork,s_node::Int) = ntw.slib[s_node]
 src_expr(ns::Int) = :(val[$ns][idx[$ns]])
 src_nodes(ntw::AbstractNetwork) = keys(ntw.slib)
 
-function add_source!(ntw::AbstractNetwork; node::Int, kwargs...)
-    add_vertex!(ntw,node)
-    if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
-    push!(ntw.src,Dict(:node => node, kwargs...))
+"""
+    add_source!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds a single source to the network `ntw` and fills their corresponding
+`PropDict` with the named arguments `kwargs`.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = ntw()
+julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
+                    flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
+julia> add_source!(ntwᵖʷʳ, node = 1,
+                           name = "generator 1",
+                           std  = stdᵍᵉⁿ)
+```
+"""
+function add_source!(ntw::AbstractNetwork; kwargs...)
+    haskey(kwargs,:node) || return false
+    add_vertex!(ntw,kwargs[:node])
+    push!(ntw.src,Dict(kwargs...))
     update_lib!(:node,ntw.src,ntw.slib)
 end
 function add_source!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
@@ -201,6 +253,24 @@ function add_source!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     push!(ntw.src,Dict(:node => node, dict...))
     update_lib!(:node,ntw.src,ntw.slib)
 end
+"""
+    add_sources!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds multiple sources to the network `ntw` and fills their corresponding
+`PropDict` with the named arguments `kwargs`. Either an uniform arguments is
+given which holds for all components or an array is given whith specific
+argument for each component.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = ntw()
+julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
+                    flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
+julia> add_sources!(ntwᵖʷʳ, node = 1:5,
+                            std  = stdᵍᵉⁿ,
+                            dep  = true)
+```
+"""
 function add_sources!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
     node = kwargs[:node]
@@ -213,9 +283,7 @@ function add_sources!(ntw::AbstractNetwork; kwargs...)
     end end
 end
 
-"""
-## User
-"""
+## User (abbr: usr)
 # functions
 nu(ntw::AbstractNetwork) = length(ntw.usr)
 nu(ntw::AbstractNetwork,u_node::Int) = length(ntw.ulib[u_node])
@@ -224,10 +292,24 @@ usr(ntw::AbstractNetwork,u_node::Int) = ntw.usr[ntw.ulib[u_node]]
 usr_ids(ntw::AbstractNetwork) = 1:nu(ntw)
 usr_ids(ntw::AbstractNetwork,u_node::Int) = ntw.ulib[u_node]
 usr_nodes(ntw::AbstractNetwork) = keys(ntw.ulib)
+"""
+    add_user!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
 
-function add_user!(ntw::AbstractNetwork; node::Int, kwargs...)
-    add_vertex!(ntw,node)
-    push!(ntw.usr,PropDict(:node => node, kwargs...))
+Adds a single user to the network `ntw` and fills their corresponding
+`PropDict` with the named arguments `kwargs`.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = ntw()
+julia> add_source!(ntwᵖʷʳ, node = 1,
+                           name = "Tom's house",
+                           ind  = [:EENS])
+```
+"""
+function add_user!(ntw::AbstractNetwork; kwargs...)
+    haskey(kwargs,:node) || return false
+    add_vertex!(ntw,kwargs[:node])
+    push!(ntw.usr,PropDict(kwargs...))
     update_lib!(:node,ntw.usr,ntw.ulib)
 end
 function add_user!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
@@ -235,6 +317,21 @@ function add_user!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     push!(ntw.usr,PropDict(:node => node, dict...))
     update_lib!(:node,ntw.usr,ntw.ulib)
 end
+"""
+    add_users!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds multiple users to the network `ntw` and fills their corresponding
+`PropDict` with the named arguments `kwargs`. Either an uniform arguments is
+given which holds for all components or an array is given whith specific
+argument for each component.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = ntw()
+julia> add_sources!(ntwᵖʷʳ, node = [1,5,8],
+                            ind  = [:EENS])
+```
+"""
 function add_users!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
     node = kwargs[:node]
@@ -243,9 +340,7 @@ function add_users!(ntw::AbstractNetwork; kwargs...)
     end
 end
 
-"""
-## Pathså
-"""
+##
 # functions
 weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
 max_paths(ntw::AbstractNetwork) = _MG.nv(ntw.graph) + _MG.ne(ntw.graph,true)
