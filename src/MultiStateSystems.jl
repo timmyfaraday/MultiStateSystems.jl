@@ -31,6 +31,7 @@ const BASE_DIR = dirname(@__DIR__)
 include("core/types.jl")
 
 include("io/cluster.jl")
+include("io/distributions.jl")
 include("io/measure.jl")
 include("io/network.jl")
 include("io/state_transition_diagram.jl")
@@ -44,6 +45,8 @@ include("prob/universal_generating_operator.jl")
 # export
 export  BASE_DIR
 export  cluster_wind_power
+export  Exponential, 𝑬, Weibull, 𝑾, LogNormal, 𝑳𝑵, Dirac, 𝑫, Uniform, 𝑼
+export  pdf, cdf, ccdf  #this is for testing, may be deleted later
 export  Network, add_source!, add_sources!, add_user!, add_users!,
         add_component!, add_components!
 export  STD, add_state!, add_states!, add_transition!, add_transitions!

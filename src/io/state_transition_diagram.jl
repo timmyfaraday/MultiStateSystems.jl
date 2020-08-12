@@ -37,8 +37,7 @@ Sets `solved` of the STDInfo to true.
 # Example
 ```julia-repl
 julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
-                    flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
-
+                    flow = [0.0u"MW",0.0u"MW",2.0u"MW"])
 ```
 """
 function STD(;prob::Array, kwargs...)

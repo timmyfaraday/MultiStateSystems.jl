@@ -24,12 +24,13 @@ julia> solve!(stdᵍᵉⁿ, 1000u"hr", alg = :markov_process)
 function solve!(std::AbstractSTD, tsim::Number; alg::Symbol=:nothing)
     # TODO - update_std_info!(std)
     if is_a_markov_process(std,alg) solve_markov_process!(std, tsim) end
+    # if is_a_x_process(std,alg) solve_x_process!(std, tsim) end
     set_info!(std,:solved,true)
 end
 
 ## Markov Process
 const markov_props = [:renewal,:markovian]
-is_a_markov_process(std::AbstractSTD,alg::Symbol) =
+is_a_markov_process(std::AbstractSTD, alg::Symbol) =
     alg==:markov_process || prod(getfield(std.props[:info],prop) for prop in markov_props)
 
 function homogeneous_markov_process(du, u, p, t)
@@ -64,7 +65,7 @@ function inhomogeneous_markov_process(du, u, p, t)
                             if ns ≠ nt)
     end end
 end
-function solve_markov_process!(std::STD, tsim::Number; tol::Real = 1e-8)
+function solve_markov_process!(std::AbstractSTD, tsim::Number; tol::Real = 1e-8)
     p   = [std.graph,get_tprop(std,:rate),get_sprop(std,:info)]
     u₀  = get_sprop(std,:init)
     ts  = (0.0_UF.unit(tsim),tsim)
@@ -74,8 +75,34 @@ function solve_markov_process!(std::STD, tsim::Number; tol::Real = 1e-8)
     else
         prob = _ODE.ODEProblem(inhomogeneous_markov_process,u₀,ts,p)
     end
-    sol = _ODE.solve(prob,_ODE.RK4(),reltol = tol,abstol = tol)
+    @time sol = _ODE.solve(prob,_ODE.Vern8(),reltol = tol,abstol = tol)
 
     set_prop!(std,:time,sol.t)
     set_prop!(std,states(std),:prob,[sol[ns,:] for ns in states(std)])
 end
+
+# ## X process
+# const x_props = []
+# is_a_x_process(std::AbstractSTD, alg::Symbol) =
+#     alg == :x_process || prod(getfield(std.props[:info],prop) for prop in x_props)
+#
+# function solve_normal_state!(std::AbstractSTD, tsim::Number, tol::Real)
+#
+#
+#
+#     # determine the normal state
+#     # Determine the varphi as a measure of the dynamics of the problem
+#     # Determine the cohorts Tuple (id,t₀,φ₀)
+#     for (id,t₀,φ₀) in cohorts(std,tsim)
+#
+#
+#     end
+#
+#     set_prop!(std,:time,sol.t)
+#     set_prop!(std,normal_state_id,:prob,sol.pn)
+#     set_prop!(std,failures,:prob,sol.pf)
+# end
+# function solve_x_process!(std::AbstractSTD, tsim::Number; tol::Real = 1e-8)
+#     solve_normal_state(std, tsim, tol)
+#
+# end

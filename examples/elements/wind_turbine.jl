@@ -19,6 +19,7 @@ path = joinpath(BASE_DIR,"examples/data/Anholt.xlsx")
 wind_power = XLSX.readdata(path,"Sheet1!D2:D52215")
 wind_power = convert(Vector{Float64},vec(wind_power))
 output, rate = cluster_wind_power(wind_power,number_of_clusters = 7)
+init = zeros(length(output)); init[1] = 1.0
 
 # Initialize the state-transition diagrams corresponding to the output (wto) and
 # reliability (wtr) of a wind turbine.
@@ -27,7 +28,7 @@ stdʷᵗʳ = STD()
 
 # Add the states to the std's
 add_states!(stdʷᵗᵒ, power = (output)u"MW",
-                    init  = [0.0,0.0,0.0,0.0,0.0,0.0,1.0]) # TODO - has to change if you change the number of clusters
+                    init  = init)
 add_states!(stdʷᵗʳ, power = [(Inf)u"MW",0.0u"MW",0.0u"MW",0.0u"MW",0.0u"MW",
                             0.0u"MW",0.0u"MW",0.0u"MW",0.0u"MW",0.0u"MW"],
                     init = [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])

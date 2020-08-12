@@ -10,6 +10,7 @@ makedocs(
                     "Getting Started"   => "quickguide.md",
                     "DSL Manual"        =>
                         [ "State-Transition Diagram"=> "std.md",
+                          "Distributions"           => "distributions.jl",
                           "Generating Functions"    => "ugf.md",
                           "Network"                 => "network.md"],
                     "Models Manual"     =>
@@ -18,9 +19,6 @@ makedocs(
                   ]
 )
 
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
 deploydocs(
      repo = "github.com/timmyfaraday/MultiStateSystems.jl.git"
 )

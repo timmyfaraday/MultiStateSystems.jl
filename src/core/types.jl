@@ -9,6 +9,7 @@
 # abstract types
 abstract type AbstractUGF end
 abstract type AbstractInfo end
+abstract type AbstractDistribution{N,R} end
 abstract type AbstractSTD{T} <: _LG.AbstractGraph{T} end
 abstract type AbstractNetwork{T} <: _LG.AbstractGraph{T} end
 
@@ -19,3 +20,6 @@ Single = Union{Bool,Number,String,Symbol,AbstractSTD,Tuple}
 # dict types
 LibDict = Dict{UIE,Vector{Int}}
 PropDict = Dict{Symbol,Any}
+
+# broadcastable
+Broadcast.broadcastable(dst::AbstractDistribution) = Ref(dst)
