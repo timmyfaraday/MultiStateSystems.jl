@@ -285,7 +285,7 @@ f(x; a, b, ω) = \begin{cases}
 ```
 """
 # struct
-struct Uniform{N<:Number, R<:Real} <: Distribution{N,R}
+struct Uniform{N<:Number, R<:Real} <: AbstractDistribution{N,R}
     a::N            # start
     b::N            # end
     ω::R            # weight: 0.0 < ω <= 1.0
