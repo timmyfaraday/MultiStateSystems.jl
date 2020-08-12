@@ -10,7 +10,7 @@ makedocs(
                     "Getting Started"   => "quickguide.md",
                     "DSL Manual"        =>
                         [ "State-Transition Diagram"=> "std.md",
-                          "Distributions"           => "distributions.jl",
+                          "Distributions"           => "distributions.md",
                           "Generating Functions"    => "ugf.md",
                           "Network"                 => "network.md"],
                     "Models Manual"     =>
