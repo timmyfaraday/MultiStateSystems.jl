@@ -23,6 +23,7 @@ function cluster_wind_power(input::Vector{Float64}; number_of_clusters::Int=10)
         assign[bounds[nc-1].<temp.<=bounds[nc]] .= nc
     end
     assign[temp.==bounds[end]] .= number_of_clusters
+    println(assign)
 
     rate = zeros(Float64,number_of_clusters,number_of_clusters)
     for ni in 1:number_of_samples-1 rate[assign[ni],assign[ni+1]] += 1 end

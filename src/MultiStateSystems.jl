@@ -8,13 +8,13 @@
 
 module MultiStateSystems
 
-# import Pkgs
+# import pkgs
 import LightGraphs
 import LinearAlgebra
 import Multigraphs
 import OrdinaryDiffEq
 
-# using Pkgs
+# using pkgs
 using  Unitful
 
 # pkg const

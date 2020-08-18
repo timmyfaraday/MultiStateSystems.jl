@@ -8,32 +8,52 @@ functions. The implementation is heavily influenced by the package
 it to allow for weighted distributions as well as the
 [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) parameters.
 
-## Dirac Distribution
+## Distributions
 
-```@docs
-Dirac(o,ω)
+Each distribution has a number of constructors, both based on its full name and
+abbreviation, e.g., `LogNormal()` is equivalent to `𝑳𝑵()`. Furthermore,
+additional constructors are included for limited input, where all remaining
+parameters are set to their default, e.g., `LogNormal(10.0u"hr")` is equivalent
+to `LogNormal(10.0u"hr",1.0u"hr",1.0)`.
+
+All input parameters are either of the type `Number` or its subtype `Real`:
+```
+Number
+ |- Unitful.Quantity, e.g., 10.0u"hr"
+ |- Real
+     |- AbstractFloat, e.g., 10.0
+     |- Integer, e.g., 10
 ```
 
-## Uniform Distribution
+All distributions may be scaled using a weight parameter `ω`, where
+`0.0 < ω ≤ 1.0`.
+
+### Dirac Distribution
 
 ```@docs
-Uniform(a,b,ω)
+Dirac
 ```
 
-## Exponential Distribution
+### Uniform Distribution
 
 ```@docs
-Exponential(θ,ω)
+Uniform
 ```
 
-## Weibull Distribution
+### Exponential Distribution
 
 ```@docs
-Weibull(θ,α,ω)
+Exponential
 ```
 
-## LogNormal Distribution
+### Weibull Distribution
 
 ```@docs
-LogNormal(μ,σ,ω)
+Weibull
+```
+
+### LogNormal Distribution
+
+```@docs
+LogNormal
 ```

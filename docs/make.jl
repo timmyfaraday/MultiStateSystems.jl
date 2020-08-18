@@ -1,9 +1,16 @@
+################################################################################
+#  Copyright 2020, Tom Van Acker                                               #
+################################################################################
+# MultiStateSystems.jl                                                         #
+# A Julia package to solve multi-state system models.                          #
+# See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
+################################################################################
 using Documenter
 using MultiStateSystems
 
 makedocs(
     modules     = [MultiStateSystems],
-    format      = Documenter.HTML(mathengine = Documenter.MathJax()),
+    format      = Documenter.HTML(analytics = "UA-367975-10", mathengine = Documenter.MathJax()),
     sitename    = "MultiStateSystems.jl",
     authors     = "Tom Van Acker",
     pages       = [ "Home"              => "index.md",
@@ -20,5 +27,5 @@ makedocs(
 )
 
 deploydocs(
-     repo = "github.com/timmyfaraday/MultiStateSystems.jl.git"
+    repo = "github.com/timmyfaraday/MultiStateSystems.jl.git"
 )

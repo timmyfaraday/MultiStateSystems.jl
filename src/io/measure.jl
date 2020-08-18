@@ -21,10 +21,10 @@ get_unit(msr::Symbol) = UnitDict[msr]
 check_unit(msr::Symbol,unit::_UF.FreeUnits) =
     _UF.dimension(UnitDict[msr]) == _UF.dimension(unit)
 
-get_msr(std::AbstractSTD) = haskey(std.props,msr) ? std.props[:msr] : Set() ;
-get_msr(ntw::AbstractNetwork) = haskey(ntw.props,msr) ? ntw.props[:msr] : Set() ;
-set_msr(ntw::AbstractNetwork) =
+get_msr(std::AbstractSTD) = haskey(std.props,:msr) ? std.props[:msr] : Set() ;
+get_msr(ntw::AbstractNetwork) = haskey(ntw.props,:msr) ? ntw.props[:msr] : Set() ;
+set_msr!(ntw::AbstractNetwork) =
     for ne in elements(ntw)
-        if haskey(kwargs,:std) push!(get_msr(ntw),get_msr(ne[:std])...) end
-        if haskey(kwargs,:ntw) push!(get_msr(ntw),get_msr(ne[:ntw][1])...) end
+        if haskey(ne,:std) push!(get_msr(ntw),get_msr(ne[:std])...) end
+        if haskey(ne,:ntw) push!(get_msr(ntw),get_msr(ne[:ntw][1])...) end
     end
