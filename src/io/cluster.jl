@@ -11,7 +11,7 @@
 function cluster_wind_power(input::Vector{Float64}; number_of_clusters::Int=10)
     if any(x->x.<=0.0,input) input[input.<=0.0] .= 0.0 end
 
-    temp = copy(input)
+    temp = deepcopy(input)
     number_of_samples = length(input)
     clusters = Jenks.JenksClassification(number_of_clusters-2,input,errornorm=2)
 
@@ -23,12 +23,12 @@ function cluster_wind_power(input::Vector{Float64}; number_of_clusters::Int=10)
         assign[bounds[nc-1].<temp.<=bounds[nc]] .= nc
     end
     assign[temp.==bounds[end]] .= number_of_clusters
-    println(assign)
 
     rate = zeros(Float64,number_of_clusters,number_of_clusters)
     for ni in 1:number_of_samples-1 rate[assign[ni],assign[ni+1]] += 1 end
     rate ./= (sum(rate,dims=2)/number_of_samples)
     rate[_LA.diagind(rate)] .= 0
+    rate[isnan.(rate)] .= 0.0
 
     return output, rate
 end

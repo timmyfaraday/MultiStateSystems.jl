@@ -11,10 +11,10 @@ it to allow for weighted distributions as well as the
 ## Distributions
 
 Each distribution has a number of constructors, both based on its full name and
-abbreviation, e.g., `LogNormal()` is equivalent to `𝑳𝑵()`. Furthermore,
+abbreviation, e.g., `Weibull()` is equivalent to `𝑾()`. Furthermore,
 additional constructors are included for limited input, where all remaining
-parameters are set to their default, e.g., `LogNormal(10.0u"hr")` is equivalent
-to `LogNormal(10.0u"hr",1.0u"hr",1.0)`.
+parameters are set to their default, e.g., `Weibull(10.0u"hr")` is equivalent
+to `Weibull(10.0u"hr",1.0,1.0)`.
 
 All input parameters are either of the type `Number` or its subtype `Real`:
 ```
@@ -52,8 +52,8 @@ Exponential
 Weibull
 ```
 
-### LogNormal Distribution
+### Raised Cosine Distribution
 
 ```@docs
-LogNormal
+Cosine
 ```

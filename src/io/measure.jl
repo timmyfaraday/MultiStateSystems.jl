@@ -23,8 +23,11 @@ check_unit(msr::Symbol,unit::_UF.FreeUnits) =
 
 get_msr(std::AbstractSTD) = haskey(std.props,:msr) ? std.props[:msr] : Set() ;
 get_msr(ntw::AbstractNetwork) = haskey(ntw.props,:msr) ? ntw.props[:msr] : Set() ;
-set_msr!(ntw::AbstractNetwork) =
+function set_msr!(ntw::AbstractNetwork)
+    msr = Set()
     for ne in elements(ntw)
-        if haskey(ne,:std) push!(get_msr(ntw),get_msr(ne[:std])...) end
-        if haskey(ne,:ntw) push!(get_msr(ntw),get_msr(ne[:ntw][1])...) end
+        if haskey(ne,:std) union!(msr,get_msr(ne[:std])) end
+        if haskey(ne,:ntw) union!(msr,get_msr(ne[:ntw][1])) end
     end
+    ntw.props[:msr] = msr
+end

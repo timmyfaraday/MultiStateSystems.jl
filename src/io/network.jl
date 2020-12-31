@@ -246,6 +246,7 @@ julia> add_source!(ntwᵖʷʳ, node = 1,
 function add_source!(ntw::AbstractNetwork; kwargs...)
     haskey(kwargs,:node) || return false
     add_vertex!(ntw,kwargs[:node])
+    if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
     push!(ntw.src,Dict(kwargs...))
     update_lib!(:node,ntw.src,ntw.slib)
 end
@@ -276,12 +277,15 @@ function add_sources!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
     node = kwargs[:node]
     if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
-    if dim(node) > 0 for ni in 1:length(node)
-        add_source!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
+    if dim(node) > 0 
+        for ni in 1:length(node)
+            add_source!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
+        end
+    else 
+        for ni in indices_of(kwargs)
+            add_source!(ntw, node, reduce(kwargs,ni,exclude=[:node]))
+        end 
     end
-    else for ni in indices_of(kwargs)
-        add_source!(ntw, node, reduce(kwargs,ni,exclude=[:node]))
-    end end
 end
 
 ## User (abbr: usr)
@@ -303,7 +307,6 @@ Adds a single user to the network `ntw` and fills their corresponding
 ```julia-repl
 julia> ntwᵖʷʳ = ntw()
 julia> add_source!(ntwᵖʷʳ, node = 1,
-                           name = "Tom's house",
                            ind  = [:EENS])
 ```
 """
@@ -337,11 +340,11 @@ function add_users!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
     node = kwargs[:node]
     for ni in 1:length(node)
-        add_user!(ntw, node[ni], reduce(kwargs,ni,exclude[:node]))
+        add_user!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
     end
 end
 
-##
+## Network
 # functions
 weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
 max_paths(ntw::AbstractNetwork) = _MG.nv(ntw.graph) + _MG.ne(ntw.graph,true)

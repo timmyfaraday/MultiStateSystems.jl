@@ -74,11 +74,11 @@ a specific key [Symbol].
 * `:info` is reserved for the StateInfo
 * `:init` is reserved for the initial state probability ``p(0)`` [-]
 * `:prob` is reserved for the state probability ``p(t)`` [-]
+* `:φinit` is reserved for the initial state sojourn time ``φ(0)`` [hr]
 * `:flow` is reserved for the state flow measure [m³/hr]
 * `:power` is reserved for the state power measure [MW]
 
-States may either be added to state-transition diagram individually or grouped
-using, respectively:
+States may either be added to state-transition diagram individually or grouped using, respectively:
 
 ```@docs
 MultiStateSystems.add_state!(std::MultiStateSystems.AbstractSTD; kwargs...)
@@ -100,6 +100,14 @@ linked to a specific key [Symbol].
 
 * `:states` is reserved for the tuple (fr,to) of the from- and to-state
 * `:rate` is reserved for the transition rate ``\rho(t,φ)`` [1/hr]
+* `:distr` is reserved for the transition distribution
+* `:type` is reserved for the transition type
+    - `:f`   - failure
+    - `:p`   - preventive maintenance decision
+    - `:r`   - recoverability action
+    - `:mcm` - minimal corrective maintenance
+    - `:pcm` - perfect corrective maintenance
+    - `:ppm` - perfect preventive maintenance
 
 Transitions may either be added to a state-transition diagram individually or
 grouped using, respectively:

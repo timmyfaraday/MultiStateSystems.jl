@@ -6,6 +6,24 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
+## Quantile
+quantile_bisect(dst::AbstractDistribution, p::Real) =
+    quantile_bisect(dst, p, minimum(dst), maximum(dst), 1.0e-12)
+function quantile_bisect(dst::AbstractDistribution, p::Real, lx::Real, rx::Real,
+                         tol::Real)
+    cl, cr = cdf(dst, lx), cdf(dst, rx)
+    @assert cl <= p <= cr
+    while rx - lx > tol
+        m = (lx + rx) / 2
+        c = cdf(dst, m)
+        if p > c
+            cl, lx = c, m
+        else
+            cr, rx = c, m
+    end end
+    return (lx + rx) / 2
+end
+
 ## Exponential
 # struct
 """
@@ -51,6 +69,16 @@ Exponential(θ::Number) = Exponential(θ, 1.0)
 scale(dst::Exponential)  = dst.θ
 weight(dst::Exponential) = dst.ω
 params(dst::Exponential) = (dst.θ, dst.ω)
+
+minimum(dst::Exponential) = zero(dst.θ)
+maximum(dst::Exponential) = (Inf)unit(dst.θ)
+
+xv(dst::Exponential, z::Real) = z * dst.θ
+quantile(dst::Exponential, p::Real)  = -xv(dst, log1p(-p))
+cquantile(dst::Exponential, p::Real) = -xv(dst, log(p))
+sojourn(dst::Exponential,dφ::Number,tol::Real) = 
+    0.0unit(dφ):dφ:cquantile(dst,tol)
+
 function pdf(dst::Exponential, x::Number)
     θ, ω = params(dst)
     dimension(θ)==dimension(x) || return false
@@ -100,7 +128,7 @@ f(x, θ, α, ω) = \\begin{cases}
 | Full              | Abbr.         | Description                                               |
 | :---------------- | :------------ | :-------------------------------------------------------- |
 | `Weibull(θ,α,ω)`  | `𝑾(θ,α,ω)`   | full constructor                                           |
-| `Weibull(θ,α)`    | `𝑾(θ,α)`     | constructor which defaults to `Weibull(θ,α,1.0)`         |
+| `Weibull(θ,α)`    | `𝑾(θ,α)`     | constructor which defaults to `Weibull(θ,α,1.0)`           |
 | `Weibull(θ)`      | `𝑾(θ)`       | constructor which defaults to `Weibull(θ,1.0,1.0)`         |
 | `Weibull()`       | `𝑾()`        | empty constructor which defaults to `Weibull(1.0,1.0,1.0)` |
 # Examples
@@ -133,11 +161,20 @@ scale(dst::Weibull)  = dst.θ
 shape(dst::Weibull)  = dst.α
 weight(dst::Weibull) = dst.ω
 params(dst::Weibull) = (dst.θ, dst.α, dst.ω)
+
+minimum(dst::Weibull) = zero(dst.θ)
+maximum(dst::Weibull) = (Inf)unit(dst.θ)
+
+xv(dst::Weibull, z::Real) = dst.θ * z ^ (1 / dst.α)
+quantile(dst::Weibull, p::Real)  = xv(dst, -log1p(-p))
+cquantile(dst::Weibull, p::Real) = xv(dst, -log(p))
+sojourn(dst::Weibull,dφ::Number,tol::Real) = 0.0unit(dφ):dφ:cquantile(dst,tol) 
+
 function pdf(dst::Weibull, x::Number)
     θ, α, ω = params(dst)
     dimension(θ)==dimension(x) || return false
     if x >= (0)unit(θ)
-        y = uconvert(unit(θ),x) / θ
+        y = (uconvert(unit(θ),x) + 1e-10unit(θ)) / θ
         ω * (α / θ) * y^(α - 1) * exp(-y^α)
     else
         zero(R)unit(θ)
@@ -164,85 +201,99 @@ function ccdf(dst::Weibull, x::Number)
     end
 end
 
-## LogNormal
+## Raised Cosine
 # struct
 """
-    LogNormal
+    Cosine
 
-The [**log normal distribution**](http://en.wikipedia.org/wiki/Log-normal_distribution)
-with mean `μ` [`Number`], standard deviation `σ` [`Number`] and optional weight
+The [**raised cosine distribution**](https://en.wikipedia.org/wiki/Raised_cosine_distribution)
+with mean `μ` [`Number`], maximal deviation `s` [`Number`] and optional weight
 `ω` [`Real`] has a probability density function
 ```math
 f(x, μ, σ, ω) = \\begin{cases}
-                    \\frac{ω}{\\sqrt{2π}σx} e^{-\\frac{(\\log(x)-\\log(μ))^{2}}{2σ²}}  &\\text{if:}~x ≥ 0, \\\\
-                    0                                                                  &\\text{if:}~x < 0.
+                    0                                                                  &\\text{if:}~x < μ-s,        \\\\
+                    \\frac{ω}{2s} \\big(1 + π \\cos\\big(\\frac{x - μ}{s}\\big)\big)   &\\text{if:}~μ-s ≤ x ≤ μ+s,  \\\\
+                    0                                                                  &\\text{if:}~x > μ+s.
                 \\end{cases}
 ```
 # Constructors
 | Full              | Abbr.         | Description                                               |
 | :---------------- | :------------ | :-------------------------------------------------------- |
-| `LogNormal(μ,σ,ω)`| `𝑳𝑵(μ,σ,ω)`  | full constructor                                           |
-| `LogNormal(μ,σ)`  | `𝑳𝑵(μ,σ)`    | constructor which defaults to `LogNormal(μ,σ,1.0)`         |
-| `LogNormal(μ)`    | `𝑳𝑵(μ)`      | constructor which defaults to `LogNormal(μ,1.0,1.0)`         |
-| `LogNormal()`     | `𝑳𝑵()`       | empty constructor which defaults to `LogNormal(1.0,1.0,1.0)` |
+| `Cosine(μ,s,ω)`   | `𝑪(μ,s,ω)`    | full constructor                                           |
+| `Cosine(μ,s)`     | `𝑪(μ,s)`      | constructor which defaults to `Cosine(μ,s,1.0)`         |
+| `Cosine(μ)`       | `𝑪(μ)`        | constructor which defaults to `Cosine(μ,1.0,1.0)`         |
+| `Cosine()`        | `𝑪()`         | empty constructor which defaults to `Cosine(1.0,1.0,1.0)` |
 # Examples
 ```julia-repl
-julia> LogNormal()           # default LogNormal distr. with μ = 1.0, σ = 1.0 and ω = 1.0
-julia> 𝑳𝑵(3.0u"minute")     # LogNormal distr. with μ = 3.0 min, σ = 1.0 and ω = 1.0
-julia> 𝑳𝑵(5.0u"yr",4.0)     # LogNormal distr. with μ = 5.0 yr, σ = 4.0 and ω = 1.0
-julia> 𝑳𝑵(10.0,0.5,0.2)     # scaled LogNormal distr. with μ = 10.0, σ = 0.5 and ω = 0.2
+julia> Cosine()             # default Raised Cosine distr. with μ = 1.0, s = 1.0 and ω = 1.0
+julia> 𝑪(3.0u"minute")      # Raised Cosine distr. with μ = 3.0 min, s = 1.0 min and ω = 1.0
+julia> 𝑪(5.0u"yr",4.0u"d")  # Raised Cosine distr. with μ = 5.0 yr, s = 4.0 d and ω = 1.0
+julia> 𝑪(10.0,0.5,0.2)      # scaled Raised Cosine distr. with μ = 10.0, σ = 0.5 and ω = 0.2
 ```
 """
-struct LogNormal{N<:Number, R<:Real} <: AbstractDistribution{N,R}
+struct Cosine{N<:Number, R<:Real} <: AbstractDistribution{N,R}
     μ::N            # mean
-    σ::N            # std
-    ω::R            # weight: 0.0 < ω <= 1.0
+    s::N            # maximal deviation
+    ω::R            # weight
 end
 
 # constructors
-LogNormal() = LogNormal(1.0, 1.0, 1.0)
-LogNormal(μ::Number) = LogNormal(μ, (1.0)unit(μ), 1.0)
-LogNormal(μ::Number, σ::Number) = LogNormal(μ, uconvert(unit(μ),σ), 1.0)
+Cosine() = Cosine(1.0, 1.0, 1.0)
+Cosine(μ::Number) = Cosine(μ, oneunit(μ), 1.0)
+Cosine(μ::Number, s::Number) = Cosine(μ, uconvert(unit(μ), s), 1.0)
 
 # shortened constructors
-𝑳𝑵() = LogNormal()
-𝑳𝑵(μ::Number) = LogNormal(μ)
-𝑳𝑵(μ::Number, σ::Number) = LogNormal(μ, uconvert(unit(μ),σ))
-𝑳𝑵(μ::Number, σ::Number, ω::Real) = LogNormal(μ, uconvert(unit(μ),σ), ω)
+𝑪() = Cosine()
+𝑪(μ::Number) = Cosine(μ)
+𝑪(μ::Number, s::Number) = Cosine(μ, uconvert(unit(μ),s))
+𝑪(μ::Number, s::Number, ω::Real) = Cosine(μ, uconvert(unit(μ), s), ω)
 
 # functions
-mean(dst::LogNormal)  = dst.μ
-stdev(dst::LogNormal)  = dst.σ
-weight(dst::LogNormal) = dst.ω
-params(dst::LogNormal) = (dst.μ, dst.σ, dst.ω)
-function pdf(dst::LogNormal, x::Number)
-    μ, σ, ω = params(dst)
+mean(dst::Cosine)   = dst.μ
+dev(dst::Cosine)    = dst.s
+weight(dst::Cosine) = dst.ω
+params(dst::Cosine) = (dst.μ, dst.s, dst.ω)
+
+minimum(dst::Cosine) = dst.μ-dst.s
+maximum(dst::Cosine) = dst.μ+dst.s
+
+quantile(dst::Cosine, p::Real) = quantile_bisect(dst, p)
+cquantile(dst::Cosine, p::Real) = quantile(dst, 1-p)
+sojourn(dst::Cosine, dφ::Number, tol::Real) = 
+    dst.μ-dst.s:dφ:dst.μ+dst.s+dφ
+
+function pdf(dst::Cosine, x::Number)
+    μ, s, ω = params(dst)
     dimension(μ)==dimension(σ)==dimension(x) || return false
-    if x >= (0)unit(μ)
-        y = uconvert(unit(μ),x)
-        ω / (sqrt(2π) * σ * y) * exp(-(log(y) - log(μ))^2/(2 * σ^2))
+    if μ-s <= x <= μ+s
+        y = (uconvert(unit(μ),x) - μ) / (2 * s)
+        ω / (2 * s) * (1 + cospi(y))
     else
-        zero(R)unit(μ)
+        zero(Real)/oneunit(μ)
     end
 end
-function cdf(dst::LogNormal, x::Number)
-    μ, σ, ω = params(dst)
+function cdf(dst::Cosine, x::Number)
+    μ, s, ω = params(dst)
     dimension(μ)==dimension(σ)==dimension(x) || return false
-    if x >= (0)unit(μ)
-        y = uconvert(unit(μ),x)
-        ω/2 + ω/2 * erf((log(y) - log(μ))/(sqrt(2) * σ))
-    else
-        zero(R)
-    end
-end
-function ccdf(dst::LogNormal, x::Number)
-    μ, σ, ω = params(dst)
-    dimension(μ)==dimension(σ)==dimension(x) || return false
-    if x >= (0)unit(μ)
-        y = uconvert(unit(μ),x)
-        ω/2 - ω/2 * erf((log(y) - log(μ))/(sqrt(2) * σ))
-    else
+    if μ-s > x
+        zero(Real)
+    elseif μ-s <= x <= μ+s
+        y = (uconvert(unit(μ),x) - μ) / s
+        ω / 2 * (1 + y + sinpi(y) / π)
+    elseif x > μ+s
         ω
+    end
+end
+function ccdf(dst::Cosine, x::Number)
+    μ, s, ω = params(dst)
+    dimension(μ)==dimension(σ)==dimension(x) || return false
+    if μ-s > x
+        ω
+    elseif μ-s <= x <= μ+s
+        y = (μ - uconvert(unit(μ), x)) / s
+        ω / 2 * (1 + y + sinpi(y) / π)
+    elseif x > μ+s
+        zero(Real)
     end
 end
 
@@ -292,6 +343,13 @@ Dirac(o::Number) = Dirac(o, 1.0)
 offset(dst::Dirac) = dst.o
 weight(dst::Dirac) = dst.ω
 params(dst::Dirac) = (dst.o, dst.ω)
+
+minimum(dst::Dirac) = dst.o
+maximum(dst::Dirac) = dst.o
+
+quantile(dst::Dirac, p::Real)  = dst.o
+cquantile(dst::Dirac, p::Real) = dst.o
+
 function pdf(dst::Dirac, x::Number)
     o, ω = params(dst)
     dimension(o)==dimension(x) || return false
@@ -366,6 +424,14 @@ fr(dst::Uniform)     = dst.a
 to(dst::Uniform)     = dst.b
 weight(dst::Uniform) = dst.ω
 params(dst::Uniform) = (dst.a, dst.b, dst.ω)
+
+minimum(dst::Uniform) = dst.a
+maximum(dst::Uniform) = dst.b
+
+quantile(dst::Uniform, p::Real)  = dst.a + p * (dst.b - dst.a)
+cquantile(dst::Uniform, p::Real) = dst.b + p * (dst.a - dst.b)
+sojourn(dst::Uniform,dφ::Number,tol::Real) = 0.0unit(dφ):dφ:cquantile(dst,tol) 
+
 function pdf(dst::Uniform, x::Number)
     a, b, ω = params(dst)
     dimension(a)==dimension(b)==dimension(x) || return false
