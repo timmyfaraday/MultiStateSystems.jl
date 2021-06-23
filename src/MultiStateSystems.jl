@@ -8,9 +8,13 @@
 
 module MultiStateSystems
 
+<<<<<<< HEAD
 # import pkgs
 import DSP
 import Interpolations
+=======
+# import Pkgs
+>>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
 import LightGraphs
 import LinearAlgebra
 import Multigraphs
@@ -18,7 +22,7 @@ import OrdinaryDiffEq
 import SpecialFunctions
 import Statistics
 
-# using pkgs
+# using Pkgs
 using  Unitful
 
 # pkg const

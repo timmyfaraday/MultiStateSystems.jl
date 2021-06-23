@@ -37,10 +37,10 @@ julia> isequal(ugfᵍᵉⁿ,[0.0u"MW",2.0u"MW"])
 true
 ```
 """
-# function UGF(msr::Symbol, prb::Vector, val::Vector)
-#     red_prb, red_val = reduce(prb,val)
-#     return UGF(msr,red_prb,red_val)
-# end
+function UGF(msr::Symbol, prb::Vector, val::Vector)
+    red_prb, red_val = reduce(prb,val)
+    return UGF(msr,red_prb,red_val)
+end
 """
     UGF(msr::Symbol, std::MultiStateSystems.AbstractSTD)
 
@@ -89,7 +89,7 @@ function src_ugf(msr::Symbol,src::PropDict)
     return UGF(msr)
 end
 function set_ugf!(ntw::AbstractNetwork)
-    msr = collect(ntw.props[:msr])[1] # TODO: ugly fix
+    msr = ntw.props[:msr]
     for cmp in cmp(ntw) cmp[:ugf] = cmp_ugf(msr,cmp) end
     for src in src(ntw) src[:ugf] = src_ugf(msr,src) end
 end

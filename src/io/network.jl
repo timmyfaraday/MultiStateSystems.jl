@@ -88,9 +88,8 @@ function ntws(ntw::AbstractNetwork)
     end
     for nn in ntws set_msr!(nn) end
     if any(x -> get_info(x,:dependent_sources),ntws)
-        ni  = findlast(x -> get_info(x,:dependent_sources),ntws)
-        msr = collect(get_msr(ntws[ni]))[1]
-        ntws[1].props[:source_ugf] = UGF(msr,ntws[ni].src[1][:std])
+        ni = findlast(x -> get_info(x,:dependent_sources),ntws)
+        ntws[1].props[:source_ugf] = UGF(ntws[ni].props[:msr],ntws[ni].src[1][:std])
         for nn in ntws set_info!(nn,:dependent_sources,true) end
     end
     return reverse(ntws)

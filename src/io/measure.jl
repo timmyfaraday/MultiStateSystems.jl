@@ -21,6 +21,7 @@ get_unit(msr::Symbol) = UnitDict[msr]
 check_unit(msr::Symbol,unit::_UF.FreeUnits) =
     _UF.dimension(UnitDict[msr]) == _UF.dimension(unit)
 
+<<<<<<< HEAD
 get_msr(std::AbstractSTD) = haskey(std.props,:msr) ? std.props[:msr] : Set() ;
 get_msr(ntw::AbstractNetwork) = haskey(ntw.props,:msr) ? ntw.props[:msr] : Set() ;
 function set_msr!(ntw::AbstractNetwork)
@@ -28,6 +29,14 @@ function set_msr!(ntw::AbstractNetwork)
     for ne in elements(ntw)
         if haskey(ne,:std) union!(msr,get_msr(ne[:std])) end
         if haskey(ne,:ntw) union!(msr,get_msr(ne[:ntw][1])) end
+=======
+get_msr(std::AbstractSTD) = haskey(std.props,msr) ? std.props[:msr] : Set() ;
+get_msr(ntw::AbstractNetwork) = haskey(ntw.props,msr) ? ntw.props[:msr] : Set() ;
+set_msr(ntw::AbstractNetwork) =
+    for ne in elements(ntw)
+        if haskey(kwargs,:std) push!(get_msr(ntw),get_msr(ne[:std])...) end
+        if haskey(kwargs,:ntw) push!(get_msr(ntw),get_msr(ne[:ntw][1])...) end
+>>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
     end
     ntw.props[:msr] = msr
 end

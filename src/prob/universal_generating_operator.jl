@@ -30,7 +30,7 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
             usr[:mat] = s_prb*n_prb'
             prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
             usr[:std] = STD(prob = prb,flow = val)
-            usr[:ugf] = UGF(collect(get_msr(ntw))[1],prb,val)
+            usr[:ugf] = UGF(get_msr(ntw),prb,val)
     end end
     for usr in ntw.usr if haskey(usr,:ind)
         for ind in usr[:ind]
@@ -132,7 +132,7 @@ function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
         n_prb, n_val = reduce(Prb,Val)
 
         usr[:std] = STD(prob = n_prb,flow = n_val)
-        usr[:ugf] = UGF(collect(get_msr(ntw))[1],n_prb,n_val)
+        usr[:ugf] = UGF(get_msr(ntw),n_prb,n_val)
     end
     set_info!(ntw,:solved,true)
 end
