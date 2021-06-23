@@ -6,8 +6,7 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 """
-Example considering a tree-like wind farm with four wind turbines taken from:
-xxx by xxx
+Example considering a tree-like wind farm with four wind turbines.
 
 The goal of this example is to show the effectiveness of solving tree-like
 systems iteratively compared to solving it as a single system. To this end, a
@@ -15,11 +14,11 @@ wind farm with four wind turbines is considered (Fig. 1).
 
   WT₁         WT₂          n₅
    |----///----|----///----|
-   n₁   c₁     n₂   c₂     |
+   n₁    c₁     n₂    c₂     |
                            |--⋅ PCC
-  WT₃         WT₄          |
+  WT₃         WT₄           |
    |----///----|----///----|
-   n₃   c₃     n₄   c₄
+   n₃    c₃     n₄    c₄
 Fig. 1: Tree-like wind farm with four wind turbines.
 """
 # Load Pkgs
