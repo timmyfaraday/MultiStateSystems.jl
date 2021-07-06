@@ -192,4 +192,5 @@ add_sources!(ntw, node = 1, ntw = [(ntwᶠ¹⁻⁶,1),(ntwᶠ⁷⁻¹²,1)])
 @time solve!(ntw)
 
 # Plot the probability distribution (p>=1e-5)
+ugf = ntw.usr[1][:ugf]
 scatter(ustrip.(ugf.val[ugf.prb.>=1e-5]),ugf.prb[ugf.prb.>=1e-5],legend=false)
