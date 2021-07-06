@@ -51,7 +51,7 @@ function solve_cable(nld::Tuple,λ::Dict,μ::Dict)
         add_transitions!(std, states = [(1,2),(2,1)],
                               rate = [λ̄, μ̄])
     end
-    solve!(std, 1.0u"yr")
+    solve!(std, SteadyStateProcess())
     return std
 end
 

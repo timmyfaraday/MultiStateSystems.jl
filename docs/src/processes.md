@@ -5,7 +5,8 @@
 A number of stochastic processes are available to determine the state
 probabilities of an `std`:
 
-* Markov chain `:markov_chain`
+* Steady state process `SteadyStateProcess <: AbstractMarkovProcess`
+* Markov chain `:markov_process`
 * Markov process `:markov_process`
 * Semi-Markov process `:semimarkov_process`
 * Van Acker process `:vanacker_process`
@@ -15,12 +16,23 @@ Solving a stochastic process may be accomplished through:
 solve!(std::MultiStateSystems.AbstractSTD, tsim::Number; alg::Symbol=:nothing)
 ```
 
+## Steady State Process
+| Spaces      |             	| Properties  |             |
+| :---------- | :-------------- | :---------- | :---------- |
+| State-space | discrete        | Renewal     | ✅          |
+| Time-space  | singular (t=∞)	| Markov      | ✅          |
+
+A steady state process determines the state-state probability of the state space
+associated with a time-homogeneous Markov process/chain, i.e., where t→∞.
+
+https://www.maplesoft.com/support/help/maple/view.aspx?path=examples/SteadyStateMarkovChain
+
 ## Markov Process
 
-| Spaces      |             | Properties  |             |
-| :---------- | :---------- | :---------- | :---------- |
-| State-space | discrete    | Renewal     | ✅          |
-| Time-space  | continuous  | Markov      | ✅          |
+| Spaces      |             	| Properties  |             |
+| :---------- | :-------------- | :---------- | :---------- |
+| State-space | discrete    	| Renewal     | ✅          |
+| Time-space  | continuous  	| Markov      | ✅          |
 
 A Markov process is described by a random variable $X_t$, where $t$ denotes the
 calendar time. The possible values of $X_t$ are represented by the discrete

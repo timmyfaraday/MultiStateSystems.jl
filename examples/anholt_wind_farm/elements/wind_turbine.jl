@@ -42,7 +42,7 @@ end
 ## STD
 # Read in the wind power output data, and determine the clustered outputs and
 # corresponding rates.
-path = joinpath(BASE_DIR,"examples/data/Anholt.xlsx")
+path = joinpath(BASE_DIR,"examples/anholt_wind_farm/data/Anholt.xlsx")
 wind_power = XLSX.readdata(path,"Sheet1!D2:D52215")
 wind_power = convert(Vector{Float64},vec(wind_power))
 output, rate = cluster_wind_power(wind_power,number_of_clusters = number_of_clusters)
@@ -88,8 +88,8 @@ else
                              rate = [1.954u"1/yr",0.04715u"1/hr"])
 end
 # Solve the problems
-solve!(stdʷᵗᵒ, 1.0u"yr")
-solve!(stdʷᵗʳ, 1.0u"yr")
+solve!(stdʷᵗᵒ, SteadyStateProcess())
+solve!(stdʷᵗʳ, SteadyStateProcess())
 
 ## Network
 # Initialize the wind turbine network

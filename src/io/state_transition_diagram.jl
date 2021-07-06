@@ -43,7 +43,7 @@ julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
 function STD(;prob::Array, kwargs...)
     std = STD(length(prob))
     set_info!(std,:solved,true)
-    set_prop!(std,:msr,intersect(MsrSet,keys(kwargs)))
+    set_prop!(std,:msr,collect(intersect(MsrSet,keys(kwargs)))[1])
     set_prop!(std,states(std),:prob,prob)
     for ns in states(std) set_props!(std, ns, reduce(kwargs,ns)) end
 
@@ -130,23 +130,6 @@ get_info(std::AbstractSTD, nt::_LG.Edge, info::Symbol) =
     getproperty(std.tprops[nt][:info],info)
 set_info!(std::AbstractSTD, nt::_LG.Edge, info::Symbol, value::Bool) =
     setproperty!(std.tprops[nt][:info],info,value)
-# functions
-# is_markovian(std::AbstractSTD,nt::_LG.Edge) = isa(get_prop(std,nt,:rate),Number)
-# is_time_homogeneous(std::AbstractSTD,nt::_LG.Edge) =
-#     isa(get_prop(std,nt,:rate),Number)
-# function update_info(std::AbstractSTD,nt::_LG.Edge)
-#     # markovian
-#     mrk = is_markovian(std,nt)
-#     get_info(std,:markovian) *= mrk
-#     get_info(std,nt,:markovian) *= mrk
-#     get_info(std,_LG.src(nt),:markovian) *= mrk
-#     # time homogeneous
-#     thg = is_time_homogeneous(std,nt)
-#     get_info(std,:time_homogeneous) *= thg
-#     get_info(std,nt,:time_homogeneous) *= thg
-#     # trapping
-#     get_info(std,_LG.src(nt),:trapping) *= false
-# end
 
 ## State
 # functions
@@ -214,7 +197,7 @@ julia> add_states!(stdᵍᵉⁿ, name  = ["normal operation state","failed state
 """
 function add_states!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
-    set_prop!(std, :msr, intersect(MsrSet,keys(kwargs)))                        # TODO auto capture info prop
+    set_prop!(std, :msr, collect(intersect(MsrSet,keys(kwargs)))[1])                        # TODO auto capture info prop
     for ni in indices_of(kwargs) add_state!(std,reduce(kwargs,ni)) end
     return true
 end

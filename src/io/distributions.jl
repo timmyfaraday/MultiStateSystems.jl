@@ -59,6 +59,8 @@ scale(dst::Exponential)  = dst.θ
 weight(dst::Exponential) = dst.ω
 params(dst::Exponential) = (dst.θ, dst.ω)
 
+rate(dst::Exponential) = 1.0 / dst.θ
+
 minimum(dst::Exponential) = zero(dst.θ)
 maximum(dst::Exponential) = (Inf)unit(dst.θ)
 
@@ -108,7 +110,6 @@ with scale parameter `θ`, shape parameter `α` and optional weight `ω` has a
 probability density function
 
 ```math
-<<<<<<< HEAD
 f(x, θ, α, ω) = \\begin{cases}
                     \\frac{αω}{θ} \\cdot \\big(\\frac{x}{θ}\\big)^{α-1} \\cdot e^{-\\big(\\frac{x}{θ}\\big)^{α}}  &\\text{if:}~x ≥ 0, \\\\
                     0                                                                                 &\\text{if:}~x < 0.
@@ -127,12 +128,6 @@ julia> Weibull()            # default Weibull distr. with θ = 1.0, α = 1.0 and
 julia> 𝑾(3.0u"minute")     # Weibull distr. with θ = 3.0 min, α = 1.0 and ω = 1.0
 julia> 𝑾(5.0u"yr",4.0)     # Weibull distr. with θ = 5.0 yr, α = 4.0 and ω = 1.0
 julia> 𝑾(10.0,0.5,0.2)     # scaled Weibull distr. with θ = 10.0, α = 0.5 and ω = 0.2
-=======
-f(x; θ, α, ω) = \begin{cases}
-                    (αω)/θ (x/θ)^{α-1} e^{-(x/θ)^{α}}   & x ≥ 0, \\
-                    0                                   & x < 0.
-                \end{cases}
->>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
 ```
 """
 # struct
@@ -198,7 +193,6 @@ function ccdf(dst::Weibull, x::Number)
     end
 end
 
-<<<<<<< HEAD
 ## Raised Cosine
 # struct
 """
@@ -230,25 +224,6 @@ julia> 𝑪(10.0,0.5,0.2)      # scaled Raised Cosine distr. with μ = 10.0, σ 
 ```
 """
 struct Cosine{N<:Number, R<:Real} <: AbstractDistribution{N,R}
-=======
-## LogNormal
-"""
-    LogNormal(μ,σ,ω)
-
-The [*log normal distribution*](http://en.wikipedia.org/wiki/Log-normal_distribution)
-with mean `μ`, standard deviation `σ` and optional weight `ω` has a probability
-density function
-
-```math
-f(x; μ, σ, ω) = \begin{cases}
-                    ω/(√(2π)σx) e^{-(log(x)-log(μ))^{2}/(2σ²)}  & x ≥ 0, \\
-                    0                                           & x < 0.
-                \end{cases}
-```
-"""
-# struct
-struct LogNormal{N<:Number, R<:Real} <: AbstractDistribution{N,R}
->>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
     μ::N            # mean
     s::N            # maximal deviation
     ω::R            # weight

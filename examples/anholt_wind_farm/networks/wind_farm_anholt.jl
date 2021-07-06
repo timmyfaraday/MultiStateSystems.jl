@@ -11,10 +11,13 @@ The [Anholt Wind Farm](https://en.wikipedia.org/wiki/Anholt_Offshore_Wind_Farm)
 
 """
 
-# Load Pkgs
+# Load pkgs
 using Plots
 using Unitful
 using MultiStateSystems
+
+# Pkg const
+const _MSS = MultiStateSystems
 
 # Settings for a specific analysis
 cbl = true
@@ -23,8 +26,8 @@ wtr = true
 number_of_clusters = 8
 
 # Include the stochastic models for the wind turbines and cables
-include(joinpath(BASE_DIR,"examples/elements/wind_turbine.jl"))
-include(joinpath(BASE_DIR,"examples/elements/sea_cable.jl"))
+include(joinpath(_MSS.BASE_DIR,"examples/anholt_wind_farm/elements/wind_turbine.jl"))
+include(joinpath(_MSS.BASE_DIR,"examples/anholt_wind_farm/elements/sea_cable.jl"))
 
 # Feeder 1 - Nodes 30, 62:65, 76, 109:111
 ntwᶠ¹ = Network()
@@ -186,7 +189,7 @@ add_user!(ntw, node = 1, ind = [:GRA,:EENS])
 add_sources!(ntw, node = 1, ntw = [(ntwᶠ¹⁻⁶,1),(ntwᶠ⁷⁻¹²,1)])
 
 # Solve the problem
-@time solve!(ntw, type = :steady)
+@time solve!(ntw)
 
 # Plot the probability distribution (p>=1e-5)
 scatter(ustrip.(ugf.val[ugf.prb.>=1e-5]),ugf.prb[ugf.prb.>=1e-5],legend=false)

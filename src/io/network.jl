@@ -6,10 +6,13 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
+"""
+# Network (abbr: ntw)
+"""
 ## Network
 # structs
 struct Network{I<:Int} <: AbstractNetwork{I}
-    graph::_MG.Multigraph{I,I}
+    graph::_MG.Multigraph{I}
 
     props::PropDict
 
@@ -167,6 +170,7 @@ function add_component!(ntw::AbstractNetwork; kwargs...)
         push!(ntw.cmp,Dict(:edge => edge, reduce(kwargs,1,exclude=[:edge])...))
         update_lib!(:edge,ntw.cmp,ntw.clib)
     end
+    return true
 end
 function add_component!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     add_vertex!(ntw,node)
@@ -213,6 +217,7 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
         for ni in 1:length(edge)
             add_component!(ntw, edge[ni], reduce(kwargs,ni,exclude=[:edge]))
     end end
+    return true
 end
 
 ### Source (abbr: src)
@@ -248,11 +253,13 @@ function add_source!(ntw::AbstractNetwork; kwargs...)
     if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
     push!(ntw.src,Dict(kwargs...))
     update_lib!(:node,ntw.src,ntw.slib)
+    return true
 end
 function add_source!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     add_vertex!(ntw,node)
     push!(ntw.src,Dict(:node => node, dict...))
     update_lib!(:node,ntw.src,ntw.slib)
+    return true
 end
 """
     add_sources!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
@@ -285,6 +292,7 @@ function add_sources!(ntw::AbstractNetwork; kwargs...)
             add_source!(ntw, node, reduce(kwargs,ni,exclude=[:node]))
         end 
     end
+    return true
 end
 
 ## User (abbr: usr)
@@ -314,6 +322,7 @@ function add_user!(ntw::AbstractNetwork; kwargs...)
     add_vertex!(ntw,kwargs[:node])
     push!(ntw.usr,PropDict(kwargs...))
     update_lib!(:node,ntw.usr,ntw.ulib)
+    return true
 end
 function add_user!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     add_vertex!(ntw,node)
@@ -341,6 +350,7 @@ function add_users!(ntw::AbstractNetwork; kwargs...)
     for ni in 1:length(node)
         add_user!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
     end
+    return true
 end
 
 ## Network

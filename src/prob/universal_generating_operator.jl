@@ -29,15 +29,16 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
             n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
             usr[:mat] = s_prb*n_prb'
             prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
-            usr[:std] = STD(prob = prb,flow = val)
-            usr[:ugf] = UGF(get_msr(ntw),prb,val)
+
+            msr = Expr(:kw, get_msr(ntw)[1], n_val)
+            usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))
+            usr[:ugf] = UGF(get_msr(ntw)[1],val,prb)
     end end
     for usr in ntw.usr if haskey(usr,:ind)
         for ind in usr[:ind]
             if ind == :EENS usr[:EENS] = EENS(usr) end
     end end end
 end
-
 
 ## Probability Function
 probability_function(pr::Vector,idx_itr) =
@@ -131,8 +132,9 @@ function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
 
         n_prb, n_val = reduce(Prb,Val)
 
-        usr[:std] = STD(prob = n_prb,flow = n_val)
-        usr[:ugf] = UGF(get_msr(ntw),n_prb,n_val)
+        msr = Expr(:kw, get_msr(ntw)[1], n_val)
+        usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))
+        usr[:ugf] = UGF(get_msr(ntw)[1],n_val,n_prb)                            # Currently, only one measure is supported
     end
     set_info!(ntw,:solved,true)
 end

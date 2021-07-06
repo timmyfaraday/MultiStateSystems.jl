@@ -20,7 +20,7 @@ The oil flow is transmitted from a source S to a user U (Fig. 1).
             pipe 2
 Fig. 1: Flow transmission system.
 
-The pipes' performance is measured by their transmission capacity (MW)
+The pipes' performance is measured by their transmission capacity (m³/hr)
 (Table 1). The associated probabilities are given Table 2.
 
 Table 1: Transmission capacity of the pipes in the flow transmission system.

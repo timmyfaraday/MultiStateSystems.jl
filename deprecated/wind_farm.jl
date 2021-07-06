@@ -7,11 +7,7 @@
 ################################################################################
 
 """
-<<<<<<< HEAD
 Example considering a tree-like wind farm with four wind turbines.
-=======
-Example considering a tree-like wind farm with six wind turbines taken from:
->>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
 
 The goal of this example is to show the effectiveness of solving tree-like
 systems iteratively compared to solving it as a single system. To this end, a
@@ -19,35 +15,12 @@ wind farm with six wind turbines is considered (Fig. 1).
 
   WT₁         WT₂
    |----///----|----///----|
-<<<<<<< HEAD
    n₁    c₁     n₂    c₂     |
                            |--⋅ PCC
   WT₃         WT₄           |
    |----///----|----///----|
    n₃    c₃     n₄    c₄
 Fig. 1: Tree-like wind farm with four wind turbines.
-=======
-   n₁   c₁     n₂   c₂     |
-                           |
-  WT₃         WT₄          |           n₈
-   |----///----|----///----|----///----|--⋅ PCC
-   n₃   c₃     n₄   c₄     |    c₇
-                           |
-  WT₅         WT₆          |
-   |----///----|----///----|
-   n₅   c₅     n₆   c₆     n₇
-Fig. 1: Tree-like wind farm with six wind turbines.
-
-The output of the wind turbines is governed by the stochastic model which may be
-found in the file titled:
-> ../examples/elements/wind_turbine.jl
-The reliability of the wind turbines is governed by the stochastic model which
-may be found in the file titled:
-> ../examples/elements/wind_turbine.jl
-The reliability of the cables is governed by the stochastic model which may be
-found in the file titled:
-> ../examples/elements/sub_sea_cable.jl
->>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
 """
 
 # Load Pkgs
