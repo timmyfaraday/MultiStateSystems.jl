@@ -10,8 +10,6 @@
 MultiStateSystems.jl is a Julia package to solve multi-state systems,
 often found in reliability engineering.
 
-Currently, it allows
-
 ## Installation
 
 The latest stable release of MultiStateSystems can be installed using the Julia
@@ -26,9 +24,3 @@ In order to test whether the package works, run:
 ```
 ] test MultiStateSystems
 ```
-
-## Future Development Roadmap
-
-- [ ] Markov Chain
-- [ ] Semi-Markov Process
-- [ ] Van Acker Process
