@@ -27,7 +27,7 @@ julia> solve!(stdᵍᵉⁿ, 1000u"hr", alg = :markov_process)
 ```
 """
 function solve!(std::AbstractSTD; alg::Symbol=:markov_process, tsim::Number=1.0u"yr")
-    if is_a_steady_state_process(std, alg)  solve_steady_state_process(std)
+    if is_a_steady_state_process(std, alg)  solve_steady_state_process(std)  end
     if is_a_markov_process(std, alg)        solve_markov_process!(std, tsim) end
     set_info!(std,:solved,true)
 end
