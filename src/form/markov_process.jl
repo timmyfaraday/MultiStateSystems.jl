@@ -63,8 +63,9 @@ function solve!(std::AbstractSTD, cls::AbstractMarkovProcess; tsim::Number=1.0u"
     end
     sol = _ODE.solve(prob,_ODE.Tsit5(),reltol = tol,abstol = tol)
 
+    set_prop!(std, :cls, cls)
     set_prop!(std,:time,sol.t)
     set_prop!(std,states(std),:prob,[sol[ns,:] for ns in states(std)])
 
-    set_info!(std,:solved,true)
+    set_info!(std, :solved, true)
 end

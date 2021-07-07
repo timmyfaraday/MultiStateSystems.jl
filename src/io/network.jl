@@ -75,8 +75,8 @@ has_vertex(ntw::AbstractNetwork, x...) = _MG.has_vertex(ntw.graph, x...)
 ne(ntw::AbstractNetwork) = _MG.ne(ntw.graph)
 add_edge!(ntw::AbstractNetwork, x...) = _MG.add_edge!(ntw.graph, x...)
 has_edge(ntw::AbstractNetwork, x...) = _MG.has_edge(ntw.graph, x...)
-mul_edge(ntw::AbstractNetwork,edge::Tuple{Int,Int}) =
-    ntw.graph.adjmx[edge[1],edge[2]]
+mul_edge(ntw::AbstractNetwork,edge::Tuple{Int,Int}) = 
+    _MG.mul(ntw.graph, edge[1], edge[2])
 
 update_lib!(type::Symbol,array::Array,lib::Dict) =
     haskey(lib,array[end][type]) ? push!(lib[array[end][type]],length(array)) :
@@ -352,10 +352,13 @@ end
 ## Network
 # functions
 weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
-max_paths(ntw::AbstractNetwork) = _MG.nv(ntw.graph) + _MG.ne(ntw.graph,true)
+max_paths(ntw::AbstractNetwork) = _MG.nv(ntw.graph) + _MG.ne(ntw.graph, count_mul = true)
+# nodal_paths(ntw::AbstractNetwork,s_node::Int,u_node::Int) =
+#     _LG.yen_k_shortest_paths(_LG.Graph(ntw.graph.adjmx),s_node,u_node,
+#                              weights(ntw),max_paths(ntw)).paths
 nodal_paths(ntw::AbstractNetwork,s_node::Int,u_node::Int) =
-    _LG.yen_k_shortest_paths(_LG.Graph(ntw.graph.adjmx),s_node,u_node,
-                             weights(ntw),max_paths(ntw)).paths
+    _LG.yen_k_shortest_paths(ntw.graph, s_node, u_node, 
+                             weights(ntw), max_paths(ntw)).paths
 mul_path(ntw::AbstractNetwork,npath::Array{Int,1}) =
     [1:mul_edge(ntw,(npath[ni],npath[ni+1])) for ni in 1:length(npath)-1]
 function paths(ntw::AbstractNetwork, s_node::Int, u_node::Int)

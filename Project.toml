@@ -5,15 +5,11 @@ version = "0.1.0"
 
 [deps]
 AdditionalUnits = "02d9b4f0-7821-44c6-acbd-01a1ab91b72e"
-DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
-Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 LightGraphs = "093fc24a-ae57-5d10-9952-331d41423f4d"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Multigraphs = "7ebac608-6c66-46e6-9856-b5f43e107bac"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
-SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]

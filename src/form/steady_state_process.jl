@@ -42,7 +42,8 @@ solve_steady_state(std) =
 function solve!(std::AbstractSTD, cls::SteadyStateProcess)
     set_parameters!(std, cls)
 
-    set_prop!(std, :time, Inf)
+    set_prop!(std, :cls, cls)
+    set_prop!(std, :time, [Inf])
     set_prop!(std, states(std), :prob, solve_steady_state(std))
 
     set_info!(std, :solved, true)

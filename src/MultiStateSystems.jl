@@ -11,28 +11,20 @@ module MultiStateSystems
 # import pkgs
 import Base: maximum
 
-import DSP
-import Interpolations
 import LightGraphs
 import LinearAlgebra
 import Multigraphs
 import OrdinaryDiffEq
-import SpecialFunctions
-import Statistics
 
 # using Pkgs
 using Unitful
 using AdditionalUnits
 
 # pkg const
-const _DSP = DSP
-const _INT = Interpolations
 const _LA  = LinearAlgebra
 const _LG  = LightGraphs
 const _MG  = Multigraphs
 const _ODE = OrdinaryDiffEq
-const _SF  = SpecialFunctions
-const _ST  = Statistics
 const _UF  = Unitful
 
 # paths
