@@ -10,7 +10,7 @@
 abstract type MarkovProcess <: AbstractMarkovProcess end
 
 # properties
-const markov_process_props = [:renewal,:markovian,:dynamic]
+const markov_process_props = [:renewal, :markovian, :dynamic]
 
 # parameters 
 function set_parameters!(std::AbstractSTD, cls::AbstractMarkovProcess)

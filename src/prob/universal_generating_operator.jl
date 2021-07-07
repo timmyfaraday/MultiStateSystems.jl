@@ -15,8 +15,8 @@ of all users `usr` of a network `ntw`.
 
 Optionally, the type
 """
-function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
-    for nn in ntws(ntw) solve_network!(nn,type = type) end
+function solve!(ntw::AbstractNetwork)
+    for nn in ntws(ntw) solve_network!(nn) end
     for usr in ntw.usr if haskey(usr,:ind)
         for ind in usr[:ind]
             if ind == :GRA usr[:GRA] = GRA(usr) end
@@ -27,7 +27,7 @@ function solve!(ntw::AbstractNetwork; type::Symbol=:steady)
         for usr in ntw.usr
             n_ugf = usr[:ugf]
             n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
-            usr[:mat] = s_prb*n_prb'
+            usr[:mat] = s_prb * n_prb'
             prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
 
             msr = Expr(:kw, get_msr(ntw)[1], n_val)
@@ -115,11 +115,11 @@ function horizontal_reduction!(npaths::Array,cpaths::Array)
 end
 
 
-function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
+function solve_network!(ntw::AbstractNetwork)
     set_msr!(ntw)
     set_ugf!(ntw)
     set_structure_function!(ntw)
-    pr, vl, idx_itr = get_prb(ntw,type = type), get_val(ntw), get_idx_itr(ntw)
+    pr, vl, idx_itr = get_prb(ntw), get_val(ntw), get_idx_itr(ntw)
     Prb = probability_function(pr,idx_itr)
     for usr in ntw.usr
         Val = Number[]
@@ -136,5 +136,5 @@ function solve_network!(ntw::AbstractNetwork; type::Symbol=:steady)
         usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))
         usr[:ugf] = UGF(get_msr(ntw)[1],n_val,n_prb)                            # Currently, only one measure is supported
     end
-    set_info!(ntw,:solved,true)
+    set_info!(ntw, :solved, true)
 end

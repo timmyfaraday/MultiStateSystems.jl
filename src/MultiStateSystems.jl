@@ -43,12 +43,10 @@ include("core/types.jl")
 include("form/markov_process.jl")
 include("form/steady_state_process.jl")
 
-include("io/cluster.jl")
 include("io/distributions.jl")
 include("io/measure.jl")
 include("io/network.jl")
 include("io/state_transition_diagram.jl")
-include("io/stochastic_process.jl")
 include("io/universal_generating_function.jl")
 include("io/utils.jl")
 

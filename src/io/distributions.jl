@@ -6,7 +6,7 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-## Quantile
+## quantile
 quantile_bisect(dst::AbstractDistribution, p::Real) =
     quantile_bisect(dst, p, minimum(dst), maximum(dst), 1.0e-12)
 function quantile_bisect(dst::AbstractDistribution, p::Real, lx::Real, rx::Real,
@@ -24,7 +24,7 @@ function quantile_bisect(dst::AbstractDistribution, p::Real, lx::Real, rx::Real,
     return (lx + rx) / 2
 end
 
-## Exponential
+## exponential
 """
     Exponential(θ,ω)
 
@@ -101,7 +101,7 @@ function ccdf(dst::Exponential, x::Number)
     end
 end
 
-## Weibull
+## weibull
 """
     Weibull(θ,α,ω)
 
@@ -193,7 +193,7 @@ function ccdf(dst::Weibull, x::Number)
     end
 end
 
-## Raised Cosine
+## raised cosine
 # struct
 """
     Cosine
@@ -289,7 +289,7 @@ function ccdf(dst::Cosine, x::Number)
     end
 end
 
-## Dirac
+## dirac
 """
     Dirac(o,ω)
 
@@ -357,7 +357,7 @@ function ccdf(dst::Dirac, x::Number)
     end
 end
 
-## Uniform
+## uniform
 """
     Uniform(a,b,ω)
 The [*continuous uniform distribution*](http://en.wikipedia.org/wiki/Uniform_distribution_(continuous))

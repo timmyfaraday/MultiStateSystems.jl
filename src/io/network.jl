@@ -120,11 +120,7 @@ elements(ntw::AbstractNetwork) = Iterators.flatten((ntw.cmp,ntw.src))
 get_idx(ntw::AbstractNetwork) = [1:length(elm[:ugf].prb) for elm in elements(ntw)]
 get_idx_itr(ntw::AbstractNetwork) = Iterators.product(get_idx(ntw)...)
 get_val(ntw::AbstractNetwork) = [elm[:ugf].val for elm in elements(ntw)]
-get_steady_prb(elm::PropDict) =
-    dim(elm[:ugf].prb) > 0 ? [prb[end] for prb in elm[:ugf].prb] : elm[:ugf].prb ;
-get_prb(ntw::AbstractNetwork; type::Symbol) =
-    return type==:steady ? [get_steady_prb(elm) for elm in elements(ntw)] :
-                           [elm[:ugf].prb for elm in elements(ntw)] ;
+get_prb(ntw::AbstractNetwork) = [elm[:ugf].prb for elm in elements(ntw)]
 get_ntw(ntw::AbstractNetwork) =
     [elm[:ntw][1] for elm in elements(ntw) if haskey(elm,:ntw)]
 

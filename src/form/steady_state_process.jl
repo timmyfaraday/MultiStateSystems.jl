@@ -6,10 +6,13 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-# Abstract types
+# abstract types
 mutable struct SteadyStateProcess <: AbstractMarkovProcess end 
 
-# Parameters 
+# properties
+const steady_state_process_props = [:renewal, :markovian, :steady_state]
+
+# parameters 
 function set_rates!(std::AbstractSTD, cls::AbstractMarkovProcess)
     for nt in transitions(std)
         if !has_prop(std, nt, :rate) && has_prop(std, nt, :distr)
@@ -33,7 +36,7 @@ function set_parameters!(std::AbstractSTD, cls::SteadyStateProcess)
     set_markov_chain_matrix!(std, cls)
 end
 
-# Process
+# stochastic process
 solve_steady_state(std) =
     hcat(get_prop(std, :P) .- _LA.I(ns(std)),ones(ns(std)))' \ [zeros(ns(std))..., 1.0]
 function solve!(std::AbstractSTD, cls::SteadyStateProcess)
@@ -42,5 +45,5 @@ function solve!(std::AbstractSTD, cls::SteadyStateProcess)
     set_prop!(std, :time, Inf)
     set_prop!(std, states(std), :prob, solve_steady_state(std))
 
-    set_info!(std,:solved,true)
+    set_info!(std, :solved, true)
 end
