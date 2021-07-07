@@ -1,14 +1,16 @@
 # MultiStateSystems
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://timmyfaraday.github.io/MultiStateSystems.jl/dev/)
-[![Build Status](https://travis-ci.com/timmyfaraday/MultiStateSystems.jl.svg?branch=master)](https://travis-ci.com/timmyfaraday/MultiStateSystems.jl)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/timmyfaraday/MultiStateSystems.jl?svg=true)](https://ci.appveyor.com/project/timmyfaraday/MultiStateSystems-jl)
-[![Codecov](https://codecov.io/gh/timmyfaraday/MultiStateSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/timmyfaraday/MultiStateSystems.jl)
+<a href="https://github.com/timmyfaraday/MultiStateSystems.jl/actions?query=workflow%3ACI"><img src="https://github.com/timmyfaraday/MultiStateSystems.jl/workflows/CI/badge.svg"></img></a>
+<a href="https://codecov.io/gh/timmyfaraday/MultiStateSystems.jl"><img src="https://img.shields.io/codecov/c/github/timmyfaraday/MultiStateSystems.jl?logo=Codecov"></img></a>
+<a href="https://timmyfaraday.github.io/MultiStateSystems.jl/dev/"><img src="https://github.com/timmyfaraday/MultiStateSystems.jl/workflows/Documentation/badge.svg"></img></a>
+
 
 ## Overview
 
 MultiStateSystems.jl is a Julia package to solve multi-state systems,
 often found in reliability engineering.
+
+Currently, it allows
 
 ## Installation
 
