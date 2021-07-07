@@ -17,7 +17,7 @@ expected not to be met in a given year.
       of the system for that user.
 """
 EENS(usr::PropDict) =
-    8760u"hr"*sum((maximum(usr[:ugf].val).-usr[:ugf].val).*usr[:ugf].prb)
+    8760u"hr"*sum((maximum(usr[:ugf].val).-usr[:ugf].val).*usr[:ugf].prb) |> u"MWh"
 
 """
     GRA(usr)

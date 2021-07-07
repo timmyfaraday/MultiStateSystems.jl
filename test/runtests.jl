@@ -5,9 +5,16 @@
 # A Julia package to solve multi-state system models.                          #
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
+
+# load pkgs
 using Test
+using Unitful
+using AdditionalUnits
 using MultiStateSystems
 
+# pkg const
+const _MSS = MultiStateSystems
+
 @testset "MultiStateSystems" begin
-    #include("test_stochastic_processes.jl")
+    include("indices.jl")
 end

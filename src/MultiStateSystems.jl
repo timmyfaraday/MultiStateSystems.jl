@@ -21,7 +21,8 @@ import SpecialFunctions
 import Statistics
 
 # using Pkgs
-using  Unitful
+using Unitful
+using AdditionalUnits
 
 # pkg const
 const _DSP = DSP
@@ -62,6 +63,5 @@ export  Network, add_source!, add_sources!, add_user!, add_users!,
 export  STD, add_state!, add_states!, add_transition!, add_transitions!
 export  UGF
 export  solve!
-export  get_cycles
 
 end
