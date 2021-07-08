@@ -21,4 +21,7 @@ const _MSS = MultiStateSystems
 
     # io
     include("indices.jl")
+
+    # prob
+    include("universal_generating_operator.jl")
 end

@@ -40,19 +40,19 @@ Table 1: States' output and transition intensities.
 using the fraction of kᵢⱼ over Tᵢ as given in the paper.
 """
 
-# Load Pkgs
+# load pkgs
 using Unitful
 using MultiStateSystems
 
-# Initialize the state-transition diagram corresponding to the coal fired power
-# Generating unit.
+# initialize the state-transition diagram corresponding to the coal fired power
+# generating unit.
 stdᶜᶠ = STD()
 
 # Add the states to the std
 add_states!(stdᶜᶠ, power = [0u"MW", 247u"MW", 482u"MW", 576u"MW"],
                    init  = [0.0, 0.0, 0.0, 1.0])
 
-# Add the transitions to the std
+# add the transitions to the std
 add_transitions!(stdᶜᶠ, states = [(1,2),(1,3)],
                         rate = [0.08000u"1/hr",0.01333u"1/hr"])
 add_transitions!(stdᶜᶠ, states = [(2,1),(2,3),(2,4)],

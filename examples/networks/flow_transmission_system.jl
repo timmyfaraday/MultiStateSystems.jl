@@ -38,24 +38,24 @@ Table 2: Associated probabilities of the pipes in the flow transmission system.
 |                      |                      | p³₃ = 0.7            |
 """
 
-# Load Pkgs
+# load Pkgs
 using Unitful
 using MultiStateSystems
 
-# Initialize the network corresponding to the flow transmission system.
-ntw = Network()
+# initialize the network corresponding to the flow transmission system.
+ntwᶠᵗˢ = Network()
 
-# Add the user, source and components to the network ntw.
-add_user!(ntw,node = 3)
-add_source!(ntw,node = 1)
-add_components!(ntw,edge = [(1,2),(1,2),(2,3)],
-                    name = ["pipe 1","pipe 2","pipe 3"],
-                    std  = [STD(flow = [0u"m^3/hr",1500u"m^3/hr"],
-                                prob = [0.2,0.8]),
-                            STD(flow = [0u"m^3/hr",2000u"m^3/hr"],
-                                prob = [0.4,0.6]),
-                            STD(flow = [0u"m^3/hr",1800u"m^3/hr",4000u"m^3/hr"],
-                                prob = [0.1,0.2,0.7])])
+# add the user, source and components to the network ntw.
+add_user!(ntwᶠᵗˢ, node = 3)
+add_source!(ntwᶠᵗˢ, node = 1)
+add_components!(ntwᶠᵗˢ, edge = [(1,2),(1,2),(2,3)],
+                        name = ["pipe 1", "pipe 2", "pipe 3"],
+                        std  = [STD(flow = [0u"m^3/hr", 1500u"m^3/hr"],
+                                    prob = [0.2, 0.8]),
+                                STD(flow = [0u"m^3/hr", 2000u"m^3/hr"],
+                                    prob = [0.4, 0.6]),
+                                STD(flow = [0u"m^3/hr", 1800u"m^3/hr", 4000u"m^3/hr"],
+                                    prob = [0.1, 0.2, 0.7])])
 
-# Solve the problem
-solve!(ntw)
+# return the network
+return ntwᶠᵗˢ
