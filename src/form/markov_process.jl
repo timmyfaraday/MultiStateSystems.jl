@@ -7,7 +7,7 @@
 ################################################################################
 
 # abstract types
-abstract type MarkovProcess <: AbstractMarkovProcess end
+mutable struct MarkovProcess <: AbstractMarkovProcess end
 
 # properties
 const markov_process_props = [:renewal, :markovian, :dynamic]

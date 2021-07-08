@@ -46,21 +46,21 @@ using MultiStateSystems
 
 # Initialize the state-transition diagram corresponding to the coal fired power
 # Generating unit.
-stdᵃᵐ = STD()
+stdᶜᶠ = STD()
 
 # Add the states to the std
-add_states!(stdᵃᵐ, power = [0u"MW", 247u"MW", 482u"MW", 576u"MW"],
+add_states!(stdᶜᶠ, power = [0u"MW", 247u"MW", 482u"MW", 576u"MW"],
                    init  = [0.0, 0.0, 0.0, 1.0])
 
 # Add the transitions to the std
-add_transitions!(stdᵃᵐ, states = [(1,2),(1,3)],
+add_transitions!(stdᶜᶠ, states = [(1,2),(1,3)],
                         rate = [0.08000u"1/hr",0.01333u"1/hr"])
-add_transitions!(stdᵃᵐ, states = [(2,1),(2,3),(2,4)],
+add_transitions!(stdᶜᶠ, states = [(2,1),(2,3),(2,4)],
                         rate = [0.02941u"1/hr",0.32353u"1/hr",0.02941u"1/hr"])
-add_transitions!(stdᵃᵐ, states = [(3,2),(3,4)],
+add_transitions!(stdᶜᶠ, states = [(3,2),(3,4)],
                         rate = [0.02885u"1/hr",0.35577u"1/hr"])
-add_transitions!(stdᵃᵐ, states = [(4,1),(4,2),(4,3)],
+add_transitions!(stdᶜᶠ, states = [(4,1),(4,2),(4,3)],
                         rate = [0.00015u"1/hr",0.00010u"1/hr",0.00069u"1/hr"])
 
-# Solve the problem
-solve!(stdᵃᵐ, 1.0u"yr")
+# return the std
+return stdᶜᶠ

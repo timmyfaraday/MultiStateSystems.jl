@@ -16,5 +16,9 @@ using MultiStateSystems
 const _MSS = MultiStateSystems
 
 @testset "MultiStateSystems" begin
+    # form
+    include("markov_process.jl")
+
+    # io
     include("indices.jl")
 end
