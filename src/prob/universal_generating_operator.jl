@@ -8,12 +8,10 @@
 
 # Universal Generating Operator
 """
-    solve!(ntw::MultiStateSystems.AbstractNetwork; type::Symbol=:steady)
+    solve!(ntw::MultiStateSystems.AbstractNetwork)
 
 This function determines the universal generating function related to the output
 of all users `usr` of a network `ntw`.
-
-Optionally, the type
 """
 function solve!(ntw::AbstractNetwork)
     for nn in ntws(ntw) solve_network!(nn) end
@@ -113,7 +111,6 @@ function horizontal_reduction!(npaths::Array,cpaths::Array)
             deleteat!(cpaths[ni],idx[2:end])
     end end
 end
-
 
 function solve_network!(ntw::AbstractNetwork)
     set_msr!(ntw)

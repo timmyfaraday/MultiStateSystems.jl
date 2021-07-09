@@ -38,7 +38,7 @@ Table 2: Associated probabilities of the pipes in the flow transmission system.
 |                      |                      | p³₃ = 0.7            |
 """
 
-# load Pkgs
+# load pkgs
 using Unitful
 using MultiStateSystems
 
