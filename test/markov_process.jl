@@ -11,7 +11,7 @@
     @testset "Coal Fired Power Generating Unit" begin
         # Example from: A Multi-State Markov Model for a Short-Term Reliability
         # Analysis of a Power Generating Unit (p. 4)
-        stdᶜᶠ = include(joinpath(_MSS.BASE_DIR,"examples/elements/coal_fired_power_generating_unit.jl"))
+        stdᶜᶠ = include(joinpath(_MSS.BASE_DIR,"test/elements/coal_fired_power_generating_unit.jl"))
         
         solve!(stdᶜᶠ, MarkovProcess(), tsim = 1.0u"yr")
         prb_m = [np[end] for np in _MSS.get_sprop(stdᶜᶠ, :prob)]

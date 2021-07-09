@@ -48,7 +48,7 @@ using MultiStateSystems
 # generating unit.
 stdᶜᶠ = STD()
 
-# Add the states to the std
+# add the states to the std
 add_states!(stdᶜᶠ, power = [0u"MW", 247u"MW", 482u"MW", 576u"MW"],
                    init  = [0.0, 0.0, 0.0, 1.0])
 
