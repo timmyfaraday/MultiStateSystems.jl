@@ -60,13 +60,13 @@ end
 function set_structure_function!(ntw::Network)
     for u_node in usr_nodes(ntw)
         expr = nothing
-        for s_node in src_nodes(ntw)
-            exrp_src = src_structure_function(ntw,s_node)
-            exrp_cmp = cmp_structure_function(ntw,s_node,u_node)
+        for s_node in src_nodes(ntw) if has_path(ntw, s_node, u_node)
+            exrp_src = src_structure_function(ntw, s_node)
+            exrp_cmp = cmp_structure_function(ntw, s_node, u_node)
             exrp_cmp == nothing ? exrp = :($exrp_src) :
-                                  exrp = :(min($exrp_src,$exrp_cmp)) ;
+                                  exrp = :(min($exrp_src, $exrp_cmp)) ;
             expr == nothing ? expr = :($exrp) : expr = :($expr + $exrp) ;
-        end
+        end end
         for nu in ntw.ulib[u_node] ntw.usr[nu][:str] = expr end
     end
 end

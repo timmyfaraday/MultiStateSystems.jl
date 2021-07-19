@@ -42,10 +42,10 @@ Table 2: Associated probabilities of the pipes in the flow transmission system.
 using Unitful
 using MultiStateSystems
 
-# initialize the network corresponding to the flow transmission system.
+# initialize the network corresponding to the flow transmission system
 ntwᶠᵗˢ = Network()
 
-# add the user, source and components to the network ntw.
+# add the user, source and components to the network ntwᶠᵗˢ
 add_user!(ntwᶠᵗˢ, node = 3)
 add_source!(ntwᶠᵗˢ, node = 1)
 add_components!(ntwᶠᵗˢ, edge = [(1,2),(1,2),(2,3)],

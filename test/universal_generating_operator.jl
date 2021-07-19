@@ -40,4 +40,22 @@
         @test all(isapprox.(prb_sol, prb_ntw, rtol=1e-6))
     end
 
+    @testset "Disconnected Sources and Users" begin
+        # Example from: Industrial Energy System Availability Management (p. 92)
+        val_sol = [0.0u"MW", 1.0u"MW"]
+        prb_sol = [0.1, 0.9]
+
+        ntwᵈˢᶠ = include(joinpath(_MSS.BASE_DIR,"test/networks/double_single_feeder.jl"))
+        val_usr_1, prb_usr_1 = ntwᵈˢᶠ.usr[1][:ugf].val, ntwᵈˢᶠ.usr[1][:ugf].prb
+        val_usr_2, prb_usr_2 = ntwᵈˢᶠ.usr[2][:ugf].val, ntwᵈˢᶠ.usr[2][:ugf].prb
+
+        @test isapprox.(sum(prb_usr_1), 1.0, rtol=1e-6)
+        @test all(isapprox.(val_sol, val_usr_1, rtol=1e-6))
+        @test all(isapprox.(prb_sol, prb_usr_1, rtol=1e-6))
+
+        @test isapprox.(sum(prb_usr_2), 1.0, rtol=1e-6)
+        @test all(isapprox.(val_sol, val_usr_2, rtol=1e-6))
+        @test all(isapprox.(prb_sol, prb_usr_2, rtol=1e-6))
+    end
+
 end

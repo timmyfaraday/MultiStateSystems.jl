@@ -352,14 +352,13 @@ end
 ## Network
 # functions
 weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
+has_path(ntw::AbstractNetwork, s_node::Int, u_node::Int) =
+    _LG.has_path(ntw.graph, s_node, u_node)
 max_paths(ntw::AbstractNetwork) = _MG.nv(ntw.graph) + _MG.ne(ntw.graph, count_mul = true)
-# nodal_paths(ntw::AbstractNetwork,s_node::Int,u_node::Int) =
-#     _LG.yen_k_shortest_paths(_LG.Graph(ntw.graph.adjmx),s_node,u_node,
-#                              weights(ntw),max_paths(ntw)).paths
-nodal_paths(ntw::AbstractNetwork,s_node::Int,u_node::Int) =
+nodal_paths(ntw::AbstractNetwork, s_node::Int, u_node::Int) =
     _LG.yen_k_shortest_paths(ntw.graph, s_node, u_node, 
                              weights(ntw), max_paths(ntw)).paths
-mul_path(ntw::AbstractNetwork,npath::Array{Int,1}) =
+mul_path(ntw::AbstractNetwork, npath::Array{Int,1}) =
     [1:mul_edge(ntw,(npath[ni],npath[ni+1])) for ni in 1:length(npath)-1]
 function paths(ntw::AbstractNetwork, s_node::Int, u_node::Int)
     npaths, cpaths = Array{Int,1}[], Array{Expr,1}[]
