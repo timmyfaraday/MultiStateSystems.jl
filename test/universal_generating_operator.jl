@@ -46,6 +46,7 @@
         prb_sol = [0.1, 0.9]
 
         ntwᵈˢᶠ = include(joinpath(_MSS.BASE_DIR,"test/networks/double_single_feeder.jl"))
+        solve!(ntwᵈˢᶠ)
         val_usr_1, prb_usr_1 = ntwᵈˢᶠ.usr[1][:ugf].val, ntwᵈˢᶠ.usr[1][:ugf].prb
         val_usr_2, prb_usr_2 = ntwᵈˢᶠ.usr[2][:ugf].val, ntwᵈˢᶠ.usr[2][:ugf].prb
 
