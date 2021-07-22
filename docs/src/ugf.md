@@ -16,12 +16,11 @@ polynomial expression:
 where 𝓞 is the reduced state-space which only contains unique values for a
 specific measure.
 
-## Constructors
-
-Two constructors are implemented:
 ```@docs
 MultiStateSystems.UGF
 ```
+
+Alternatively, an ugf may be constructed based on a **solved** state-transition diagram:
 
 ```@docs
 MultiStateSystems.UGF(msr::Symbol, std::MultiStateSystems.AbstractSTD)

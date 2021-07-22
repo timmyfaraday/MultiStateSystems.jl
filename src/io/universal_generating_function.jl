@@ -11,6 +11,10 @@
 """
     UGF
 
+An ugf is a struct containing: `msr` with default constructor: 
+    
+    UGF(msr::Symbol, val::Vector, prb::Vector)
+
 A UGF constructor for a specific measure `msr` based on a given probability
 vector `prb` and value vector `val`.
 
