@@ -1,4 +1,4 @@
-# MultiStateSystems.jl XXX
+# MultiStateSystems.jl XXXx
 
 ## Overview
 
