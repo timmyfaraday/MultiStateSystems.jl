@@ -9,7 +9,7 @@
 ## Universal Generating Function
 # structs
 """
-    UGF(msr::Symbol, val::Vector, prb::Vector)
+    UGF
 
 A UGF constructor for a specific measure `msr` based on a given probability
 vector `prb` and value vector `val`.
@@ -58,11 +58,8 @@ julia> isequal(ugfᵍᵉⁿ,[0.0u"MW",2.0u"MW"])
 true
 ```
 """
-function UGF(msr::Symbol, std::AbstractSTD)
-    prb, val = reduce(get_sprop(std,:prob),get_sprop(std,msr))
-
-    return UGF(msr,val,prb)
-end
+UGF(msr::Symbol, std::AbstractSTD) = 
+    UGF(msr,get_sprop(std,msr),get_sprop(std,:prob))
 ################################################################################
 # WARNING:  The empty constructor needs to be last in order to overwrite the   #
 #           empty constructor created by other contructors, see: discourse -   #
