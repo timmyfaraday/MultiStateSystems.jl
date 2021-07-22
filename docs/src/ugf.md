@@ -13,14 +13,14 @@ polynomial expression:
 ```math
     ω_{x}(z) = \sum_{o \in \mathcal{O}} p_o \cdot z^{v_o}
 ```
-where 𝓞 is the reduced state-space which only contains unique values for a
+where $𝓞$ is the reduced state-space which only contains unique values for a
 specific measure.
 
 ```@docs
 MultiStateSystems.UGF
 ```
 
-Alternatively, an ugf may be constructed based on a **solved** state-transition diagram:
+Alternatively, an ugf may be constructed based on a *solved* state-transition diagram:
 
 ```@docs
 MultiStateSystems.UGF(msr::Symbol, std::MultiStateSystems.AbstractSTD)
