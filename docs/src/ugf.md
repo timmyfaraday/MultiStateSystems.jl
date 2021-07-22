@@ -20,7 +20,20 @@ specific measure.
 
 Two constructors are implemented:
 ```@docs
-MultiStateSystems.UGF(msr::Symbol, val::Vector, prb::Vector)
+    UGF(msr::Symbol, val::Vector, prb::Vector)
+
+A UGF constructor for a specific measure `msr` based on a given probability
+vector `prb` and value vector `val`.
+
+This function automatically reduces the state-space to where only unique values
+and associated probabilites remain.
+
+# Example
+```julia-repl
+julia> ugfᵍᵉⁿ = UGF(:flow, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7])
+julia> isequal(ugfᵍᵉⁿ,[0.0u"MW",2.0u"MW"])
+true
+```
 ```
 
 ```@docs
