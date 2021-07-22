@@ -10,13 +10,13 @@
 # Arrays
 """
 dim(value::Any) = length(size(value))
-function reduce(Prb::Vector,Val::Vector)
+function reduce(Val::Vector,Prb::Vector)
     idx = sortperm(Val)
     sPrb, sVal = Prb[idx], Val[idx]
     val = unique(sVal)
     prb = [sum(sPrb[sorted_range(sVal,nv)]) for nv in val]
 
-    return prb, val
+    return val, prb
 end
 sorted_range(sVal,nv) = searchsortedfirst(sVal,nv):searchsortedlast(sVal,nv)
 function update!(v1::Vector{Float64},v2::Vector{Float64})

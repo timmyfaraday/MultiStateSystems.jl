@@ -8,10 +8,28 @@
 
 ## Universal Generating Function
 # structs
+"""
+    UGF(msr::Symbol, val::Vector, prb::Vector)
+
+A UGF constructor for a specific measure `msr` based on a given probability
+vector `prb` and value vector `val`.
+
+This function automatically reduces the state-space to where only unique values
+and associated probabilites remain.
+
+# Example
+```julia-repl
+julia> ugfᵍᵉⁿ = UGF(:flow, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7])
+julia> isequal(ugfᵍᵉⁿ,[0.0u"MW",2.0u"MW"])
+true
+```
+"""
 struct UGF <: AbstractUGF
     msr::Symbol
     val::Vector
     prb::Vector
+
+    UGF(msr,val,prb) = new(msr,reduce(val,prb)...)
 end
 
 # constructors
@@ -21,26 +39,7 @@ function UGF(msr::Symbol)
 
     return UGF(msr, val, prb)
 end
-# """ --> This is broken given incremental compilation.
-#     UGF(msr::Symbol, prb::Vector, val::Vector)
 
-# A UGF constructor for a specific measure `msr` based on a given probability
-# vector `prb` and value vector `val`.
-
-# This function automatically reduces the state-space to where only unique values
-# and associated probabilites remain.
-
-# # Example
-# ```julia-repl
-# julia> ugfᵍᵉⁿ = UGF(:flow, [0.1,0.2,0.7], [0.0u"MW",0.0u"MW",2.0u"MW"])
-# julia> isequal(ugfᵍᵉⁿ,[0.0u"MW",2.0u"MW"])
-# true
-# ```
-# """
-# function UGF(msr::Symbol, prb::Vector, val::Vector; red::Bool=false)
-#     red_prb, red_val = reduce(prb,val)
-#     return UGF(msr,red_val,red_prb)
-# end
 """
     UGF(msr::Symbol, std::MultiStateSystems.AbstractSTD)
 

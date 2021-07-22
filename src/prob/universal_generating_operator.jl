@@ -26,7 +26,7 @@ function solve!(ntw::AbstractNetwork)
             n_ugf = usr[:ugf]
             n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
             usr[:mat] = s_prb * n_prb'
-            prb, val = reduce(kron(n_prb,s_prb),kron(n_val,ustrip.(s_val)))
+            val, prb = reduce(kron(n_val,ustrip.(s_val)), kron(n_prb,s_prb))
 
             msr = Expr(:kw, get_msr(ntw)[1], n_val)
             usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))
@@ -127,7 +127,7 @@ function solve_network!(ntw::AbstractNetwork)
 
         for ni in idx_itr push!(Val,Base.invokelatest(structure_function,ni,vl)) end
 
-        n_prb, n_val = reduce(Prb,Val)
+        n_val, n_prb = reduce(Val,Prb)
 
         msr = Expr(:kw, get_msr(ntw)[1], n_val)
         usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))

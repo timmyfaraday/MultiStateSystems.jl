@@ -20,7 +20,7 @@ specific measure.
 
 Two constructors are implemented:
 ```@docs
-MultiStateSystems.UGF(msr::Symbol, prb::Vector, val::Vector)
+MultiStateSystems.UGF(msr::Symbol, val::Vector, prb::Vector)
 ```
 
 ```@docs
