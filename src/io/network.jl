@@ -113,7 +113,7 @@ get_info(ntw::AbstractNetwork, info::Symbol) = getproperty(ntw.props[:info],info
 set_info!(ntw::AbstractNetwork, info::Symbol, value::Bool) =
     setproperty!(ntw.props[:info],info,value)
 
-## Elements
+## Elements (abbr: elm)
 # functions
 elements(ntw::AbstractNetwork) = Iterators.flatten((ntw.cmp,ntw.src))
 
@@ -374,7 +374,7 @@ function paths(ntw::AbstractNetwork, s_node::Int, u_node::Int)
                 haskey(ntw.clib,edge) ? push!(cpath,cmp_expr(ntw.clib[edge][1])) : ~ ;
             end
             node = npath[end]
-            haskey(ntw.clib,node) ? push!(cpath,value(ntw.clib[node][1])) : ~ ;
+            haskey(ntw.clib,node) ? push!(cpath,cmp_expr(ntw.clib[node][1])) : ~ ;
             push!(npaths,npath)
             push!(cpaths,cpath)
     end end

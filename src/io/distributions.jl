@@ -26,7 +26,7 @@ end
 
 ## exponential
 """
-    Exponential(θ,ω)
+    Exponential
 
 The [*exponential distribution*](http://en.wikipedia.org/wiki/Exponential_distribution)
 with scale parameter `θ` and an optional weight `ω` has a probability density
@@ -103,7 +103,7 @@ end
 
 ## weibull
 """
-    Weibull(θ,α,ω)
+    Weibull
 
 The [*Weibull distribution*](http://en.wikipedia.org/wiki/Weibull_distribution)
 with scale parameter `θ`, shape parameter `α` and optional weight `ω` has a
@@ -291,7 +291,7 @@ end
 
 ## dirac
 """
-    Dirac(o,ω)
+    Dirac
 
 The [*Dirac distribution*](https://en.wikipedia.org/wiki/Dirac_delta_function)
 with offset `o` and optional weight `ω` has a probability density function
@@ -359,7 +359,8 @@ end
 
 ## uniform
 """
-    Uniform(a,b,ω)
+    Uniform
+
 The [*continuous uniform distribution*](http://en.wikipedia.org/wiki/Uniform_distribution_(continuous))
 over an interval `[a, b]` and with optional weight `ω` has a probability density
 function
