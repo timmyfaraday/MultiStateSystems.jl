@@ -43,8 +43,8 @@ probability_function(pr::Vector,idx_itr) =
     vec([prod([pr[ne][ni[ne]] for ne in 1:length(pr)])[1] for ni in idx_itr])
 
 ## Structure Function
-function cmp_structure_function(ntw::AbstractNetwork,s_node::Int,u_node::Int)
-    npaths, cpaths = paths(ntw, s_node, u_node)
+function user_structure_function(ntw::AbstractNetwork, u_node::Int)
+    npaths, cpaths = paths(ntw, u_node)
     cpaths != [[]] || return nothing
     while length(npaths[1]) ≠ 0
         has_duplicate_paths(npaths) ? vertical_reduction!(npaths,cpaths) :
@@ -52,22 +52,10 @@ function cmp_structure_function(ntw::AbstractNetwork,s_node::Int,u_node::Int)
     end
     return cpaths[1][1]
 end
-function src_structure_function(ntw::AbstractNetwork,s_node::Int)
-    nc, src_idx = length(ntw.cmp), src_ids(ntw,s_node)
-    return ns(ntw,s_node) == 1 ? src_expr(nc+src_idx[1]) :
-                                 par([src_expr(nc+ns) for ns in src_idx]) ;
-end
 function set_structure_function!(ntw::Network)
     for u_node in usr_nodes(ntw)
-        expr = nothing
-        for s_node in src_nodes(ntw) if has_path(ntw, s_node, u_node)
-            exrp_src = src_structure_function(ntw, s_node)
-            exrp_cmp = cmp_structure_function(ntw, s_node, u_node)
-            exrp_cmp === nothing ? exrp = :($exrp_src) :
-                                   exrp = :(min($exrp_src, $exrp_cmp)) ;
-            expr === nothing ? expr = :($exrp) : expr = :($expr + $exrp) ;
-        end end
-        for nu in ntw.ulib[u_node] ntw.usr[nu][:str] = expr end
+        expr = user_structure_function(ntw, u_node)
+        for nu in ntw.ulib[u_node] ntw.usr[nu][:str] = :($expr) end
     end
 end
 
@@ -116,22 +104,47 @@ function solve_network!(ntw::AbstractNetwork)
     set_msr!(ntw)
     set_ugf!(ntw)
     set_structure_function!(ntw)
+
+    msr = get_msr(ntw)[1]
     pr, vl, idx_itr = get_prb(ntw), get_val(ntw), get_idx_itr(ntw)
     Prb = probability_function(pr,idx_itr)
-    for usr in ntw.usr
-        Val = Number[]
+    skip = Int[]
+    
+    for (nu,usr) in enumerate(ntw.usr) if !in(nu,skip)
+        if get_info(usr,:eval_dep)
+            Val = zeros(Number, length(Prb), length(usr[:eval_dep_usr]))
+            
+            for (nc,nu) in enumerate(usr[:eval_dep_usr])
+                expr = ntw.usr[nu][:str]
+                exrp = quote function structure_function(idx,val) $expr end end
+                eval(exrp)
 
-        expr = usr[:str]
-        exrp = quote function structure_function(idx,val) $expr end end
-        eval(exrp)
+                for (ni,id) in enumerate(idx_itr) 
+                    Val[ni,nc] = Base.invokelatest(structure_function,id,vl) 
+                end
+            end
 
-        for ni in idx_itr push!(Val,Base.invokelatest(structure_function,ni,vl)) end
+            rVal, rPrb = reduce(Val, Prb)
 
-        n_val, n_prb = reduce(Val,Prb)
+            for (nc,nu) in enumerate(usr[:eval_dep_usr])
+                ntw.usr[nu][:ugf] = UGF(msr, rVal[:,nc], rPrb, rdc=false)
+                ntw.usr[nu][:std] = STD(ntw.usr[nu][:ugf])
+            end
 
-        msr = Expr(:kw, get_msr(ntw)[1], n_val)
-        usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))
-        usr[:ugf] = UGF(get_msr(ntw)[1],n_val,n_prb)                            # Currently, only one measure is supported
-    end
+            push!(skip, usr[:eval_dep_usr]...)
+        else
+            Val = zeros(Number, length(Prb))
+
+            expr = usr[:str]
+            exrp = quote function structure_function(idx,val) $expr end end
+            eval(exrp)
+
+            for (ni,id) in enumerate(idx_itr) 
+                Val[ni] = Base.invokelatest(structure_function,id,vl) 
+            end
+
+            usr[:ugf] = UGF(msr, Val, Prb)                                      # Currently, only one measure is supported
+            usr[:std] = STD(usr[:ugf])
+    end end end
     set_info!(ntw, :solved, true)
 end

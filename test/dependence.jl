@@ -6,23 +6,14 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-# load pkgs
-using Test
-using Unitful
-using AdditionalUnits
-using MultiStateSystems
+@testset "Dependence" begin
+    
+    @testset "Evaluation Dependence" begin
+        # Example from: xxx
+        ntwʰᵛ = include(joinpath(_MSS.BASE_DIR,"test/networks/high_voltage_system.jl"))
+        solve!(ntwʰᵛ)
 
-# pkg const
-const _MSS = MultiStateSystems
+        #ntwˡᵛ = include(joinpath(_MSS.BASE_DIR,"test/networks/low_voltage_system"))
+    end
 
-@testset "MultiStateSystems" begin
-    # form
-    include("markov_process.jl")
-
-    # io
-    include("indices.jl")
-    include("universal_generating_function.jl")
-
-    # prob
-    include("universal_generating_operator.jl")
 end

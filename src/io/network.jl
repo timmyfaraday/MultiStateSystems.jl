@@ -77,10 +77,23 @@ add_edge!(ntw::AbstractNetwork, x...) = _MG.add_edge!(ntw.graph, x...)
 has_edge(ntw::AbstractNetwork, x...) = _MG.has_edge(ntw.graph, x...)
 mul_edge(ntw::AbstractNetwork,edge::Tuple{Int,Int}) = 
     _MG.mul(ntw.graph, edge[1], edge[2])
+mul_edge(graph::_MG.Multigraph,edge::Tuple{Int,Int}) = 
+    _MG.mul(graph, edge[1], edge[2])
 
 update_lib!(type::Symbol,array::Array,lib::Dict) =
     haskey(lib,array[end][type]) ? push!(lib[array[end][type]],length(array)) :
                                    lib[array[end][type]] = [length(array)] ;
+
+function get_extended_graph(ntw::AbstractNetwork, u_node::Int)
+    graph = _MG.copy(ntw.graph)
+    _MG.add_vertex!(graph)
+    
+    for src in ntw.src if has_path(ntw, src[:node], u_node)
+        _MG.add_edge!(graph, _MG.nv(graph), src[:node])
+    end end
+    
+    return graph, _MG.nv(graph)
+end
 
 function ntws(ntw::AbstractNetwork)
     cntr = 1
@@ -103,15 +116,25 @@ end
 mutable struct NetworkInfo{B<:Bool} <: AbstractInfo
     solved::B
     dependent_sources::B
+    eval_dep::B
 
     # constructor
-    NetworkInfo() = new{Bool}(false,false)
+    NetworkInfo() = new{Bool}(false,false,false)
+end
+mutable struct UserInfo{B<:Bool} <: AbstractInfo 
+    eval_dep::B
+
+    # default constructor
+    UserInfo() = new{Bool}(false)
 end
 
 # functions
 get_info(ntw::AbstractNetwork, info::Symbol) = getproperty(ntw.props[:info],info)
 set_info!(ntw::AbstractNetwork, info::Symbol, value::Bool) =
-    setproperty!(ntw.props[:info],info,value)
+    setproperty!(ntw.props[:info], info, value)
+get_info(prt::PropDict, info::Symbol) = getproperty(prt[:info],info)
+set_info!(prt::PropDict, info:: Symbol, value::Bool) =
+    setproperty!(prt[:info], info, value)
 
 ## Elements (abbr: elm)
 # functions
@@ -127,11 +150,12 @@ get_ntw(ntw::AbstractNetwork) =
 ### Component (abbr: cmp)
 # functions
 nc(ntw::AbstractNetwork) = length(ntw.cmp)
-nc(ntw::AbstractNetwork,c_key::UIE) = length(ntw.clib[c_key])
+nc(ntw::AbstractNetwork, c_key::UIE) = length(ntw.clib[c_key])
 cmp(ntw::AbstractNetwork) = ntw.cmp
-cmp(ntw::AbstractNetwork,c_key::UIE) = ntw.cmp[ntw.clib[c_key]]
+cmp(ntw::AbstractNetwork, c_key::UIE) = ntw.cmp[ntw.clib[c_key]]
+cmp_id(ntw::AbstractNetwork, c_key::UIE) = ntw.clib[c_key][1]
 cmp_ids(ntw::AbstractNetwork) = 1:nc(ntw)
-cmp_ids(ntw::AbstractNetwork,c_key::UIE) = ntw.clib[c_key]
+cmp_ids(ntw::AbstractNetwork, c_key::UIE) = ntw.clib[c_key]
 cmp_expr(nc::Int) = :(val[$nc][idx[$nc]])
 cmp_keys(ntw::AbstractNetwork) = keys(ntw.clib)
 
@@ -163,7 +187,7 @@ function add_component!(ntw::AbstractNetwork; kwargs...)
         add_vertex!(ntw,maximum(edge))
         add_edge!(ntw,edge[1],edge[2])
         edge = _MG.MultipleEdge(edge[1],edge[2],mul_edge(ntw,edge))
-        push!(ntw.cmp,Dict(:edge => edge, reduce(kwargs,1,exclude=[:edge])...))
+        push!(ntw.cmp,Dict(:edge => edge, reduce(kwargs,1,excl=[:edge])...))
         update_lib!(:edge,ntw.cmp,ntw.clib)
     end
     return true
@@ -206,12 +230,12 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
     if haskey(kwargs,:node)
         node = kwargs[:node]
         for ni in 1:length(node)
-            add_component!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
+            add_component!(ntw, node[ni], reduce(kwargs,ni,excl=[:node]))
     end end
     if haskey(kwargs,:edge)
         edge = kwargs[:edge]
         for ni in 1:length(edge)
-            add_component!(ntw, edge[ni], reduce(kwargs,ni,exclude=[:edge]))
+            add_component!(ntw, edge[ni], reduce(kwargs,ni,excl=[:edge]))
     end end
     return true
 end
@@ -222,8 +246,10 @@ ns(ntw::AbstractNetwork) = length(ntw.src)
 ns(ntw::AbstractNetwork,s_node::Int) = length(ntw.slib[s_node])
 src(ntw::AbstractNetwork) = ntw.src
 src(ntw::AbstractNetwork,s_node::Int) = ntw.src[ntw.slib[s_node]]
+src_id(ntw::AbstractNetwork, s_node::Int, mul::Int) = 
+    nc(ntw) + ntw.slib[s_node][mul]
+src_ids(ntw::AbstractNetwork, s_node::Int) = ntw.slib[s_node]
 src_ids(ntw::AbstractNetwork) = 1:ns(ntw)
-src_ids(ntw::AbstractNetwork,s_node::Int) = ntw.slib[s_node]
 src_expr(ns::Int) = :(val[$ns][idx[$ns]])
 src_nodes(ntw::AbstractNetwork) = keys(ntw.slib)
 
@@ -281,11 +307,11 @@ function add_sources!(ntw::AbstractNetwork; kwargs...)
     if haskey(kwargs,:dep) set_info!(ntw,:dependent_sources,kwargs[:dep]) end
     if dim(node) > 0 
         for ni in 1:length(node)
-            add_source!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
+            add_source!(ntw, node[ni], reduce(kwargs,ni,excl=[:node]))
         end
     else 
         for ni in indices_of(kwargs)
-            add_source!(ntw, node, reduce(kwargs,ni,exclude=[:node]))
+            add_source!(ntw, node, reduce(kwargs,ni,excl=[:node]))
         end 
     end
     return true
@@ -315,14 +341,25 @@ julia> add_source!(ntwᵖʷʳ, node = 1,
 """
 function add_user!(ntw::AbstractNetwork; kwargs...)
     haskey(kwargs,:node) || return false
+    
     add_vertex!(ntw,kwargs[:node])
-    push!(ntw.usr,PropDict(kwargs...))
+
+    info = UserInfo()
+
+    push!(ntw.usr,PropDict(:info => info, kwargs...))
     update_lib!(:node,ntw.usr,ntw.ulib)
     return true
 end
 function add_user!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     add_vertex!(ntw,node)
-    push!(ntw.usr,PropDict(:node => node, dict...))
+
+    info = UserInfo()
+    if haskey(dict,:eval_dep) 
+        info.eval_dep = dict[:eval_dep] 
+        delete!(dict, :eval_dep)
+    end
+
+    push!(ntw.usr,PropDict(:node => node, :info => info, dict...))
     update_lib!(:node,ntw.usr,ntw.ulib)
 end
 """
@@ -342,9 +379,15 @@ julia> add_sources!(ntwᵖʷʳ, node = [1,5,8],
 """
 function add_users!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
+
     node = kwargs[:node]
+    if haskey(kwargs,:eval_dep) set_info!(ntw, :eval_dep, kwargs[:eval_dep]) end
+
     for ni in 1:length(node)
-        add_user!(ntw, node[ni], reduce(kwargs,ni,exclude=[:node]))
+        prop_dict = reduce(kwargs, ni, excl=[:node])
+        if haskey(kwargs,:eval_dep) prop_dict[:eval_dep_usr] = length(ntw.usr) .+ 1:length(kwargs[:node]) end
+        
+        add_user!(ntw, node[ni], prop_dict)
     end
     return true
 end
@@ -354,27 +397,37 @@ end
 weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
 has_path(ntw::AbstractNetwork, s_node::Int, u_node::Int) =
     _LG.has_path(ntw.graph, s_node, u_node)
-max_paths(ntw::AbstractNetwork) = _MG.nv(ntw.graph) + _MG.ne(ntw.graph, count_mul = true)
-nodal_paths(ntw::AbstractNetwork, s_node::Int, u_node::Int) =
-    _LG.yen_k_shortest_paths(ntw.graph, s_node, u_node, 
-                             weights(ntw), max_paths(ntw)).paths
-mul_path(ntw::AbstractNetwork, npath::Array{Int,1}) =
-    [1:mul_edge(ntw,(npath[ni],npath[ni+1])) for ni in 1:length(npath)-1]
-function paths(ntw::AbstractNetwork, s_node::Int, u_node::Int)
+max_paths(graph::_MG.Multigraph) = 
+    _MG.nv(graph) + _MG.ne(graph, count_mul = true)
+nodal_paths(graph::_MG.Multigraph, s_node::Int, u_node::Int) =
+    _LG.yen_k_shortest_paths(graph, s_node, u_node, 
+                             _LG.weights(graph), max_paths(graph)).paths
+mul_path(graph::_MG.Multigraph, npath::Array{Int,1}) =
+    [1:mul_edge(graph,(npath[ni],npath[ni+1])) for ni in 1:length(npath)-1]
+
+function paths(ntw::AbstractNetwork, u_node::Int)
     npaths, cpaths = Array{Int,1}[], Array{Expr,1}[]
-    for npath in nodal_paths(ntw,s_node,u_node)
-        for mul in Iterators.product(mul_path(ntw,npath)...)
+
+    graph, x_node = get_extended_graph(ntw, u_node)
+    for npath in nodal_paths(graph, x_node, u_node)
+        for mul in Iterators.product(mul_path(graph,npath)...)
             cpath = Array{Expr,1}()
-            for nn in 1:length(npath)-1
-                node = npath[nn]
-                haskey(ntw.clib,node) ? push!(cpath,cmp_expr(ntw.clib[node][1])) : ~ ;
-                edge = _MG.MultipleEdge(npath[nn],npath[nn+1],mul[nn])
-                haskey(ntw.clib,edge) ? push!(cpath,cmp_expr(ntw.clib[edge][1])) : ~ ;
-                edge = _MG.MultipleEdge(npath[nn+1],npath[nn],mul[nn])
-                haskey(ntw.clib,edge) ? push!(cpath,cmp_expr(ntw.clib[edge][1])) : ~ ;
+            # sources
+            fr, to, ml = npath[1], npath[2], mul[1]
+            edge = _MG.MultipleEdge(fr, to, ml)
+            haskey(ntw.slib, to) ? push!(cpath,src_expr(src_id(ntw, to, ml))) : ~ ;
+            for nn in 2:length(npath)-1
+                fr, to, ml = npath[nn], npath[nn+1], mul[nn]
+                # nodal cmp
+                haskey(ntw.clib, fr) ? push!(cpath,cmp_expr(cmp_id(ntw, fr))) : ~ ;
+                # edge cmp
+                edge = _MG.MultipleEdge(fr, to, ml)
+                haskey(ntw.clib, edge) ? push!(cpath,cmp_expr(cmp_id(ntw, edge))) : ~ ;
+                edge = _MG.MultipleEdge(to, fr, ml)
+                haskey(ntw.clib, edge) ? push!(cpath,cmp_expr(cmp_id(ntw, edge))) : ~ ; ## This needs to be checked!! Test with reversed edge!
             end
             node = npath[end]
-            haskey(ntw.clib,node) ? push!(cpath,cmp_expr(ntw.clib[node][1])) : ~ ;
+            haskey(ntw.clib, node) ? push!(cpath,cmp_expr(cmp_id(ntw, node, 1))) : ~ ;
             push!(npaths,npath)
             push!(cpaths,cpath)
     end end

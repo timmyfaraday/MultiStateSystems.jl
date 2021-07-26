@@ -14,7 +14,8 @@ makedocs(
                           "Generating Functions"    => "ugf.md",
                           "Network"                 => "network.md"],
                     "Models Manual"     =>
-                        [ "Stochastic Processes"    => "processes.md"
+                        [ "Dependence"              => "dependence.md"
+                          "Stochastic Processes"    => "processes.md"
                           "Generating Operators"    => "ugo.md"]
                   ]
 )

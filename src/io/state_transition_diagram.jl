@@ -26,6 +26,28 @@ function STD(Ns::Int)
 
     return STD(graph, props, sprops, tprops)
 end
+
+"""
+    STD(ugf::MultiStateSystems.UGF)
+
+An state-transition diagram constructor based on an universal generating 
+function `ugf`.
+
+Sets `solved` of the STDInfo to true.
+
+# Example
+```julia-repl
+julia> ugfᵍᵉⁿ = UGF(:power, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7])
+julia> stdᵍᵉⁿ = STD(ugfᵍᵉⁿ)
+```
+"""
+function STD(ugf::AbstractUGF)
+    msr, val, prb = ugf.msr, ugf.val, ugf.prb
+    msr = Expr(:kw, msr, val)
+    
+    return eval(:(STD(prob = $(prb), $msr)))
+end
+
 """
     STD(;prob::Array, kwargs...)
 
@@ -36,11 +58,13 @@ Sets `solved` of the STDInfo to true.
 
 # Example
 ```julia-repl
-julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
-                    flow = [0.0u"MW",0.0u"MW",2.0u"MW"])
+julia> stdᵍᵉⁿ = STD(prob  = [0.1,0.2,0.7],
+                    power = [0.0u"MW",0.0u"MW",2.0u"MW"])
 ```
 """
 function STD(;prob::Array, kwargs...)
+    isapprox(1.0, sum(prob), rtol=1e-6) || return false
+
     std = STD(length(prob))
     set_info!(std,:solved,true)
     set_prop!(std,:msr,collect(intersect(MsrSet,keys(kwargs)))[1])
@@ -287,7 +311,7 @@ function add_transitions!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
     for ni in indices_of(kwargs)
         crd = haskey(kwargs,:states) ? kwargs[:states][ni] : (ni[1],ni[2]) ;
-        add_transition!(std,crd,reduce(kwargs,ni,exclude=[:states]))            # TODO auto capture info prop
+        add_transition!(std,crd,reduce(kwargs, ni, excl=[:states]))             # TODO auto capture info prop
     end
     return true
 end

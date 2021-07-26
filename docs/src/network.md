@@ -91,9 +91,9 @@ linked to a specific key [Symbol].
 
 * `:node` is reserved for the source's node in the multigraph `ntw.graph`
 * `:std` is reserved for the state-transition diagram of the source
-* `:ntw` is reserved for the tuple (ntw,usr) representing the source, where usr
-is the user-id [Int] of the network ntw.
-* `:dep` is reserved for the `dependent_source` property.
+* `:ntw` is reserved for the tuple (ntw,usr) representing the source, where usr is the user-id [Int] of the network ntw.
+* `:dep_source` is reserved for the `dependent_source` property.
+* `:dep_eval` is reserved for the `dependent_evaluation` property.
 
 !!! note
     In order to link the specific source to a vertex of the network, it is

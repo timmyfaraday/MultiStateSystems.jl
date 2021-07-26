@@ -18,7 +18,17 @@ function reduce(Val::Vector,Prb::Vector)
 
     return val, prb
 end
+function reduce(Val::Array, Prb::Vector)
+    idx = sortperm(collect(eachrow(Val)))
+    sVal, sPrb = Val[idx,:], Prb[idx]
+    val = unique(sVal, dims=1)
+    cVal = collect(eachrow(sVal))
+    prb = [sum(sPrb[sorted_range(cVal,nv)]) for nv in eachrow(val)]
+
+    return val, prb
+end
 sorted_range(sVal,nv) = searchsortedfirst(sVal,nv):searchsortedlast(sVal,nv)
+
 function update!(v1::Vector{Float64},v2::Vector{Float64})
     length(v1) > length(v2) ? push!(v2, zeros(length(v1) - length(v2))...) :
                               push!(v1, zeros(length(v2) - length(v1))...) ;
@@ -53,17 +63,12 @@ end
 
 indices_of(kwargs::Iterators.Pairs) =
     CartesianIndices(kwargs[findfirst(x->!isa(x,Single),values(kwargs))])
-reduce(kwargs::Iterators.Pairs, nc; exclude=[]) =
-    Dict(key => isa(value,Single) ? value : value[nc] for (key,value) in kwargs
-                                                      if !in(key,exclude))
+reduce(kwargs::Iterators.Pairs, nc; excl=[]) =
+    PropDict(key => isa(value,Single) ? value : value[nc] for (key,value) in kwargs
+                                                          if !in(key,excl))
 
 """
 # UNITS
 """
 Base.log(a::Quantity{T,D,U}) where T <: Real where D where U = log(a.val)unit(a)
 Base.exp(a::Quantity{T,D,U}) where T <: Real where D where U = exp(a.val)unit(a)
-
-"""
-# 
-"""
-
