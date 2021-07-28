@@ -20,12 +20,13 @@ get_max(msr::Symbol) = MaxVal[msr]
 get_unit(msr::Symbol) = UnitDict[msr]
 check_unit(msr::Symbol,unit::_UF.FreeUnits) =
     _UF.dimension(UnitDict[msr]) == _UF.dimension(unit)
-
+get_msr(ugf::AbstractUGF) = [ugf.msr]
 get_msr(std::AbstractSTD) = haskey(std.props,:msr) ? [std.props[:msr]] : [] ;
 get_msr(ntw::AbstractNetwork) = haskey(ntw.props,:msr) ? [ntw.props[:msr]] : [] ;
 function set_msr!(ntw::AbstractNetwork)
     msr = []
     for ne in elements(ntw)
+        if haskey(ne,:ugf) union!(msr,get_msr(ne[:ugf])) end
         if haskey(ne,:std) union!(msr,get_msr(ne[:std])) end
         if haskey(ne,:ntw) union!(msr,get_msr(ne[:ntw][1])) end
     end

@@ -97,6 +97,6 @@ function src_ugf(msr::Symbol,src::PropDict)
 end
 function set_ugf!(ntw::AbstractNetwork)
     msr = ntw.props[:msr]
-    for cmp in cmp(ntw) cmp[:ugf] = cmp_ugf(msr,cmp) end
-    for src in src(ntw) src[:ugf] = src_ugf(msr,src) end
+    for cmp in cmp(ntw) if !haskey(cmp,:ugf) cmp[:ugf] = cmp_ugf(msr,cmp) end end
+    for src in src(ntw) if !haskey(src,:ugf) src[:ugf] = src_ugf(msr,src) end end
 end

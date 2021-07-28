@@ -39,8 +39,10 @@ function solve!(ntw::AbstractNetwork)
 end
 
 ## Probability Function
-probability_function(pr::Vector,idx_itr) =
-    vec([prod([pr[ne][ni[ne]] for ne in 1:length(pr)])[1] for ni in idx_itr])
+# probability_function(pr::Vector,idx_itr) =
+#     vec([prod([pr[ne][ni[ne]] for ne in 1:length(pr)])[1] for ni in idx_itr])
+probability_function(pr::Vector) = 
+    vec([prod(np) for np in Iterators.product(pr...)])
 
 ## Structure Function
 function user_structure_function(ntw::AbstractNetwork, u_node::Int)
@@ -107,14 +109,14 @@ function solve_network!(ntw::AbstractNetwork)
 
     msr = get_msr(ntw)[1]
     pr, vl, idx_itr = get_prb(ntw), get_val(ntw), get_idx_itr(ntw)
-    Prb = probability_function(pr,idx_itr)
+    Prb = probability_function(pr)
     skip = Int[]
     
     for (nu,usr) in enumerate(ntw.usr) if !in(nu,skip)
         if get_info(usr,:eval_dep)
-            Val = zeros(Number, length(Prb), length(usr[:eval_dep_usr]))
+            Val = zeros(Number, length(Prb), length(usr[:eval_dep_ids]))
             
-            for (nc,nu) in enumerate(usr[:eval_dep_usr])
+            for (nc,nu) in enumerate(usr[:eval_dep_ids])
                 expr = ntw.usr[nu][:str]
                 exrp = quote function structure_function(idx,val) $expr end end
                 eval(exrp)
@@ -126,12 +128,12 @@ function solve_network!(ntw::AbstractNetwork)
 
             rVal, rPrb = reduce(Val, Prb)
 
-            for (nc,nu) in enumerate(usr[:eval_dep_usr])
+            for (nc,nu) in enumerate(usr[:eval_dep_ids])
                 ntw.usr[nu][:ugf] = UGF(msr, rVal[:,nc], rPrb, rdc=false)
                 ntw.usr[nu][:std] = STD(ntw.usr[nu][:ugf])
             end
 
-            push!(skip, usr[:eval_dep_usr]...)
+            push!(skip, usr[:eval_dep_ids]...)
         else
             Val = zeros(Number, length(Prb))
 
