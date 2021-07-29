@@ -29,16 +29,6 @@ function reduce(Val::Array, Prb::Vector)
 end
 sorted_range(sVal,nv) = searchsortedfirst(sVal,nv):searchsortedlast(sVal,nv)
 
-function update!(v1::Vector{Float64},v2::Vector{Float64})
-    length(v1) > length(v2) ? push!(v2, zeros(length(v1) - length(v2))...) :
-                              push!(v1, zeros(length(v2) - length(v1))...) ;
-    v1 .+= v2
-end
-function shift!(array::Vector{Float64},step::Number,offset::Number)
-    push!(array,0.0)
-    array *= step / (step + offset) 
-    array[2:end] += offset / (step + offset) * array[1:end-1]
-end
 """
 # KWARGS
 """
