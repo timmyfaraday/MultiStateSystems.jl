@@ -19,6 +19,7 @@
         solve!(stdᶜᶠ, SteadyStateProcess())  
         prb_s = [np[end] for np in _MSS.get_sprop(stdᶜᶠ, :prob)]
         
+        @test isapprox(sum(prb_m), 1.0, rtol=1e-6)
         @test all(isapprox.(prb_m, prb_s, rtol=1e-6))
     end
 

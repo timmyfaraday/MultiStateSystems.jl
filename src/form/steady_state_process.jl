@@ -30,8 +30,9 @@ function set_markov_chain_matrix!(std::AbstractSTD, cls::SteadyStateProcess)
     for ns in 1:ns(std)
         P[ns,ns] = 1.0 - sum(P[ns,:])
     end
-    P = all(_MSM.uncertainty.(P).== 0.0_UF.unit(first(P))) ? _MSM.value.(P) : P ;
-    set_prop!(std, :P, P)
+    set_prop!(std, :P, ifelse(all(_MSM.uncertainty.(P).== 0.0_UF.unit(first(P))),
+                              _MSM.value.(P),
+                              P))
 end
 function set_parameters!(std::AbstractSTD, cls::SteadyStateProcess)
     set_rates!(std, cls)

@@ -10,9 +10,14 @@
 
     @testset "Series-Parallel Network" begin
         # Example from: Multi-State System Reliability Analysis and Optimization
-        # for Engineers and Industrial Managers (p. 11)
-        val_sol = Any[0u"m^3/hr", 1500u"m^3/hr", 1800u"m^3/hr", 2000u"m^3/hr", 3500u"m^3/hr"]
-        prb_sol = Any[0.172, 0.288, 0.12, 0.084, 0.336]
+        # for Engineers and Industrial Managers (p. 11/209)
+        val_sol = [0u"m^3/hr", 1500u"m^3/hr", 1800u"m^3/hr", 2000u"m^3/hr", 3500u"m^3/hr"]
+        prb_sol = [0.01207138, 0.10333981359, 0.07371573369, 0.05304777100, 0.75782529972]
+
+        global λ¹, μ¹ = 7.0u"1/yr", 100.0u"1/yr" 
+        global λ², μ² = 10.0u"1/yr", 80.0u"1/yr"
+        global λ³ᵃ, λ³ᵇ = 7.0u"1/yr", 10.0u"1/yr"
+        global μ³ᵃ, μ³ᵇ = 120.0u"1/yr", 110.0u"1/yr"
 
         ntwᶠᵗˢ = include(joinpath(_MSS.BASE_DIR,"test/networks/flow_transmission_system.jl"))
         solve!(ntwᶠᵗˢ)
@@ -24,10 +29,33 @@
         @test all(isapprox.(prb_sol, prb_ntw, rtol=1e-6))
     end
 
+    @testset "Series-Parallel Network with Measurements Uncertainty" begin
+        # Example from: Multi-State System Reliability Analysis and Optimization
+        # for Engineers and Industrial Managers (p. 11/209)
+        val_sol = [0u"m^3/hr", 1500u"m^3/hr", 1800u"m^3/hr", 2000u"m^3/hr", 3500u"m^3/hr"]
+        prb_sol = [0.01207138, 0.10333981359, 0.07371573369, 0.05304777100, 0.75782529972]
+
+        global λ¹, μ¹ = (7.0±1.0)u"1/yr", 100.0u"1/yr" 
+        global λ², μ² = 10.0u"1/yr", (80.0±10.0)u"1/yr"
+        global λ³ᵃ, λ³ᵇ = 7.0u"1/yr", (10.0±2.0)u"1/yr"
+        global μ³ᵃ, μ³ᵇ = (120.0±5.0)u"1/yr", 110.0u"1/yr"
+
+        ntwᶠᵗˢ = include(joinpath(_MSS.BASE_DIR,"test/networks/flow_transmission_system.jl"))
+        solve!(ntwᶠᵗˢ)
+        val_ntw = ntwᶠᵗˢ.usr[1][:ugf].val
+        prb_ntw = ntwᶠᵗˢ.usr[1][:ugf].prb
+
+        @test isapprox.(sum(prb_ntw), 1.0, rtol=1e-6)
+        @test all(isapprox.(val_sol, val_ntw, rtol=1e-6))
+        @test all(isapprox.(prb_sol, prb_ntw, rtol=1e-6))
+
+        @test isapprox(_MSM.uncertainty(sum(prb_ntw)), 0.0, atol=1e-6)
+    end
+
     @testset "Disconnected Sources and Users" begin
         # Example from: Industrial Energy System Availability Management (p. 92)
-        val_sol = Any[0.0u"MW", 1.0u"MW"]
-        prb_sol = Any[0.1, 0.9]
+        val_sol = [0.0u"MW", 1.0u"MW"]
+        prb_sol = [0.1, 0.9]
 
         ntwᵈˢᶠ = include(joinpath(_MSS.BASE_DIR,"test/networks/double_single_feeder.jl"))
         solve!(ntwᵈˢᶠ)
@@ -46,8 +74,8 @@
     @testset "Source Dependence" begin
         # Example from: Analytical Model for Availability Assessment of Large-
         # Scale Offshore Wind Farms including their Collector System (p. 5)
-        val_sol = Any[0.0u"MW", 2.0u"MW", 4.0u"MW", 6.0u"MW", 8.0u"MW"]
-        prb_sol = Any[0.307,0.0126,0.11907,0.10206,0.45927]
+        val_sol = [0.0u"MW", 2.0u"MW", 4.0u"MW", 6.0u"MW", 8.0u"MW"]
+        prb_sol = [0.307,0.0126,0.11907,0.10206,0.45927]
 
         ntwʷᶠ = include(joinpath(_MSS.BASE_DIR,"test/networks/wind_farm.jl"))
         solve!(ntwʷᶠ)
