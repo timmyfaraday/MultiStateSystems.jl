@@ -15,6 +15,7 @@ import LightGraphs
 import LinearAlgebra
 import Multigraphs
 import OrdinaryDiffEq
+import Measurements
 
 # using Pkgs
 using Unitful
@@ -26,6 +27,7 @@ const _LG  = LightGraphs
 const _MG  = Multigraphs
 const _ODE = OrdinaryDiffEq
 const _UF  = Unitful
+const _MSM = Measurements
 
 # paths
 const BASE_DIR = dirname(@__DIR__)

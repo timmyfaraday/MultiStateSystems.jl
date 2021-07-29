@@ -57,15 +57,15 @@ function solve!(std::AbstractSTD, cls::AbstractMarkovProcess; tsim::Number=1.0u"
     ts  = (0.0_UF.unit(tsim),tsim)
 
     if get_info(std,:time_homogeneous)
-        prob = _ODE.ODEProblem(homogeneous_markov_process,u₀,ts,p)
+        prob = _ODE.ODEProblem(homogeneous_markov_process, u₀, ts, p)
     else
-        prob = _ODE.ODEProblem(inhomogeneous_markov_process,u₀,ts,p)
+        prob = _ODE.ODEProblem(inhomogeneous_markov_process, u₀, ts, p)
     end
-    sol = _ODE.solve(prob,_ODE.Tsit5(),reltol = tol,abstol = tol)
+    sol = _ODE.solve(prob, _ODE.Tsit5(), reltol = tol, abstol = tol)
 
     set_prop!(std, :cls, cls)
-    set_prop!(std,:time,sol.t)
-    set_prop!(std,states(std),:prob,[sol[ns,:] for ns in states(std)])
+    set_prop!(std, :time, sol.t)
+    set_prop!(std, states(std), :prob, [sol[ns,:] for ns in states(std)])
 
     set_info!(std, :solved, true)
 end

@@ -20,7 +20,10 @@ get_max(msr::Symbol) = MaxVal[msr]
 get_unit(msr::Symbol) = UnitDict[msr]
 check_unit(msr::Symbol,unit::_UF.FreeUnits) =
     _UF.dimension(UnitDict[msr]) == _UF.dimension(unit)
+has_msr(kwargs::Iterators.Pairs) =  
+    !isempty(collect(intersect(MsrSet,keys(kwargs))))
 get_msr(ugf::AbstractUGF) = [ugf.msr]
+get_msr(kwargs::Iterators.Pairs) = collect(intersect(MsrSet,keys(kwargs)))[1]
 get_msr(std::AbstractSTD) = haskey(std.props,:msr) ? [std.props[:msr]] : [] ;
 get_msr(ntw::AbstractNetwork) = haskey(ntw.props,:msr) ? [ntw.props[:msr]] : [] ;
 function set_msr!(ntw::AbstractNetwork)

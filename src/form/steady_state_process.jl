@@ -21,15 +21,16 @@ function set_rates!(std::AbstractSTD, cls::AbstractMarkovProcess)
     end end end
 end
 function set_markov_chain_matrix!(std::AbstractSTD, cls::SteadyStateProcess)
-    P = zeros(ns(std), ns(std))
+    P = zeros(_MSM.Measurement, ns(std), ns(std))
     for nt in transitions(std)
         rate = get_prop(std, nt, :rate)
         P[_LG.src(nt),_LG.dst(nt)] = 
-            _UF.unit(rate) == _UF.NoUnits ? rate : rate * 1.0u"s" |> u"s/s" ;
+            ifelse(_UF.unit(rate)==_UF.NoUnits, rate, rate * 1.0u"s" |> u"s/s")
     end
     for ns in 1:ns(std)
         P[ns,ns] = 1.0 - sum(P[ns,:])
     end
+    P = all(_MSM.uncertainty.(P).== 0.0_UF.unit(first(P))) ? _MSM.value.(P) : P ;
     set_prop!(std, :P, P)
 end
 function set_parameters!(std::AbstractSTD, cls::SteadyStateProcess)

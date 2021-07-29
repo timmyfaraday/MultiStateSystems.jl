@@ -221,7 +221,7 @@ julia> add_states!(stdᵍᵉⁿ, name  = ["normal operation state","failed state
 """
 function add_states!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
-    set_prop!(std, :msr, collect(intersect(MsrSet,keys(kwargs)))[1])                        # TODO auto capture info prop
+    if has_msr(kwargs) set_prop!(std, :msr, get_msr(kwargs)) end                        # TODO auto capture info prop
     for ni in indices_of(kwargs) add_state!(std,reduce(kwargs,ni)) end
     return true
 end

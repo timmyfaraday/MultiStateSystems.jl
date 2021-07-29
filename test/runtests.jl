@@ -9,14 +9,17 @@
 # load pkgs
 using Test
 using Unitful
+using Measurements
 using AdditionalUnits
 using MultiStateSystems
 
 # pkg const
+const _MSM = Measurements
 const _MSS = MultiStateSystems
 
 @testset "MultiStateSystems" begin
     # form
+    include("steady_state_process.jl")
     include("markov_process.jl")
 
     # io
