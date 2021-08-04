@@ -105,7 +105,7 @@ function paths(ntw::AbstractNetwork, u_node::Int)
     npaths, cpaths = Vector{Int}[], Vector{Expr}[]
 
     graph, x_node = get_extended_graph(ntw, u_node)
-    for npath in nodal_paths(graph, x_node, u_node)
+    for npath in unique!(nodal_paths(graph, x_node, u_node))
         for mul in Iterators.product(mul_path(graph,npath)...)
             cpath = Vector{Expr}()
             # sources

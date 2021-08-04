@@ -7,6 +7,12 @@
 ################################################################################
 
 """
+# Vectors
+"""
+has_subvector(vec::Vector, sub::Vector) = 
+  any([sub == vec[i:(i+length(sub)-1)] for i=1:(length(vec)-length(sub)+1)])
+
+"""
 # Arrays
 """
 dim(value::Any) = length(size(value))

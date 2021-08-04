@@ -19,6 +19,7 @@ import Measurements
 
 # using Pkgs
 using Unitful
+using ProgressMeter
 using AdditionalUnits
 
 # pkg const
