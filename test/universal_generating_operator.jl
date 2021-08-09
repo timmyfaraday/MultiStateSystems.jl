@@ -54,7 +54,7 @@
 
     @testset "Bridge Network" begin
         val_sol = [0.0u"m^3/hr", 1.0u"m^3/hr", 2.0u"m^3/hr"]
-        prb_sol = [0.0361, 0.3078, 0.6561]
+        prb_sol = [0.02152, 0.32238, 0.6561]
 
         ntwᵇⁿ = include(joinpath(_MSS.BASE_DIR,"test/networks/bridge_network.jl"))
         solve!(ntwᵇⁿ)
@@ -64,8 +64,20 @@
         @test isapprox.(sum(prb_ntw), 1.0, rtol=1e-6)
         @test all(isapprox.(val_sol, val_ntw, rtol=1e-6))
         @test all(isapprox.(prb_sol, prb_ntw, rtol=1e-6))
+    end
 
-        @test isapprox(_MSM.uncertainty(sum(prb_ntw)), 0.0, atol=1e-6)
+    @testset "Double Bridge Network" begin
+        val_sol = [0.0u"m^3/hr", 1.0u"m^3/hr", 2.0u"m^3/hr"]
+        prb_sol = [0.0102772, 0.1827198, 0.807003]
+
+        ntwᵈᵇⁿ = include(joinpath(_MSS.BASE_DIR,"test/networks/double_bridge_network.jl"))
+        solve!(ntwᵈᵇⁿ)
+        val_ntw = ntwᵈᵇⁿ.usr[1][:ugf].val 
+        prb_ntw = ntwᵈᵇⁿ.usr[1][:ugf].prb
+
+        @test isapprox.(sum(prb_ntw), 1.0, rtol=1e-6)
+        @test all(isapprox.(val_sol, val_ntw, rtol=1e-6))
+        @test all(isapprox.(prb_sol, prb_ntw, rtol=1e-6))
     end
 
     @testset "Disconnected Sources and Users" begin

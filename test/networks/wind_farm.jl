@@ -36,7 +36,7 @@ ntwʷᶠ = Network()
 # add the user, sources and components to the network
 add_user!(ntwʷᶠ, node = 3)
 add_sources!(ntwʷᶠ, node = [1,2,4,5], std = stdʷᵗᵒ, dep = true)
-add_components!(ntwʷᶠ, edge = [(1,2),(2,3),(3,4),(4,5)],
+add_components!(ntwʷᶠ, edge = [(1,2),(2,3),(4,3),(5,4)],
                        std  = stdᶜᵇˡ)
 
 # return the network

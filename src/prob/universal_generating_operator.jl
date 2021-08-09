@@ -49,7 +49,7 @@ function user_structure_function(ntw::AbstractNetwork, u_node::Int)
     while length(npaths[1]) ≠ 0
         has_duplicate_paths(npaths) ? parallel_reduction!(npaths, cpaths) : ~ ;
         has_unique_sequence(npaths) ? series_reduction!(npaths, cpaths) : ~ ;
-        has_bridge_sequence(npaths) ? bridge_reduction!(npaths, cpaths) : ~ ;
+        while has_bridge_sequence(npaths) bridge_reduction!(npaths, cpaths) end
     end
     return cpaths[1][1]
 end
@@ -154,7 +154,7 @@ function bridge(paths)
     bridge_comp = setdiff(paths[2],union(paths[1],paths[4]))[1]
 
     delta_left = delta(left_top,left_bottom)
-    delta_right = delta(right_top,left_bottom)
+    delta_right = delta(right_top,right_bottom)
 
     bridge_path = ser([:(abs($delta_left)), :(abs($delta_right)), bridge_comp])
     cond = :(1 * (_UF.ustrip($delta_left) * _UF.ustrip($delta_right) < 0))
@@ -164,6 +164,7 @@ function bridge(paths)
 
     return vcat(paths[4][1:idx_pre-1],
                 par([left_path, right_path, :(*($bridge_path,$cond))]),
+                par([left_bottom,right_bottom]),
                 paths[4][idx_end+1:end])
 end
 swapped_paths(npaths) = [(ni,nj) for ni in 1:length(npaths) for nj in ni:length(npaths)
@@ -208,8 +209,8 @@ function solve_network!(ntw::AbstractNetwork)
     msr = get_msr(ntw)[1]
     pr, vl, idx_itr = get_prb(ntw), get_val(ntw), get_idx_itr(ntw)
     Prb = probability_function(pr)
+
     skip = Int[]
-    
     for (nu,usr) in enumerate(ntw.usr) if !in(nu,skip)
         if get_info(usr,:eval_dep)
             Val = zeros(Number, length(Prb), length(usr[:eval_dep_ids]))
@@ -219,7 +220,7 @@ function solve_network!(ntw::AbstractNetwork)
                 exrp = quote function structure_function(idx,val) $expr end end
                 eval(exrp)
 
-                for (ni,id) in enumerate(idx_itr) 
+                @showprogress for (ni,id) in enumerate(idx_itr) 
                     Val[ni,nc] = Base.invokelatest(structure_function,id,vl) 
                 end
             end
@@ -239,7 +240,7 @@ function solve_network!(ntw::AbstractNetwork)
             exrp = quote function structure_function(idx,val) $expr end end
             eval(exrp)
 
-            for (ni,id) in enumerate(idx_itr) 
+            @showprogress for (ni,id) in enumerate(idx_itr) 
                 Val[ni] = Base.invokelatest(structure_function,id,vl) 
             end
 

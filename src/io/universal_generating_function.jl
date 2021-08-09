@@ -87,6 +87,7 @@ end
 # functions
 function cmp_ugf(msr::Symbol,cmp::PropDict)
     if haskey(cmp,:std) return UGF(msr,cmp[:std]) end
+    if haskey(cmp,:ntw) ntw, id = cmp[:ntw]; return ntw.usr[id][:ugf] end
     return UGF(msr)
 end
 function src_ugf(msr::Symbol,src::PropDict)
