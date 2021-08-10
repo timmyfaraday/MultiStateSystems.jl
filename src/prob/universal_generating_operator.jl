@@ -220,7 +220,7 @@ function solve_network!(ntw::AbstractNetwork)
                 exrp = quote function structure_function(idx,val) $expr end end
                 eval(exrp)
 
-                @showprogress for (ni,id) in enumerate(idx_itr) 
+                for (ni,id) in enumerate(idx_itr) 
                     Val[ni,nc] = Base.invokelatest(structure_function,id,vl) 
                 end
             end
@@ -240,7 +240,7 @@ function solve_network!(ntw::AbstractNetwork)
             exrp = quote function structure_function(idx,val) $expr end end
             eval(exrp)
 
-            @showprogress for (ni,id) in enumerate(idx_itr) 
+            for (ni,id) in enumerate(idx_itr) 
                 Val[ni] = Base.invokelatest(structure_function,id,vl) 
             end
 

@@ -8,7 +8,6 @@ functions. The implementation is heavily influenced by the package
 it to allow for weighted distributions as well as the
 [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) parameters.
 
-<<<<<<< HEAD
 ## Distributions
 
 Each distribution has a number of constructors, both based on its full name and
@@ -30,42 +29,37 @@ All distributions may be scaled using a weight parameter `ω`, where
 `0.0 < ω ≤ 1.0`.
 
 ### Dirac Distribution
-=======
-## Dirac Distribution
->>>>>>> parent of 078bbdd (Full documentation for distributions.jl)
 
 ```@docs
-Dirac(o,ω)
+Dirac
 ```
 
 ## Uniform Distribution
 
 ```@docs
-Uniform(a,b,ω)
+Uniform
 ```
 
 ## Exponential Distribution
 
 ```@docs
-Exponential(θ,ω)
+Exponential
 ```
 
 ## Weibull Distribution
 
 ```@docs
-Weibull(θ,α,ω)
+Weibull
 ```
 
-<<<<<<< HEAD
-### Raised Cosine Distribution
+## Raised Cosine Distribution
 
 ```@docs
 Cosine
 ```
-=======
+
 ## LogNormal Distribution
 
 ```@docs
-LogNormal(μ,σ,ω)
+LogNormal
 ```
->>>>>>> parent of 078bbdd (Full documentation for distributions.jl)

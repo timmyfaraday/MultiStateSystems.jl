@@ -347,6 +347,18 @@ function add_bidirectional_component!(ntw::AbstractNetwork; kwargs...)
 
     return true
 end
+function add_bidirectional_component!(ntw::AbstractNetwork, edge::Tuple{Int,Int}, dict::Dict=PropDict())
+    if !haskey(dict,:eval_dep_ids) 
+        eval_dep_ids = init_eval_dep_cmp(ntw, 2)
+    end
+    for (ne,edge) in enumerate([edge, reverse(edge)])
+        if !haskey(dict,:eval_dep_ids)
+            dict[:eval_dep] = true
+            set_eval_dep!(dict, ne, eval_dep_ids)
+        end
+        add_component!(ntw, edge, dict)
+    end
+end
 """
     add_components!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
 
@@ -393,6 +405,21 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
 
             add_component!(ntw, edge[ni], prop_dict) 
     end end
+    return true
+end
+function add_bidirectional_components!(ntw::AbstractNetwork; kwargs...)
+    (test(kwargs) && haskey(kwargs, :edge)) || return false
+
+    edge, Ne = kwargs[:edge], length(kwargs[:edge])
+
+    eval_dep_ids = init_eval_dep_cmp(ntw, kwargs, Ne)
+
+    for ne in 1:Ne
+        prop_dict = reduce(kwargs, ne, excl=[:edge])
+        set_eval_dep!(prop_dict, ne, eval_dep_ids)
+
+        add_bidirectional_component!(ntw, edge[ne], prop_dict) 
+    end
     return true
 end
 

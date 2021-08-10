@@ -16,7 +16,7 @@ The latest stable release of MultiStateSystems can be installed using the Julia
 package manager:
 
 ```
-] add https://github.com/timmyfaraday/MultiStateSystems.jl.git
+] add MultiStateSystems
 ```
 
 In order to test whether the package works, run:

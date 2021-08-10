@@ -19,7 +19,6 @@ import Measurements
 
 # using Pkgs
 using Unitful
-using ProgressMeter
 using AdditionalUnits
 
 # pkg const
@@ -54,7 +53,8 @@ export  BASE_DIR
 export  SteadyStateProcess, MarkovProcess
 export  Cosine, 𝑪, Dirac, 𝑫, Exponential, 𝑬, Gamma, 𝑮, Uniform, 𝑼, Weibull, 𝑾
 export  Network, add_source!, add_sources!, add_user!, add_users!,
-        add_component!, add_bidirectional_component!, add_components!
+        add_component!, add_bidirectional_component!, add_components!, 
+        add_bidirectional_components!
 export  STD, add_state!, add_states!, add_transition!, add_transitions!
 export  UGF
 export  solve!

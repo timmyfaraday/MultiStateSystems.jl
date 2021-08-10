@@ -9,10 +9,10 @@ Pages = ["network.md"]
 ## Introduction
 
 In its essence, a network (abbr: ntw) is a collection of sources, components and
-users mapped onto a [multigraph](https://en.wikipedia.org/wiki/Multigraph).
+users mapped onto a directed [multigraph](https://en.wikipedia.org/wiki/Multigraph).
 
 Any network has eight attributes:
-1. a multigraph `ntw.graph::Multigraph`
+1. a multigraph `ntw.graph::DiMultigraph`
 2. network properties `ntw.props::PropDict`
 3. components `ntw.cmp::Vector{PropDict}`
 4. sources `ntw.src::Vector{PropDict}`
