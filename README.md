@@ -12,6 +12,9 @@ often found in reliability engineering.
 
 ## Installation
 
+!!! note
+    Currently, MultiStateSystems.jl is only supported on Julia 1.5.
+    
 The latest stable release of MultiStateSystems can be installed using the Julia
 package manager:
 
