@@ -33,10 +33,10 @@ add_users!(ntwᵈˢᶠ, node = [3,4])
 add_sources!(ntwᵈˢᶠ, node = [1,2])
 add_components!(ntwᵈˢᶠ, edge = [(1,3),(2,4)],
                         name = ["fdr 1", "fdr 2"],
-                        std  = [STD(power = [0.0u"MW", 1.0u"MW"],
-                                    prob  = [0.1,0.9]),
-                                STD(power = [0.0u"MW", 1.0u"MW"],
-                                    prob  = [0.1,0.9])])
+                        std  = [solvedSTD(power = [0.0u"MW", 1.0u"MW"],
+                                          prob  = [0.1,0.9]),
+                                solvedSTD(power = [0.0u"MW", 1.0u"MW"],
+                                          prob  = [0.1,0.9])])
 
 # return the network
 return ntwᵈˢᶠ
