@@ -62,8 +62,8 @@ and associated probabilites remain.
 
 # Example
 ```julia-repl
-julia> stdᵍᵉⁿ = STD(prob  = [0.1,0.2,0.7],
-                    power = [0.0u"MW",0.0u"MW",2.0u"MW"])
+julia> stdᵍᵉⁿ = solvedSTD(prob  = [0.1,0.2,0.7],
+                          power = [0.0u"MW",0.0u"MW",2.0u"MW"])
 julia> ugfᵍᵉⁿ = UGF(:power, stdᵍᵉⁿ)
 julia> isequal(ugfᵍᵉⁿ.val,[0.0u"MW",2.0u"MW"])
 true

@@ -453,8 +453,8 @@ Adds a single source to the network `ntw` and fills their corresponding
 # Example
 ```julia-repl
 julia> ntwᵖʷʳ = ntw()
-julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
-                    flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
+julia> stdᵍᵉⁿ = solvedSTD(prob = [0.1,0.2,0.7],
+                          flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
 julia> add_source!(ntwᵖʷʳ, node = 1,
                            name = "generator 1",
                            std  = stdᵍᵉⁿ)
@@ -495,8 +495,8 @@ argument for each component.
 # Example
 ```julia-repl
 julia> ntwᵖʷʳ = ntw()
-julia> stdᵍᵉⁿ = STD(prob = [0.1,0.2,0.7],
-                    flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
+julia> stdᵍᵉⁿ = solvedSTD(prob = [0.1,0.2,0.7],
+                          flow = [0.0u"MW",0.5u"MW",2.0u"MW"])
 julia> add_sources!(ntwᵖʷʳ, node = 1:5,
                             std  = stdᵍᵉⁿ,
                             dep  = true)

@@ -29,7 +29,7 @@ function solve!(ntw::AbstractNetwork)
             val, prb = reduce(kron(n_val,ustrip.(s_val)), kron(n_prb,s_prb))
 
             msr = Expr(:kw, get_msr(ntw)[1], n_val)
-            usr[:std] = eval(:(STD(prob = $(n_prb), $msr)))
+            usr[:std] = eval(:(solvedSTD(prob = $(n_prb), $msr)))
             usr[:ugf] = UGF(get_msr(ntw)[1],val,prb)
     end end
     for usr in ntw.usr if haskey(usr,:ind)

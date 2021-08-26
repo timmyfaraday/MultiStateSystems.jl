@@ -45,11 +45,11 @@ function STD(ugf::AbstractUGF)
     msr, val, prb = ugf.msr, ugf.val, ugf.prb
     msr = Expr(:kw, msr, val)
     
-    return eval(:(STD(prob = $(prb), $msr)))
+    return eval(:(solvedSTD(prob = $(prb), $msr)))
 end
 
 """
-    STD(;prob::Array, kwargs...)
+    solvedSTD(;prob::Vector, kwargs...)
 
 An state-transition diagram constructor with given state probabilities `prob`
 and any number of other arguments `kwargs`.
@@ -58,11 +58,11 @@ Sets `solved` of the STDInfo to true.
 
 # Example
 ```julia-repl
-julia> stdᵍᵉⁿ = STD(prob  = [0.1,0.2,0.7],
-                    power = [0.0u"MW",0.0u"MW",2.0u"MW"])
+julia> stdᵍᵉⁿ = solvedSTD(prob  = [0.1,0.2,0.7],
+                          power = [0.0u"MW",0.0u"MW",2.0u"MW"])
 ```
 """
-function STD(;prob::Array, kwargs...)
+function solvedSTD(;prob::Vector, kwargs...)
     isapprox(1.0, sum(prob), rtol=1e-6) || return false
 
     std = STD(length(prob))

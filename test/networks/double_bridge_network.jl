@@ -15,7 +15,7 @@ using Unitful
 using MultiStateSystems
 
 # include the state-transition diagrams for the pipes
-stdᵖ = STD(prob = [0.1, 0.9], flow = [0.0u"m^3/hr", 1.0u"m^3/hr"])
+stdᵖ = solvedSTD(prob = [0.1, 0.9], flow = [0.0u"m^3/hr", 1.0u"m^3/hr"])
 
 # initialize the network corresponding with the bridge network
 ntwᵈᵇⁿ = Network() 

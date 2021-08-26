@@ -27,8 +27,8 @@ using Unitful
 using MultiStateSystems
 
 # include the state-transition diagrams for the wind turbines and cables
-stdʷᵗᵒ = STD(prob = [0.3,0.7], power = [0.0u"MW",2.0u"MW"])
-stdᶜᵇˡ = STD(prob = [0.1,0.9], power = [0.0u"MW",4.0u"MW"])
+stdʷᵗᵒ = solvedSTD(prob = [0.3,0.7], power = [0.0u"MW",2.0u"MW"])
+stdᶜᵇˡ = solvedSTD(prob = [0.1,0.9], power = [0.0u"MW",4.0u"MW"])
 
 # initialize the network corresponding to the wind farm
 ntwʷᶠ = Network()
