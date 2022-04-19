@@ -36,6 +36,7 @@ const BASE_DIR = dirname(@__DIR__)
 include("core/types.jl")
 
 include("form/markov_process.jl")
+include("form/semi_markov_process.jl")
 include("form/steady_state_process.jl")
 
 include("io/distributions.jl")
@@ -50,7 +51,7 @@ include("prob/universal_generating_operator.jl")
 
 # export
 export  BASE_DIR
-export  SteadyStateProcess, MarkovProcess
+export  SteadyStateProcess, MarkovProcess, SemiMarkovProcess
 export  Cosine, 𝑪, Dirac, 𝑫, Exponential, 𝑬, Gamma, 𝑮, Uniform, 𝑼, Weibull, 𝑾
 export  Network, add_source!, add_sources!, add_user!, add_users!,
         add_component!, add_bidirectional_component!, add_components!, 

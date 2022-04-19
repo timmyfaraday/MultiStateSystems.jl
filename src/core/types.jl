@@ -14,6 +14,7 @@ abstract type AbstractSTD{T} <: _LG.AbstractGraph{T} end
 abstract type AbstractNetwork{T} <: _LG.AbstractGraph{T} end
 abstract type AbstractStochasticProcess end
 abstract type AbstractMarkovProcess <: AbstractStochasticProcess end
+abstract type AbstractSemiMarkovProcess <: AbstractStochasticProcess end
 
 # union types
 UIE = Union{Int,_LG.AbstractEdge}
