@@ -119,7 +119,7 @@ end
 
 ## weibull
 """
-    Weibull
+    MultiStateSystems.Weibull
 
 The [*Weibull distribution*](http://en.wikipedia.org/wiki/Weibull_distribution)
 with scale parameter `θ`, shape parameter `α` and optional weight `ω` has a
@@ -168,7 +168,8 @@ struct WeibullNRF{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
     ω::Z            # weight: 0.0 < ω(t) <= 1.0
 end
 # constructors
-Weibull(θ::Number, α::Real, ω::Function) = WeibullNRF{Number,Real,Function}(θ, α, ω)
+Weibull(θ::Number, α::Real, ω::Function) = 
+    WeibullNRF{Number,Real,Function}(θ, α, ω)
 
 # shortened constructors
 𝑾() = Weibull()
@@ -218,6 +219,115 @@ function ccdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ) / θ
         eval(ω,t) * exp(-y^α)
+    else
+        eval(ω,t)
+    end
+end
+
+## log-normal
+"""
+    MultiStateSystems.LogNormal
+
+The [*Log-normal distribution*](https://en.wikipedia.org/wiki/Log-normal_distribution)
+with expected value `μ` and standard deviation `σ` of the corresponding normal
+distribution and optional weight `ω` has a probability density function
+
+```math
+f(x, μ, σ, ω) = \\begin{cases}
+                    \\frac{ω}{\\sqrt{2π} x σ} \\cdot \\cdot e^{-\\big(\\frac{(\\ln{x}-μ)^{2}}{2 σ^{2}}\\big)}   &\\text{if:}~x ≥ 0, \\\\
+                    0                                                                                           &\\text{if:}~x < 0.
+                \\end{cases}
+```
+# Constructors
+| Full               | Abbr.         | Description                                                  |
+| :----------------- | :------------ | :----------------------------------------------------------- |
+| `LogNormal(μ,σ,ω)` | `𝑳(μ,σ,ω)`    | full constructor                                             |
+| `LogNormal(μ,σ)`   | `𝑳(μ,σ)`      | constructor which defaults to `LogNormal(μ,σ,1.0)`           |
+| `LogNormal(μ)`     | `𝑳(μ)`        | constructor which defaults to `LogNormal(μ,1.0,1.0)`         |
+| `LogNormal()`      | `𝑳()`         | empty constructor which defaults to `LogNormal(1.0,1.0,1.0)` |
+# Examples
+```julia-repl
+julia> LogNormal()          # default Log-normal distr. with μ = 1.0, σ = 1.0 and ω = 1.0
+julia> 𝑳(3.0u"minute")      # Log-normal distr. with μ = 3.0 min, σ = 1.0 min and ω = 1.0
+julia> 𝑳(5.0u"yr",4.0u"d")  # Log-normal distr. with μ = 5.0 yr, σ = 4.0 d and ω = 1.0
+julia> 𝑳(10.0,0.5,0.2)      # scaled Log-normal distr. with μ = 10.0, σ = 0.5 and ω = 0.2
+```
+"""
+# abstract type
+abstract type AbstractLogNormal{X,Y,Z} <: AbstractDistribution{X,Y,Z} end
+
+# struct - μ::Number, σ::Number, ω::Real
+struct LogNormalNNR{X<:Number, Y<:Real, Z<:Function} <: AbstractLogNormal{X,Y,Z}
+    μ::X            # mean of the corresponding normal distribution
+    σ::X            # shape of the corresponding normal distribution
+    ω::Y            # weight: 0.0 < ω <= 1.0
+end
+# constructors
+LogNormal() = LogNormalNNR{Number,Real,Function}(1.0, 1.0, 1.0)
+LogNormal(μ::Number) = LogNormalNNR{Number,Real,Function}(μ, 1.0unit(μ), 1.0)
+LogNormal(μ::Number, σ::Number) = 
+    LogNormalNNR{Number,Real,Function}(μ, uconvert(unit(μ),σ), 1.0)
+LogNormal(μ::Number, σ::Number, ω::Real) = 
+    LogNormalNNR{Number,Real,Function}(μ, uconvert(unit(μ),σ), ω)
+
+# struct - μ::Number, σ::Number, ω::Function
+struct LogNormalNNF{X<:Number, Y<:Real, Z<:Function} <: AbstractLogNormal{X,Y,Z}
+    μ::X            # mean of the corresponding normal distribution
+    σ::X            # shape of the corresponding normal distribution
+    ω::Z            # weight: 0.0 < ω(t) <= 1.0
+end
+# constructors
+LogNormal(μ::Number, σ::Number, ω::Function) = 
+    LogNormalNNF{Number,Real,Function}(μ, uconvert(unit(μ),σ), ω)
+
+# shortened constructors
+𝑳() = LogNormal()
+𝑳(μ::Number) = LogNormal(μ)
+𝑳(μ::Number, σ::Number) = LogNormal(μ, σ)
+𝑳(μ::Number, σ::Number, ω::Real) = LogNormal(μ, σ, ω)
+𝑳(μ::Number, σ::Number, ω::Function) = LogNormal(μ, σ, ω)
+
+# functions
+weight(dst::AbstractLogNormal) = dst.ω
+params(dst::AbstractLogNormal) = (dst.μ, dst.σ, dst.ω)
+
+minimum(dst::AbstractLogNormal) = zero(dst.μ)
+maximum(dst::AbstractLogNormal) = (Inf)unit(dst.μ)
+
+quantile(dst::AbstractLogNormal, p::Real)  = 
+    exp(dst.μ + sqrt(2) * dst.σ * _SF.erfinv(2.0 * p - 1.0))
+cquantile(dst::AbstractLogNormal, p::Real) = 
+    exp(dst.μ + sqrt(2) * dst.σ * _SF.erfinv(2.0 * (1.0 - p) - 1.0))
+sojourn(dst::AbstractLogNormal,dφ::Number,tol::Real) = 
+    zero(dst.μ):uconvert(dst.μ,dφ):cquantile(dst,tol) 
+
+function pdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
+    μ, σ, ω = params(dst)
+    dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
+    if φ >= zero(μ)
+        x = ustrip(unit(φ), σ)
+        y = uconvert(unit(φ/φ),(log(φ) - μ)^2 / (2 * σ^2))
+        eval(ω,t) / (sqrt(2 * pi) * x * φ) * exp(-y)
+    else
+        zero(1/φ)
+    end
+end
+function cdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
+    μ, σ, ω = params(dst)
+    dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
+    if φ >= zero(μ)
+        y = uconvert(unit(φ/φ),(log(φ) - μ) / (sqrt(2) * σ))
+        eval(ω,t) / 2 * _SF.erfc(-y)
+    else
+        zero(Number)
+    end
+end
+function ccdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
+    μ, σ, ω = params(dst)
+    dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
+    if φ >= zero(μ)
+        y = uconvert(unit(φ/φ),(log(φ) - μ) / (sqrt(2) * σ))
+        eval(ω,t) * (1 - _SF.erfc(-y) / 2)
     else
         eval(ω,t)
     end

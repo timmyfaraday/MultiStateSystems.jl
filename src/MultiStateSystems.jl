@@ -16,6 +16,7 @@ import LinearAlgebra
 import Multigraphs
 import OrdinaryDiffEq
 import Measurements
+import SpecialFunctions
 
 # using Pkgs
 using Unitful
@@ -28,6 +29,7 @@ const _MG  = Multigraphs
 const _ODE = OrdinaryDiffEq
 const _UF  = Unitful
 const _MSM = Measurements
+const _SF  = SpecialFunctions
 
 # paths
 const BASE_DIR = dirname(@__DIR__)
