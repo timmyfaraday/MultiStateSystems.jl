@@ -23,6 +23,7 @@ const _MSS = MultiStateSystems
     include("markov_process.jl")
 
     # io
+    include("distributions.jl")
     include("indices.jl")
     include("universal_generating_function.jl")
 

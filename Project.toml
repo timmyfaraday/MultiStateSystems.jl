@@ -20,7 +20,7 @@ Measurements = "2.6.0"
 Multigraphs = "0.2.2"
 OrdinaryDiffEq = "5.59.4"
 Unitful = "1.8.0"
-SpecialFunctions = "2.1.4"
+SpecialFunctions = "1.8.4"
 julia = "1"
 
 [extras]

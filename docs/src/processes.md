@@ -6,9 +6,9 @@ A number of stochastic processes are available to determine the state
 probabilities of an `std`:
 
 * Steady state process `SteadyStateProcess <: AbstractMarkovProcess`
-* Markov chain `:markov_process`
-* Markov process `:markov_process`
-* Semi-Markov process `:semimarkov_process`
+* Markov chain `MarkovChain <: AbstractMarkovProcess`
+* Markov process `MarkovProcess <: AbstractMarkovProcess`
+* Semi-Markov process `SemiMarkovProcess <: AbstractSemiMarkovProcess`
 * Van Acker process `:vanacker_process`
 
 Solving a stochastic process may be accomplished through:
