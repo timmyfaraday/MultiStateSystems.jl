@@ -180,7 +180,7 @@ Weibull(θ::Number, α::Real, ω::Function) =
 𝑾(θ::Number, α::Real, ω::Real) = Weibull(θ, α, ω)
 𝑾(θ::Number, α::Real, ω::Function) = Weibull(θ, α, ω)
 
-# functions
+# general functions
 scale(dst::AbstractWeibull)  = dst.θ
 shape(dst::AbstractWeibull)  = dst.α
 weight(dst::AbstractWeibull) = dst.ω
@@ -189,12 +189,14 @@ params(dst::AbstractWeibull) = (dst.θ, dst.α, dst.ω)
 minimum(dst::AbstractWeibull) = zero(dst.θ)
 maximum(dst::AbstractWeibull) = (Inf)unit(dst.θ)
 
+# quantile functions
 xv(dst::AbstractWeibull, z::Real) = dst.θ * z ^ (1 / dst.α)
 quantile(dst::AbstractWeibull, p::Real)  = xv(dst, -log1p(-p))
 cquantile(dst::AbstractWeibull, p::Real) = xv(dst, -log(p))
 sojourn(dst::AbstractWeibull,dφ::Number,tol::Real) = 
     zero(dφ):dφ:cquantile(dst,tol) 
 
+# density functions
 function pdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     θ, α, ω = params(dst)
     dimension(θ)==dimension(φ)==dimension(t) || return false
@@ -289,13 +291,14 @@ LogNormal(μ::Number, σ::Number, ω::Function) =
 𝑳(μ::Number, σ::Number, ω::Real) = LogNormal(μ, σ, ω)
 𝑳(μ::Number, σ::Number, ω::Function) = LogNormal(μ, σ, ω)
 
-# functions
+# general functions
 weight(dst::AbstractLogNormal) = dst.ω
 params(dst::AbstractLogNormal) = (dst.μ, dst.σ, dst.ω)
 
 minimum(dst::AbstractLogNormal) = zero(dst.μ)
 maximum(dst::AbstractLogNormal) = (Inf)unit(dst.μ)
 
+# quantile functions
 quantile(dst::AbstractLogNormal, p::Real)  = 
     exp(dst.μ + sqrt(2) * dst.σ * _SF.erfinv(2.0 * p - 1.0))
 cquantile(dst::AbstractLogNormal, p::Real) = 
@@ -303,6 +306,7 @@ cquantile(dst::AbstractLogNormal, p::Real) =
 sojourn(dst::AbstractLogNormal,dφ::Number,tol::Real) = 
     zero(dst.μ):uconvert(dst.μ,dφ):cquantile(dst,tol) 
 
+# density functions
 function pdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     μ, σ, ω = params(dst)
     dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false

@@ -50,11 +50,13 @@ function inhomogeneous_markov_process(du, u, p, t)
                             if ns ≠ nt)
     end end
 end
-function solve!(std::AbstractSTD, cls::AbstractMarkovProcess; tsim::Number=1.0u"yr", tol::Real=1e-8)
+function solve!(std::AbstractSTD, cls::MarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
     set_parameters!(std, cls)
+
+    t   = zero(dt):dt:tsim
     p   = [std.graph,get_tprop(std,:rate),get_sprop(std,:info)]
     u₀  = get_sprop(std,:init)
-    ts  = (0.0_UF.unit(tsim),tsim)
+    ts  = (zero(tsim),tsim)
 
     if get_info(std,:time_homogeneous)
         prob = _ODE.ODEProblem(homogeneous_markov_process, u₀, ts, p)
@@ -64,8 +66,8 @@ function solve!(std::AbstractSTD, cls::AbstractMarkovProcess; tsim::Number=1.0u"
     sol = _ODE.solve(prob, _ODE.Tsit5(), reltol = tol, abstol = tol)
 
     set_prop!(std, :cls, cls)
-    set_prop!(std, :time, sol.t)
-    set_prop!(std, states(std), :prob, [sol[ns,:] for ns in states(std)])
+    set_prop!(std, :time, t)
+    set_prop!(std, states(std), :prob, [sol(t,idxs=ns) for ns in states(std)])
 
     set_info!(std, :solved, true)
 end
