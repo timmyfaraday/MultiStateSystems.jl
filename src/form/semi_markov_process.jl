@@ -14,7 +14,8 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 const semi_markov_process_props = [:renewal, :dynamic]
 
 # stochastic process
-function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+#function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=4500u"hr", dt::Number=1.0u"hr", tol::Real=1e-8)
     t = zero(tsim):dt:tsim
     Nt = length(t)
 
@@ -70,7 +71,27 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1
     set_prop!(std, states(std), :prob, [Φ[:,ns] for ns in states(std)])
 end
 
+#determine integration weights based on extended Simpson's rule. w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.
+function weights(x)
+    w = zeros(x)
+    for i in 1:x
+        if i % 2 == 0
+           w[i] = 4/3 
+        else
+            w[i] = 2/3
+    end end
+    w[1] = 1/3
+    w[end] = 1/3
+
+    return w
+end
+
 # check whether sum of ccdf could be suffient
 ccdf(std::AbstractSTD, ns::Int, φ::Real, t::Real) = 
     1.0 - sum(cdf(get_prop(std,_LG.edge(ns,nx),:distr), φ, t) 
                 for nx in _LG.outneighbors(G,ns))
+
+
+
+
+
