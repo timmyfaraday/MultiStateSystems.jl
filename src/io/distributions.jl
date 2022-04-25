@@ -80,12 +80,14 @@ rate(dst::AbstractExponential) = 1.0 / dst.θ
 minimum(dst::AbstractExponential) = zero(dst.θ)
 maximum(dst::AbstractExponential) = (Inf)unit(dst.θ)
 
+# quantile
 xv(dst::AbstractExponential, z::Real) = z * dst.θ
 quantile(dst::AbstractExponential, p::Real)  = -xv(dst, log1p(-p))
 cquantile(dst::AbstractExponential, p::Real) = -xv(dst, log(p))
 sojourn(dst::AbstractExponential,dφ::Number,tol::Real) = 
     zero(dφ):dφ:cquantile(dst,tol)
 
+# density functions
 function pdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     θ, ω = params(dst)
     dimension(θ)==dimension(φ)==dimension(t) || return false
