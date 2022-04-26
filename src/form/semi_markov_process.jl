@@ -13,6 +13,11 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 # properties
 const semi_markov_process_props = [:renewal, :dynamic]
 
+# parameters
+function set_parameters!(std::AbstractSTD, cls::MarkovProcess)
+    
+end
+
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
                 tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
