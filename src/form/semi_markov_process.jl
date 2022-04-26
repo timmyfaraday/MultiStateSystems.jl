@@ -15,7 +15,8 @@ const semi_markov_process_props = [:renewal, :dynamic]
 
 # stochastic process
 
-function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+#function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=9u"hr", dt::Number=1.0u"hr", tol::Real=1e-8)
     t = zero(dt):dt:tsim
     Nt = length(t)
 
@@ -38,9 +39,9 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1
     for (ni,nt) in enumerate(t)
         w = weights(ni)
         # hier kan code optimalisatie gebeuren gegeven dat φ <<< t
-        φ = 0.0:dt:nt
+        φ = zero(dt):dt:nt
         for (nj,nφ) in enumerate(φ)
-            Ψ = zeros(ns(std), ns(std))
+            Ψ = zeros(ns(std), ns(std))u"hr^-1"
             for tr in transitions(std)
                 Ψ[_LG.dst(tr),_LG.src(tr)] = pdf(get_prop(std, tr, :distr),nφ,nt)
             end
@@ -48,7 +49,7 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1
             rT = (ns(std) * (ni - 1) + 1):(ns(std) * ni)
             rΦ = (ns(std) * (nj - 1) + 1):(ns(std) * nj)
             if ni == nj
-                U[rT,rΦ] = Matrix(1.0I, ns(std), ns(std)) .- dt .* w[nj] .* Ψ
+                U[rT,rΦ] = Matrix(1.0_LA.I, ns(std), ns(std)) .- dt .* w[nj] .* Ψ
             else
                 U[rT,rΦ] = -dt .* w[nj] .* Ψ
             end
@@ -58,11 +59,11 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1
 
     Φ = zeros(Nt, ns(std))
     for st in states(std)
-        for (ni,nt) in t
+        for (ni,nt) in enumerate(t)
             w = weights(ni)
             # hier kan code optimalisatie gebeuren gegeven dat φ <<< t
-            φ = 0.0:dt:nt
-            Φ[ni,st] += get_prop(std,st,:init) * ccdf(std,st,0.0,nt)
+            φ = zero(dt):dt:nt
+            Φ[ni,st] += get_prop(std,st,:init) * ccdf(get_prop(std, tr, :distr),0.0,nt)
             Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (ni-1) + st] * ccdf(std,st,nφ,nt) for (nj,nφ) in enumerate(φ))
     end end
 
