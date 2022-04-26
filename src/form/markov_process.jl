@@ -13,7 +13,14 @@ mutable struct MarkovProcess <: AbstractMarkovProcess end
 const markov_process_props = [:renewal, :markovian, :dynamic]
 
 # parameters 
-function set_parameters!(std::AbstractSTD, cls::AbstractMarkovProcess)
+function set_rates!(std::AbstractSTD, cls::AbstractMarkovProcess)
+    for nt in transitions(std)
+        if !has_prop(std, nt, :rate) && has_prop(std, nt, :distr)
+            if get_prop(std, nt, :distr) isa Exponential
+                set_prop!(std, nt, :rate, rate(get_prop(std, nt, :distr)))
+    end end end
+end
+function set_parameters!(std::AbstractSTD, cls::MarkovProcess)
     set_rates!(std, cls)
 end
 
@@ -50,14 +57,18 @@ function inhomogeneous_markov_process(du, u, p, t)
                             if ns ≠ nt)
     end end
 end
-function solve!(std::AbstractSTD, cls::MarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+function solve!(std::AbstractSTD, cls::MarkovProcess; 
+                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+    # set the input
     set_parameters!(std, cls)
 
+    # get the input
     t   = zero(dt):dt:tsim
     p   = [std.graph,get_tprop(std,:rate),get_sprop(std,:info)]
     u₀  = get_sprop(std,:init)
     ts  = (zero(tsim),tsim)
 
+    # solve the problem
     if get_info(std,:time_homogeneous)
         prob = _ODE.ODEProblem(homogeneous_markov_process, u₀, ts, p)
     else
@@ -65,9 +76,11 @@ function solve!(std::AbstractSTD, cls::MarkovProcess; tsim::Number=1.0u"yr", dt:
     end
     sol = _ODE.solve(prob, _ODE.Tsit5(), reltol = tol, abstol = tol)
 
+    # set the output
     set_prop!(std, :cls, cls)
     set_prop!(std, :time, t)
     set_prop!(std, states(std), :prob, [sol(t,idxs=ns) for ns in states(std)])
 
+    # set the solved status
     set_info!(std, :solved, true)
 end

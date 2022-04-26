@@ -14,12 +14,16 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 const semi_markov_process_props = [:renewal, :dynamic]
 
 # stochastic process
+function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
+                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+    # set the input
+    set_parameters!(std,cls)    
 
-#function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
-function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=9u"hr", dt::Number=1.0u"hr", tol::Real=1e-8)
+    # get the input
     t = zero(dt):dt:tsim
     Nt = length(t)
 
+    # solve the problem
     # calculate H
     A = zeros(ns(std) * Nt)
 
@@ -67,9 +71,13 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=9
             Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (ni-1) + st] * ccdf(std,st,nφ,nt) for (nj,nφ) in enumerate(φ))
     end end
 
+    # set the output
     set_prop!(std, :cls, cls)
     set_prop!(std, :time, t)
     set_prop!(std, states(std), :prob, [Φ[:,ns] for ns in states(std)])
+
+    # set the solved status
+    set_info!(std, :solved, true)
 end
 
 #determine integration weights based on extended Simpson's rule. w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.

@@ -8,10 +8,15 @@
 
 # abstract types
 abstract type AbstractUGF end
+
 abstract type AbstractInfo end
+
 abstract type AbstractDistribution{X,Y,Z} end
+
 abstract type AbstractSTD{T} <: _LG.AbstractGraph{T} end
+
 abstract type AbstractNetwork{T} <: _LG.AbstractGraph{T} end
+
 abstract type AbstractStochasticProcess end
 abstract type AbstractMarkovProcess <: AbstractStochasticProcess end
 abstract type AbstractSemiMarkovProcess <: AbstractStochasticProcess end
