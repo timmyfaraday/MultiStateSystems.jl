@@ -62,10 +62,12 @@ julia> stdᵍᵉⁿ = solvedSTD(prob  = [0.1,0.2,0.7],
                           power = [0.0u"MW",0.0u"MW",2.0u"MW"])
 ```
 """
-function solvedSTD(;prob::Vector, kwargs...)
+function solvedSTD(;prob::Vector, time::Vector=[(Inf)u"yr"], kwargs...)
+    length(first(prob)) == length(time) || return false
     all(isapprox.(1.0, sum(prob), rtol=1e-6)) || return false
 
     std = STD(length(prob))
+    set_prop!(std,:time,time)
     set_info!(std,:solved,true)
     set_prop!(std,:msr,collect(intersect(MsrSet,keys(kwargs)))[1])
     set_prop!(std,states(std),:prob,prob)

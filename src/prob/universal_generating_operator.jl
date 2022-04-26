@@ -40,7 +40,7 @@ end
 
 ## Probability Function
 probability_function(pr::Vector) = 
-    vec([prod(np) for np in Iterators.product(pr...)])
+    vec([.*(np...) for np in Iterators.product(pr...)])
 
 ## Structure Function
 function user_structure_function(ntw::AbstractNetwork, u_node::Int)
