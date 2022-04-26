@@ -63,7 +63,7 @@ julia> stdᵍᵉⁿ = solvedSTD(prob  = [0.1,0.2,0.7],
 ```
 """
 function solvedSTD(;prob::Vector, kwargs...)
-    isapprox(1.0, sum(prob), rtol=1e-6) || return false
+    all(isapprox.(1.0, sum(prob), rtol=1e-6)) || return false
 
     std = STD(length(prob))
     set_info!(std,:solved,true)

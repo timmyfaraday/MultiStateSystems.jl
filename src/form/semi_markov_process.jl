@@ -14,7 +14,7 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 const semi_markov_process_props = [:renewal, :dynamic]
 
 # parameters
-function set_parameters!(std::AbstractSTD, cls::MarkovProcess)
+function set_parameters!(std::AbstractSTD, cls::SemiMarkovProcess)
     
 end
 
