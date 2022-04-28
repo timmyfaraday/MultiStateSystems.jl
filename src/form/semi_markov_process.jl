@@ -50,7 +50,7 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
         # hier kan code optimalisatie gebeuren gegeven dat φ <<< t
         φ = zero(dt):dt:nt
         for (nj,nφ) in enumerate(φ)
-            Ψ = zeros(ns(std), ns(std))u"hr^-1"
+            Ψ = zeros(ns(std), ns(std))unit(1/dt)
             for tr in transitions(std)
                 Ψ[_LG.dst(tr),_LG.src(tr)] = pdf(get_prop(std, tr, :distr),nφ,nt)
             end
@@ -72,8 +72,8 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
             w = weights(ni)
             # hier kan code optimalisatie gebeuren gegeven dat φ <<< t
             φ = zero(dt):dt:nt
-            Φ[ni,st] += get_prop(std,st,:init) * ccdf(get_prop(std, tr, :distr),0.0,nt)
-            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (ni-1) + st] * ccdf(std,st,nφ,nt) for (nj,nφ) in enumerate(φ))
+            Φ[ni,st] += get_prop(std,st,:init) * ccdf(std, st, 0.0, nt)
+            Φ[ni,st] += sum(dt .* w[nj]unit(1/dt) .* H[ns(std) * (ni-1) + st] * ccdf(std, st, nφ, nt) for (nj,nφ) in enumerate(φ))
     end end
 
     # set the output
@@ -101,9 +101,10 @@ function weights(x)
 end
 
 # check whether sum of ccdf could be suffient
-ccdf(std::AbstractSTD, ns::Int, φ::Real, t::Real) = 
+ccdf(std::AbstractSTD, ns::Int, φ::Real, t::Quantity)  = 
     1.0 - sum(cdf(get_prop(std,_LG.edge(ns,nx),:distr), φ, t) 
-                for nx in _LG.outneighbors(G,ns))
+                for nx in _LG.outneighbors(std, ns))
+
 
 
 
