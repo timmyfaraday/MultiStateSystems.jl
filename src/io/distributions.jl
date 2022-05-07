@@ -93,7 +93,7 @@ function pdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ)
-        eval(ω,_UF.ustrip(t)) * (1/θ) * exp(-y/θ)
+        eval(ω,t) * (1/θ) * exp(-y/θ)
     else
         zero(1/θ)
     end
@@ -103,7 +103,7 @@ function cdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ)
-        eval(ω,_UF.ustrip(t)) * (1 - exp(-y/θ))
+        eval(ω,t) * (1 - exp(-y/θ))
     else
         zero(Number)
     end
@@ -113,9 +113,9 @@ function ccdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ)
-        eval(ω,_UF.ustrip(t)) * exp(-y/θ)
+        eval(ω,t) * exp(-y/θ)
     else
-        eval(ω,_UF.ustrip(t))
+        eval(ω,t)
     end
 end
 
@@ -202,7 +202,7 @@ function pdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = (uconvert(unit(θ),φ) + eps(θ)) / θ
-        eval(ω,_UF.ustrip(t)) * (α / θ) * y^(α - 1) * exp(-y^α)
+        eval(ω,t) * (α / θ) * y^(α - 1) * exp(-y^α)
     else
         zero(1/θ)
     end
@@ -212,7 +212,7 @@ function cdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ) / θ
-        ustrip(eval(ω,_UF.ustrip(t)) * (1 - exp(-y^α)))
+        ustrip(eval(ω,t) * (1 - exp(-y^α)))
     else
         zero(Number)
     end
@@ -222,9 +222,9 @@ function ccdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ) / θ
-        eval(ω,_UF.ustrip(t)) * exp(-y^α)
+        eval(ω,t) * exp(-y^α)
     else
-        eval(ω,_UF.ustrip(t))
+        eval(ω,t)
     end
 end
 
@@ -313,7 +313,7 @@ function pdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     if φ >= zero(μ)
         x = ustrip(unit(φ), σ)
         y = uconvert(unit(φ/φ),(log(φ) - μ)^2 / (2 * σ^2))
-        eval(ω,_UF.ustrip(t)) / (sqrt(2 * pi) * x * φ) * exp(-y)
+        eval(ω,t) / (sqrt(2 * pi) * x * φ) * exp(-y)
     else
         zero(1/φ)
     end
@@ -323,7 +323,7 @@ function cdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(μ)
         y = uconvert(unit(φ/φ),(log(φ) - μ) / (sqrt(2) * σ))
-        eval(ω,_UF.ustrip(t)) / 2 * _SF.erfc(-y)
+        eval(ω,t) / 2 * _SF.erfc(-y)
     else
         zero(Number)
     end
@@ -333,8 +333,8 @@ function ccdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(μ)
         y = uconvert(unit(φ/φ),(log(φ) - μ) / (sqrt(2) * σ))
-        eval(ω,_UF.ustrip(t)) * (1 - _SF.erfc(-y) / 2)
+        eval(ω,t) * (1 - _SF.erfc(-y) / 2)
     else
-        eval(ω,_UF.ustrip(t))
+        eval(ω,t)
     end
 end
