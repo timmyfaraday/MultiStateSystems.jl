@@ -42,7 +42,7 @@ add_transitions!(std, distr = [Exponential(1000.0u"hr"), Weibull(250.0u"hr", 1.5
                       states = [(1,2),(2,3)])
                       
 # solve the std
-solve!(std, cls, tsim = 4500u"hr", dt = 3u"hr")
+solve!(std, cls, tsim = 4500.0u"hr", dt = 3.0u"hr")
 
 # plot all probabilities
 plot(_MSS.get_prop(std, :time), 
