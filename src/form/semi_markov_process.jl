@@ -12,18 +12,6 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 # properties
 const semi_markov_process_props = [:renewal, :dynamic]
 
-# parameters
-function set_parameters!(std::AbstractSTD, cls::SemiMarkovProcess)
-    
-end
-
-# UNITS 
-# cdf  - [-]
-# ccdf - [-]
-# pdf  - [unit(1/dt)] -> ∫ pdf dt = [-]
-# Consequently:
-# A    - unit of the pdf [unit(1/dt)]
-
 """
     MultiStateSystems.set_A(std::MultiStateSystems.AbstractSTD, t::StepRangeLen)
 
@@ -41,19 +29,10 @@ function set_A(std::AbstractSTD, t::StepRangeLen)
     for (ni,nt) in enumerate(t)
         for tr in transitions(std)
             id      = ns(std) * (ni-1) + _LG.dst(tr)
-            # TOM: I removed the unit(dt), the initial probability has no unit, 
-            # as probability has no unit.
-            # The pdf has a unit [1/unit(t)] as this has no meaning until you 
-            # take the integral under the pdf, given that the x-axis is time, 
-            # this integral would result in a unitless probability.
-            # TOM: I removed the - 0.0u"hr" in the second argument of the pdf 
-            # function as this is pointless.
-            # TOM: I changed 0.0u"hr" in the third argument of the pdf function
-            # to zero(dt) to be agnostic
+            # NB: GLENN same clarification
             A[id]   += get_prop(std, _LG.src(tr), :init) * 
                             pdf(get_prop(std, tr, :distr), nt, zero(dt))
     end end 
-    # TOM: the replacement of NaN is easier done as follows
     A[isnan.(A)] .= zero(1/dt)
 
     return A
@@ -75,15 +54,13 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
 
     for (ni,nt) in enumerate(t)
         w = weights(ni)
-        φ = zero(dt):dt:nt
-        for (nj,nφ) in enumerate(φ)
-            # TOM: I internalized unit(1/dt) after the zeros function as 
-            # typeof(1/dt) to be agnostic
+        l = zero(dt):dt:nt
+        for (nj,nl) in enumerate(l)
             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
             for tr in transitions(std)
-                # GLENN: distr betreden op nϕ en blijven tot nt, φ =  nt - nϕ
+                # NB: GLENN additional clarification distr betreden op nϕ en blijven tot nt, φ =  nt - nl
                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
-                    pdf(get_prop(std, tr, :distr), nt - nφ, nφ)
+                    pdf(get_prop(std, tr, :distr), nt - nl, nl)
             end
             rT = (ns(std) * (ni - 1) + 1):(ns(std) * ni)
             rΦ = (ns(std) * (nj - 1) + 1):(ns(std) * nj)
@@ -93,7 +70,6 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
                 U[rT,rΦ] = -dt .* w[nj] .* Ψ
             end
     end end
-    # TOM: the replacement of NaN is easier done as follows
     U[isnan.(U)] .= 0.0
 
     return U
@@ -101,35 +77,24 @@ end
 
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
-    # set the input
-    set_parameters!(std,cls)    
-
+                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8) 
     # get the input
     t   = zero(dt):dt:tsim
     Nt  = length(t)
 
     # solve the problem
     Φ   = zeros(Nt, ns(std))
-    # TOM: dt and Nt can easily be accessed from t, and are therefore removed as
-    # arguments for both functions set_U and set_A
     H   = set_U(std, t) \ set_A(std, t)
     for st in states(std)
         for (ni,nt) in enumerate(t)
             w   = weights(ni)
-            φ   = zero(dt):dt:nt
-            # TOM: I removed the - 0.0u"hr" in the second argument of the ccdf 
-            # function as this is pointless.
-            # TOM: I changed 0.0u"hr" in the third argument of the ccdf function
-            # to zero(dt) to be agnostic
-            Φ[ni,st] += get_prop(std,st,:init) * ccdf(std, st, nt, zero(dt))
-            # TOM: I removed the unit(1/dt) after the w[nj] as this does not 
-            # make any sense.
-            # TOM: In order for this formula to make sense the unit of H needs 
-            # to be unit(1/dt). Currently, it is the inverse, i.e., unit(dt).
-            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj - 1) + st] .* 
-                                ccdf(std, st, nt - nφ, nφ) 
-                                for (nj,nφ) in enumerate(φ))
+            # TOM: φ <<< t, zero could be higher
+            l   = zero(dt):dt:nt
+            # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
+            Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
+            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+                                ccdf(std, st, nt-nl, nl) 
+                                for (nj,nl) in enumerate(l))
     end end
 
     # set the output
@@ -141,7 +106,6 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     set_info!(std, :solved, true)
 end
 
-# TOM: rewrote the weights function for better readability.
 """
     MultiStateSystems.weights(x::Int)
 
