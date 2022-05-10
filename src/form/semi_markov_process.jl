@@ -54,13 +54,13 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
 
     for (ni,nt) in enumerate(t)
         w = weights(ni)
-        φ = zero(dt):dt:nt
-        for (nj,nφ) in enumerate(φ)
+        l = zero(dt):dt:nt
+        for (nj,nl) in enumerate(l)
             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
             for tr in transitions(std)
-                # NB: GLENN additional clarification distr betreden op nϕ en blijven tot nt, φ =  nt - nϕ
+                # NB: GLENN additional clarification distr betreden op nϕ en blijven tot nt, φ =  nt - nl
                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
-                    pdf(get_prop(std, tr, :distr), nt - nφ, nφ)
+                    pdf(get_prop(std, tr, :distr), nt - nl, nl)
             end
             rT = (ns(std) * (ni - 1) + 1):(ns(std) * ni)
             rΦ = (ns(std) * (nj - 1) + 1):(ns(std) * nj)
@@ -88,13 +88,13 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     for st in states(std)
         for (ni,nt) in enumerate(t)
             w   = weights(ni)
-            # TOM: φ <<< t
-            φ   = zero(dt):dt:nt
-            # NB: ccdf(t-φ,φ) where φ = 0.0, GLENN, additional clarification
+            # TOM: φ <<< t, zero could be higher
+            l   = zero(dt):dt:nt
+            # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
             Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-                                ccdf(std, st, nt-nφ, nφ) 
-                                for (nj,nφ) in enumerate(φ))
+                                ccdf(std, st, nt-nl, nl) 
+                                for (nj,nl) in enumerate(l))
     end end
 
     # set the output

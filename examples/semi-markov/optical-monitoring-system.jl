@@ -48,7 +48,7 @@ add_transitions!(std, states = [(1,1),(1,2),(2,1),(2,3),(3,1),(3,4)],
                                 LogNormal(4.0u"hr", 0.4u"hr", 0.38)])
                       
 # solve the std
-solve!(std, cls, tsim = 8760.0u"hr", dt = 6.0u"hr")
+solve!(std, cls, tsim = 8760.0u"hr", dt = 5.84u"hr")
 
 # plot the probabilities
 plot(_MSS.get_prop(std, :time), 
@@ -58,7 +58,7 @@ plot(_MSS.get_prop(std, :time),
         ylabel="probability")
 
 # plot the reliability
-plot(_MSS.get_prop(std, :time),
+plot!(_MSS.get_prop(std, :time),
         _MSS.get_prop(std, 1, :prob),
         label="reliability",
         xlabel="time",
