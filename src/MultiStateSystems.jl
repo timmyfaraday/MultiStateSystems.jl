@@ -17,6 +17,7 @@ import Multigraphs
 import OrdinaryDiffEq
 import Measurements
 import SpecialFunctions
+import QuadGK
 
 # using Pkgs
 using Unitful
@@ -30,6 +31,7 @@ const _ODE = OrdinaryDiffEq
 const _UF  = Unitful
 const _MSM = Measurements
 const _SF  = SpecialFunctions
+const _QGK = QuadGK
 
 # paths
 const BASE_DIR = dirname(@__DIR__)

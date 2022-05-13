@@ -16,7 +16,7 @@ const markov_process_props = [:renewal, :markovian, :dynamic]
 function set_rates!(std::AbstractSTD, cls::AbstractMarkovProcess)
     for nt in transitions(std)
         if !has_prop(std, nt, :rate) && has_prop(std, nt, :distr)
-            if get_prop(std, nt, :distr) isa Exponential
+            if get_prop(std, nt, :distr) isa AbstractExponential
                 set_prop!(std, nt, :rate, rate(get_prop(std, nt, :distr)))
     end end end
 end
@@ -28,11 +28,15 @@ end
 function homogeneous_markov_process(du, u, p, t)
     G, ρ, info = p
     for ns in 1:_LG.nv(G)
-        if info[ns].trapping
+        if isempty(_LG.outneighbors(G,ns))
             du[ns] = sum(ρ[_LG.Edge(nt,ns)]*u[nt]
                             for nt in _LG.inneighbors(G,ns)
                             if ns ≠ nt)
-        else
+        elseif isempty(_LG.inneighbors(G,ns))
+            du[ns] = - sum(ρ[_LG.Edge(ns,nt)]*u[ns]
+                            for nt in _LG.outneighbors(G,ns)
+                            if ns ≠ nt)
+        else                    
             du[ns] = sum(ρ[_LG.Edge(nt,ns)]*u[nt]
                             for nt in _LG.inneighbors(G,ns)
                             if ns ≠ nt) -
