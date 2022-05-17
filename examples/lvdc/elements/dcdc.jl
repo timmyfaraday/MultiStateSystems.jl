@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright 2020, Tom Van Acker                                               #
+#  Copyright 2022, Tom Van Acker, Glenn Emmers                                 #
 ################################################################################
 # MultiStateSystems.jl                                                         #
 # A Julia package to solve multi-state system models.                          #
@@ -20,7 +20,7 @@ add_states!(stdᵈᵈ, name  = ["available", "unavailable"],
                    init  = [1.0, 0.0])
 
 # add the transitions to the std
-add_transitions!(stdᵈᵈ, rate = [0.0u"1/hr"   8.06e-6u"1/hr"
+add_transitions!(stdᵈᵈ, rate = [0.0u"1/hr"   8.058e-6u"1/hr"
                                 0.125u"1/hr" 0.0u"1/hr"])
 
 # return the std
