@@ -84,7 +84,15 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # solve the problem
     Φ   = zeros(Nt, ns(std))
-    H   = set_U(std, t) \ set_A(std, t)
+    diff  = zeros(Nt, ns(std))
+    H   =set_U(std, t) \ set_A(std, t)
+
+    unit_h = unit(H[1])
+
+    H = ustrip(H)
+
+    h = [_INT.LinearInterpolation(ustrip(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)];
+
     for st in states(std)
         for (ni,nt) in enumerate(t)
             w   = weights(ni)
@@ -92,11 +100,14 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
             l   = zero(dt):dt:nt
             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+            # Φ[ni,st] += _QGK.quadgk(x -> unit_h * h[st](ustrip(x)) * ccdf(std, st, nt-x, x), zero(dt),nt,rtol=1e-8)[1] 
+                                
+            Φ[ni,st] += sum(dt .* w[nj] .* unit_h * H[ns(std) * (nj-1) + st] .* 
                                 ccdf(std, st, nt-nl, nl) 
                                 for (nj,nl) in enumerate(l))
     end end
 
+    
     # set the output
     set_prop!(std, :cls, cls)
     set_prop!(std, :time, t)
@@ -104,6 +115,7 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
+    return h
 end
 
 """
@@ -112,21 +124,41 @@ end
 Determine integration weights based on extended Simpson's rule. 
 w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.
 """
-function weights(x::Int)
-    x==1 && return [0]
-    x==2 && return [1/2, 1/2]
-    x==3 && return [1/3, 4/3, 1/3]
-    x==4 && return [3/8, 9/8, 9/8, 3/8]
-    x==5 && return (2/45) .* [7, 32, 12, 32, 7]
-    x==6 && return (5/288) .* [19, 75, 50, 50, 75, 19]
-    x==7 && return (1/140) .* [41, 216, 27, 272, 27, 216, 41]
-    x==8 && return (7/17280) .* [751, 3577, 1323, 2989, 2989, 1323, 3577, 751]
+# function weights(x::Int)
+#     x==1 && return [0]
+#     x==2 && return [1/2, 1/2]
+#     x==3 && return [1/3, 4/3, 1/3]
+#     x==4 && return [3/8, 9/8, 9/8, 3/8]
+#     x==5 && return (2/45) .* [7, 32, 12, 32, 7]
+#     x==6 && return (5/288) .* [19, 75, 50, 50, 75, 19]
+#     x==7 && return (1/140) .* [41, 216, 27, 272, 27, 216, 41]
+#     x==8 && return (7/17280) .* [751, 3577, 1323, 2989, 2989, 1323, 3577, 751]
     
-    weights             = 48 * ones(x)
-    weights[1:4]        = [17, 59, 43, 49]
-    weights[end-3:end]  = [49, 43, 59, 17]
-    return (1/48) .* weights
-end 
+#     weights             = 48 * ones(x)
+#     weights[1:4]        = [17, 59, 43, 49]
+#     weights[end-3:end]  = [49, 43, 59, 17]
+#     return (1/48) .* weights
+# end 
+
+function weights(x::Int)
+    w = zeros(x)
+    for i in 1:length(w)
+        if i % 2 == 0
+           w[i] = 4/3 
+        else
+            w[i] = 2/3
+    end end
+    w[1] = 1/3
+    w[end] = 1/3
+
+    return w
+end
+
+# function weights(x::Int)
+#     w = ones(x)
+#     return w
+# end
+
 
 # # TOM: Alternative formulation for the state ccdf, using the trapping info prop
 # cdf(std::AbstractSTD, ns::Int, φ::Number, t::Number) = 

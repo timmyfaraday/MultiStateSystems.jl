@@ -68,12 +68,13 @@ _MSS.set_info!(std, 3, :trapping, true)
 #         ylabel="probability")
 
 # solve the std - Analytical
-dτ = dt / 100
+dτ = dt / 1
 dst1 = _MSS.get_prop(std,_LG.Edge(1,2),:distr)
 dst2 = _MSS.get_prop(std,_LG.Edge(2,3),:distr)
 
-PA1 = 1.0 .- _MSS.cdf.(dst1,t,t)
-PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,x) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]
+PA1 = 1.0 .- _MSS.cdf.(dst1,t,zero(dt))
+PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]
+PA22= [sum(dτ * _MSS.weights(length(zero(nt):dτ:nt))[ni] * _MSS.pdf.(dst1,nl,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-nl,nt)) for (ni,nl) in enumerate(zero(nt):dτ:nt)) for nt in t]
 PA3 = 1.0 .- (PA1 .+ PA2)
 
 # plot all probabilities
@@ -87,12 +88,13 @@ plot(t, [PA1, PA2, PA3],
 cls = SemiMarkovProcess()
 
 # solve the std - SEMIMarkov
-solve!(std, cls, tsim = tsim, dt = dt)
+h3 = solve!(std, cls, tsim = tsim, dt = dt)
 
 # probabilities - SEMIMarkov 
 PS1 = _MSS.get_prop(std,1,:prob)
 PS2 = _MSS.get_prop(std,2,:prob)
 PS3 = _MSS.get_prop(std,3,:prob)
+
 
 # plot all probabilities
 plot!(t, [PS1, PS2, PS3],
@@ -100,10 +102,29 @@ plot!(t, [PS1, PS2, PS3],
          xlabel="time",
          ylabel="probability")
 
+    
 
 
 
+plot(t, [PA1-PS1, diff[:,1]],
+         label="State 1",
+         xlabel="time",
+         ylabel="probability difference")
 
+plot(t, PS2-PA2,
+         label=["State 2" "diff"],
+         xlabel="time",
+         ylabel="probability difference")
+
+plot(t, PS3-PA3,
+         label=["State 3" "diff"],
+         xlabel="time",
+         ylabel="probability difference")
+
+plot(t, h4[2](ustrip(t))-h3[2](ustrip(t)),
+         label=["H array diff for State 2"],
+         xlabel="time",
+         ylabel="rate (1/t)")
 
 
 # # plot the reliability

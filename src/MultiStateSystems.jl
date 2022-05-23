@@ -18,6 +18,7 @@ import OrdinaryDiffEq
 import Measurements
 import SpecialFunctions
 import QuadGK
+import Interpolations
 
 # using Pkgs
 using Unitful
@@ -32,6 +33,7 @@ const _UF  = Unitful
 const _MSM = Measurements
 const _SF  = SpecialFunctions
 const _QGK = QuadGK
+const _INT = Interpolations
 
 # paths
 const BASE_DIR = dirname(@__DIR__)
