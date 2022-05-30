@@ -19,6 +19,7 @@ import Measurements
 import SpecialFunctions
 import QuadGK
 import Interpolations
+import SparseArrays
 
 # using Pkgs
 using Unitful
@@ -34,6 +35,7 @@ const _MSM = Measurements
 const _SF  = SpecialFunctions
 const _QGK = QuadGK
 const _INT = Interpolations
+const _SA  = SparseArrays
 
 # paths
 const BASE_DIR = dirname(@__DIR__)
