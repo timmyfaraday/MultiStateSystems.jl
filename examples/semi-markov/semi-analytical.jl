@@ -79,63 +79,63 @@ add_transitions!(std, distr = [Exponential(1000.0u"hr"), Weibull(250.0u"hr", 1.5
 
 
 
-# solve the std - Semi-Markov
-# setting for a specific analysis
-cls = SemiMarkovProcess()
+# # solve the std - Semi-Markov
+# # setting for a specific analysis
+# cls = SemiMarkovProcess()
 
 # solve the std - SEMIMarkov
-h3 = solve!(std, cls, tsim = tsim, dt = dt)
+solve!(std, cls, tsim = tsim, dt = dt)
 
-# probabilities - SEMIMarkov 
-PS1 = _MSS.get_prop(std,1,:prob)
-PS2 = _MSS.get_prop(std,2,:prob)
-PS3 = _MSS.get_prop(std,3,:prob)
+# # probabilities - SEMIMarkov 
+# PS1 = _MSS.get_prop(std,1,:prob)
+# PS2 = _MSS.get_prop(std,2,:prob)
+# PS3 = _MSS.get_prop(std,3,:prob)
 
 
 
 
     
-ϵ = 1e-16;
+# ϵ = 1e-16;
 
-plot(t, [PA1.-PS1.+ϵ, PA2.-PS2.+ϵ, PA3.-PS3.+ ϵ],
-         label=["State 1" "State 2" "State 3"],
-         xlabel="time",
-         yscale = :log,
-         ylabel="probability difference")
+# plot(t, [PA1.-PS1.+ϵ, PA2.-PS2.+ϵ, PA3.-PS3.+ ϵ],
+#          label=["State 1" "State 2" "State 3"],
+#          xlabel="time",
+#          yscale = :log,
+#          ylabel="probability difference")
 
-plot!(t, PA2.-PS2.+ϵ,
-         label="State 2",
-         xlabel="time",
-         yscale = :log,
-         ylabel="probability difference")
+# plot!(t, PA2.-PS2.+ϵ,
+#          label="State 2",
+#          xlabel="time",
+#          yscale = :log,
+#          ylabel="probability difference")
 
-plot!(t, PA3.-PS3.+ ϵ,
-         label="State 3",
-         xlabel="time",
-         yscale = :log,
-         ylabel="probability difference")
+# plot!(t, PA3.-PS3.+ ϵ,
+#          label="State 3",
+#          xlabel="time",
+#          yscale = :log,
+#          ylabel="probability difference")
 
-        # plot all probabilities
-plot(t, [PA1, PA2, PA3],
-      label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
-      xlabel="time",
-      ylabel="probability")
+#         # plot all probabilities
+# plot(t, [PA1, PA2, PA3],
+#       label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
+#       xlabel="time",
+#       ylabel="probability")
         
-         # plot all probabilities
-plot!(t, [PS1, PS2, PS3],
-        label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
-        xlabel="time",
-        ylabel="probability")
-
-plot(t, h4[2](ustrip(t))-h3[2](ustrip(t)),
-         label=["H array diff for State 2"],
-         xlabel="time",
-         ylabel="rate (1/t)")
-
-
-# # plot the reliability
-# plot(_MSS.get_prop(std, :time),
-#         _MSS.get_prop(std, 1, :prob) + _MSS.get_prop(std, 2, :prob),
-#         label="reliability",
+#          # plot all probabilities
+# plot!(t, [PS1, PS2, PS3],
+#         label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
 #         xlabel="time",
 #         ylabel="probability")
+
+# plot(t, h4[2](ustrip(t))-h3[2](ustrip(t)),
+#          label=["H array diff for State 2"],
+#          xlabel="time",
+#          ylabel="rate (1/t)")
+
+
+# # # plot the reliability
+# # plot(_MSS.get_prop(std, :time),
+# #         _MSS.get_prop(std, 1, :prob) + _MSS.get_prop(std, 2, :prob),
+# #         label="reliability",
+# #         xlabel="time",
+# #         ylabel="probability")
