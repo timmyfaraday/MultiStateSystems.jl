@@ -36,7 +36,7 @@ tsim    = 4500.0u"hr"
 t       = zero(dt):dt:tsim
 
 # setting for a specific analysis
-cls = MarkovProcess()
+cls = SemiMarkovProcess()
 
 # initialize the state-transition diagram
 std = STD()
@@ -50,7 +50,7 @@ add_transitions!(std, distr = [Exponential(1000.0u"hr"), Weibull(250.0u"hr", 1.5
                       states = [(1,2),(2,3)])
 
 # trapping
-_MSS.set_info!(std, 3, :trapping, true)
+# _MSS.set_info!(std, 3, :trapping, true)
 
 # # solve the std - Markov
 # solve!(std, cls, tsim = tsim, dt = dt)
@@ -67,21 +67,17 @@ _MSS.set_info!(std, 3, :trapping, true)
 #         xlabel="time",
 #         ylabel="probability")
 
-# solve the std - Analytical
-dτ = dt / 1
-dst1 = _MSS.get_prop(std,_LG.Edge(1,2),:distr)
-dst2 = _MSS.get_prop(std,_LG.Edge(2,3),:distr)
+# # solve the std - Analytical
+# dτ = dt / 1
+# dst1 = _MSS.get_prop(std,_LG.Edge(1,2),:distr)
+# dst2 = _MSS.get_prop(std,_LG.Edge(2,3),:distr)
 
-PA1 = 1.0 .- _MSS.cdf.(dst1,t,zero(dt))
-PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]
-PA22= [sum(dτ * _MSS.weights(length(zero(nt):dτ:nt))[ni] * _MSS.pdf.(dst1,nl,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-nl,nt)) for (ni,nl) in enumerate(zero(nt):dτ:nt)) for nt in t]
-PA3 = 1.0 .- (PA1 .+ PA2)
+# PA1 = 1.0 .- _MSS.cdf.(dst1,t,zero(dt))
+# PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]
+# PA22= [sum(dτ * _MSS.weights(length(zero(nt):dτ:nt))[ni] * _MSS.pdf.(dst1,nl,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-nl,nt)) for (ni,nl) in enumerate(zero(nt):dτ:nt)) for nt in t]
+# PA3 = 1.0 .- (PA1 .+ PA2)
 
-# plot all probabilities
-plot(t, [PA1, PA2, PA3],
-        label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
-        xlabel="time",
-        ylabel="probability")
+
 
 # solve the std - Semi-Markov
 # setting for a specific analysis
@@ -96,30 +92,40 @@ PS2 = _MSS.get_prop(std,2,:prob)
 PS3 = _MSS.get_prop(std,3,:prob)
 
 
-# plot all probabilities
-plot!(t, [PS1, PS2, PS3],
-         label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
-         xlabel="time",
-         ylabel="probability")
+
 
     
+ϵ = 1e-16;
 
-
-
-plot(t, [PA1-PS1, diff[:,1]],
-         label="State 1",
+plot(t, [PA1.-PS1.+ϵ, PA2.-PS2.+ϵ, PA3.-PS3.+ ϵ],
+         label=["State 1" "State 2" "State 3"],
          xlabel="time",
+         yscale = :log,
          ylabel="probability difference")
 
-plot(t, PS2-PA2,
-         label=["State 2" "diff"],
+plot!(t, PA2.-PS2.+ϵ,
+         label="State 2",
          xlabel="time",
+         yscale = :log,
          ylabel="probability difference")
 
-plot(t, PS3-PA3,
-         label=["State 3" "diff"],
+plot!(t, PA3.-PS3.+ ϵ,
+         label="State 3",
          xlabel="time",
+         yscale = :log,
          ylabel="probability difference")
+
+        # plot all probabilities
+plot(t, [PA1, PA2, PA3],
+      label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
+      xlabel="time",
+      ylabel="probability")
+        
+         # plot all probabilities
+plot!(t, [PS1, PS2, PS3],
+        label=reshape([_MSS.get_prop(std, ns, :name) for ns in _MSS.states(std)],1,:),
+        xlabel="time",
+        ylabel="probability")
 
 plot(t, h4[2](ustrip(t))-h3[2](ustrip(t)),
          label=["H array diff for State 2"],

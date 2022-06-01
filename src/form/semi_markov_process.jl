@@ -94,7 +94,7 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
         # dummy_value = ifelse(_LG.src(tr) == _LG.dst(tr),zero(1/dt),oneunit(1/dt)) # dummy_value voegt nu een 1 toe wanneer dest and source gelijk zijn, maar dit moet enkel in geval ni en nj ook nog gelijk zijn. Extra controle in de tijdslus.
         dst = get_prop(std, tr, :distr) 
         lb = floor(cquantile(dst, tol) / dt) * dt
-        for (ni,nt) in enumerate(t)
+        @time for (ni,nt) in enumerate(t)
             Φ = min(zero(dt),lb):dt:nt
             NΦ = length(Φ)
             
@@ -102,13 +102,13 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
             push!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ]...)
             push!(V, .- dt .* weights(ni)[1:NΦ] .* pdf.(dst, nt.-Φ, Φ)...)
     end end
-
+    V[isnan.(V)] .= 0.0
     return _SA.sparse(I, J, V)
 end
 
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real) # Default value of tol taken away for now to compare results
+                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
     # get the input
     t   = zero(dt):dt:tsim
     Nt  = length(t)
@@ -117,13 +117,12 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     Φ   = zeros(Nt, ns(std))
     diff  = zeros(Nt, ns(std))
 
-    # @time U = set_U(std,t,tol)
-    @time U = set_U(std,t)
+    U = set_U(std,t,tol)
     A = ustrip(set_A(std,t))
 
     H=U\A*unit(1/dt)
 
-   h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+    h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
 
     for st in states(std)
         for (ni,nt) in enumerate(t)
