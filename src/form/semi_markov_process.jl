@@ -54,7 +54,8 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
 
     for (ni,nt) in enumerate(t)
         w = weights(ni)
-        l = zero(dt):dt:nt
+        # l = zero(dt):dt:nt
+        l = t[1]:dt:nt
         for (nj,nl) in enumerate(l)
             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
             for tr in transitions(std)
@@ -84,9 +85,9 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     # initialize three vectors I,J,V respectively row, column and value indices
     I,J,V = Int[],Int[],Number[]
 
-    push!(I, 1:Ns*Nt...)
-    push!(J, 1:Ns*Nt...)
-    push!(V, ones(Number,Ns*Nt)...)
+    append!(I, 1:Ns*Nt)
+    append!(J, 1:Ns*Nt)
+    append!(V, ones(Number,Ns*Nt))
   
     for tr in transitions(std)
         # dummy value not necessary, since every diagonal entry requires a one to be added to it.
@@ -95,12 +96,13 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
         dst = get_prop(std, tr, :distr) 
         lb = floor(cquantile(dst, tol) / dt) * dt
         @time for (ni,nt) in enumerate(t)
-            Φ = min(zero(dt),lb):dt:nt
+            Φ = t[1]:dt:nt
+            # Φ = min(zero(dt),lb):dt:nt
             NΦ = length(Φ)
             
-            push!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ)...)
-            push!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ]...)
-            push!(V, .- dt .* weights(ni)[1:NΦ] .* pdf.(dst, nt.-Φ, Φ)...)
+            append!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ))
+            append!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ])
+            append!(V, .- dt .* weights(ni)[1:NΦ] .* pdf.(dst, nt.-Φ, Φ))
     end end
     V[isnan.(V)] .= 0.0
     return _SA.sparse(I, J, V)
@@ -108,10 +110,11 @@ end
 
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+                t::StepRangeLen, tol::Real=1e-8)
     # get the input
-    t   = zero(dt):dt:tsim
     Nt  = length(t)
+    t = t
+    dt = step(t)
 
     # solve the problem
     Φ   = zeros(Nt, ns(std))
@@ -125,14 +128,16 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
 
     for st in states(std)
-        for (ni,nt) in enumerate(t)
+        @time for (ni,nt) in enumerate(t)
             w   = weights(ni)
             # TOM: φ <<< t, zero could be higher
-            l   = zero(dt):dt:nt
+            # l   = zero(dt):dt:nt
+            l = t[1]:dt:nt
             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
             # 
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), zero(dt),nt,rtol=1e-8)[1] 
+            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), zero(dt),nt,rtol=1e-8)[1] 
+            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-8)[1] 
                                 
             # Φ[ni,st] += sum(dt .* w[nj] .* unit_h * H[ns(std) * (nj-1) + st] .* 
             #                     ccdf(std, st, nt-nl, nl) 
@@ -148,9 +153,7 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # set the solved status
     set_info!(std, :solved, true)
 
-    # h = [h[st](t) for st in states(std)];
-
-    return
+    return [h[st](t) for st in states(std)]
 end
 
 """
@@ -159,21 +162,21 @@ end
 Determine integration weights based on extended Simpson's rule. 
 w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.
 """
-function weights(x::Int)
-    x==1 && return [0]
-    x==2 && return [1/2, 1/2]
-    x==3 && return [1/3, 4/3, 1/3]
-    x==4 && return [3/8, 9/8, 9/8, 3/8]
-    x==5 && return (2/45) .* [7, 32, 12, 32, 7]
-    x==6 && return (5/288) .* [19, 75, 50, 50, 75, 19]
-    x==7 && return (1/140) .* [41, 216, 27, 272, 27, 216, 41]
-    x==8 && return (7/17280) .* [751, 3577, 1323, 2989, 2989, 1323, 3577, 751]
+# function weights(x::Int)
+#     x==1 && return [0]
+#     x==2 && return [1/2, 1/2]
+#     x==3 && return [1/3, 4/3, 1/3]
+#     x==4 && return [3/8, 9/8, 9/8, 3/8]
+#     x==5 && return (2/45) .* [7, 32, 12, 32, 7]
+#     x==6 && return (5/288) .* [19, 75, 50, 50, 75, 19]
+#     x==7 && return (1/140) .* [41, 216, 27, 272, 27, 216, 41]
+#     x==8 && return (7/17280) .* [751, 3577, 1323, 2989, 2989, 1323, 3577, 751]
     
-    weights             = 48 * ones(x)
-    weights[1:4]        = [17, 59, 43, 49]
-    weights[end-3:end]  = [49, 43, 59, 17]
-    return (1/48) .* weights
-end 
+#     weights             = 48 * ones(x)
+#     weights[1:4]        = [17, 59, 43, 49]
+#     weights[end-3:end]  = [49, 43, 59, 17]
+#     return (1/48) .* weights
+# end 
 
 # function weights(x::Int)
 #     w = zeros(x)
@@ -188,6 +191,17 @@ end
 
 #     return w
 # end
+
+function weights(x::Int)
+    if x==1 
+        w = [0]
+    else
+        w = ones(x)
+        w[1] = 1/2
+        w[end] = 1/2
+    end
+    return w
+end
 
 # function weights(x::Int)
 #     w = ones(x)
