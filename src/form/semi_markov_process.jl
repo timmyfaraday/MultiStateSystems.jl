@@ -62,7 +62,7 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
                 # NB: GLENN additional clarification distr betreden op nϕ en blijven tot nt, φ =  nt - nl
                 # pdf 
                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
-                    pdf(get_prop(std, tr, :distr), nt - nl, nl)
+                    pdf(get_prop(std, tr, :distr), nt - nl, nl) |> unit(dt)^-1
             end
             rT = (ns(std) * (ni - 1) + 1):(ns(std) * ni)
             rΦ = (ns(std) * (nj - 1) + 1):(ns(std) * nj)
@@ -96,13 +96,15 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
         dst = get_prop(std, tr, :distr) 
         lb = floor(cquantile(dst, tol) / dt) * dt
         @time for (ni,nt) in enumerate(t)
-            Φ = t[1]:dt:nt
+            Φ = nt:-dt:t[1]
+            lt = t[1]:dt:nt
             # Φ = min(zero(dt),lb):dt:nt
             NΦ = length(Φ)
             
             append!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ))
             append!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ])
-            append!(V, .- dt .* weights(ni)[1:NΦ] .* pdf.(dst, nt.-Φ, Φ))
+            # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
+            append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
     end end
     V[isnan.(V)] .= 0.0
     return _SA.sparse(I, J, V)
@@ -110,38 +112,43 @@ end
 
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-                t::StepRangeLen, tol::Real=1e-8)
+    tsim::Number=1.0u"yr", dt::Number=1u"hr", tol::Real=1e-8)
+    
     # get the input
+    dt = dt |> unit(tsim)
+    t = zero(dt):dt:tsim
     Nt  = length(t)
-    t = t
-    dt = step(t)
+    println(t)
+
 
     # solve the problem
     Φ   = zeros(Nt, ns(std))
     diff  = zeros(Nt, ns(std))
 
     U = set_U(std,t,tol)
+    # U = set_U(std,t)
     A = ustrip(set_A(std,t))
+    println("time to calculate H")
+    @time H=U\A*unit(1/t[1])
+    
 
-    H=U\A*unit(1/dt)
-
-    h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+    # h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
 
     for st in states(std)
         @time for (ni,nt) in enumerate(t)
             w   = weights(ni)
             # TOM: φ <<< t, zero could be higher
             # l   = zero(dt):dt:nt
-            l = t[1]:dt:nt
+            l = t[1]:dt:nt .|> unit(tsim)
             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
             # 
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
             # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), zero(dt),nt,rtol=1e-8)[1] 
-            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-8)[1] 
+            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-8)[1] 
                                 
-            # Φ[ni,st] += sum(dt .* w[nj] .* unit_h * H[ns(std) * (nj-1) + st] .* 
-            #                     ccdf(std, st, nt-nl, nl) 
-            #                     for (nj,nl) in enumerate(l))
+            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+                                ccdf(std, st, nt-nl, nl) 
+                                for (nj,nl) in enumerate(l))
     end end
 
     
@@ -153,7 +160,8 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # set the solved status
     set_info!(std, :solved, true)
 
-    return [h[st](t) for st in states(std)]
+    # return [h[st](t) for st in states(std)]
+    return U
 end
 
 """
@@ -182,9 +190,9 @@ w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.
 #     w = zeros(x)
 #     for i in 1:length(w)
 #         if i % 2 == 0
-#            w[i] = 4/3 
+#            w[i] = 2/3 
 #         else
-#             w[i] = 2/3
+#             w[i] = 4/3
 #     end end
 #     w[1] = 1/3
 #     w[end] = 1/3
