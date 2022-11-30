@@ -242,6 +242,9 @@ f(x, μ, σ, ω) = \\begin{cases}
                     0                                                                                           &\\text{if:}~x < 0.
                 \\end{cases}
 ```
+
+Given the ln-function, all Unitful values are converted to correspond with the unit of `μ`.
+
 # Constructors
 | Full               | Abbr.         | Description                                                  |
 | :----------------- | :------------ | :----------------------------------------------------------- |
@@ -311,9 +314,10 @@ function pdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     μ, σ, ω = params(dst)
     dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(μ)
-        x = ustrip(unit(φ), σ)
-        y = uconvert(unit(φ/φ),(log(φ) - μ)^2 / (2 * σ^2))
-        eval(ω,t) / (sqrt(2 * pi) * x * φ) * exp(-y)
+        x = ustrip(unit(μ), σ)
+        y = uconvert(unit(μ), φ)
+        z = uconvert(unit(μ/μ),(log(y) - μ)^2 / (2 * σ^2))
+        eval(ω,t) / (sqrt(2 * pi) * x * y) * exp(-z)
     else
         zero(1/φ)
     end
@@ -322,7 +326,8 @@ function cdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     μ, σ, ω = params(dst)
     dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(μ)
-        y = uconvert(unit(φ/φ),(log(φ) - μ) / (sqrt(2) * σ))
+        x = uconvert(unit(μ), φ)
+        y = uconvert(unit(μ/μ),(log(x) - μ) / (sqrt(2) * σ))
         eval(ω,t) / 2 * _SF.erfc(-y)
     else
         zero(Number)
@@ -332,7 +337,8 @@ function ccdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     μ, σ, ω = params(dst)
     dimension(μ)==dimension(σ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(μ)
-        y = uconvert(unit(φ/φ),(log(φ) - μ) / (sqrt(2) * σ))
+        x = uconvert(unit(μ), φ)
+        y = uconvert(unit(μ/μ),(log(x) - μ) / (sqrt(2) * σ))
         eval(ω,t) * (1 - _SF.erfc(-y) / 2)
     else
         eval(ω,t)
