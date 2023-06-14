@@ -29,7 +29,10 @@ function set_A(std::AbstractSTD, t::StepRangeLen)
     for (ni,nt) in enumerate(t)
         for tr in transitions(std)
             id      = ns(std) * (ni-1) + _LG.dst(tr)
-            # NB: GLENN same clarification
+            # The content of the A-vector is the probability of initially being 
+            # in state (_LG.src(tr)) times the probability of transitioning out 
+            # of that state entered at sojourn time zero and evaluated at 
+            # time t = (nt)
             A[id]   += get_prop(std, _LG.src(tr), :init) * 
                             pdf(get_prop(std, tr, :distr), nt, zero(dt))
     end end 
@@ -60,6 +63,7 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
             for tr in transitions(std)
                 # NB: GLENN additional clarification distr betreden op nϕ en blijven tot nt, φ =  nt - nl
+                # Comment
                 # pdf 
                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
                     pdf(get_prop(std, tr, :distr), nt - nl, nl) |> unit(dt)^-1
@@ -118,37 +122,33 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     dt = dt |> unit(tsim)
     t = zero(dt):dt:tsim
     Nt  = length(t)
-    println(t)
-
 
     # solve the problem
     Φ   = zeros(Nt, ns(std))
-    diff  = zeros(Nt, ns(std))
 
     U = set_U(std,t,tol)
     # U = set_U(std,t)
     A = ustrip(set_A(std,t))
-    println("time to calculate H")
-    @time H=U\A*unit(1/t[1])
+    H=U\A*unit(1/t[1])
     
 
-    # h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+    h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
 
     for st in states(std)
-        @time for (ni,nt) in enumerate(t)
+        for (ni,nt) in enumerate(t)
             w   = weights(ni)
             # TOM: φ <<< t, zero could be higher
             # l   = zero(dt):dt:nt
             l = t[1]:dt:nt .|> unit(tsim)
             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
-            # 
+            # Comment
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
             # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), zero(dt),nt,rtol=1e-8)[1] 
-            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-8)[1] 
+            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-8)[1] 
                                 
-            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-                                ccdf(std, st, nt-nl, nl) 
-                                for (nj,nl) in enumerate(l))
+            # Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+            #                     ccdf(std, st, nt-nl, nl) 
+            #                     for (nj,nl) in enumerate(l))
     end end
 
     
@@ -159,9 +159,6 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
-
-    # return [h[st](t) for st in states(std)]
-    return U
 end
 
 """
@@ -242,3 +239,20 @@ elunit(b::Vector{U}) where U = _UF.unit(U)
 _LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) = 
     (ustrip.(A) \ ustrip(b)) * (elunit(b) / elunit(A))
 
+function battery_system_availability(i, T, ntw_av, μ, σ)
+    # Calculate the probability that the battery does not run out of charge before
+    # the power sources are repaired at time t. With a lognormal distribution for 
+    # the repair time with mean μ and standard deviation σ.
+    p_failure = 1 - ntw_av[i]
+    p_repair_time_ge_T = ccdf(LogNormal(μ, σ),T)
+    return 1-p_failure*p_repair_time_ge_T
+end
+
+function battery_system_availability(i, T, ntw_av, θ)
+    # Calculate the probability that the battery does not run out of charge before
+    # the power sources are repaired at time t. With a lognormal distribution for 
+    # the repair time with mean μ and standard deviation σ.
+    p_failure = 1 - ntw_av[i]
+    p_repair_time_ge_T = ccdf(Exponential(θ),T)
+    return 1-p_failure*p_repair_time_ge_T
+end

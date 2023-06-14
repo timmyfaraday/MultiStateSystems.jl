@@ -31,7 +31,7 @@ const _MSS = MultiStateSystems
 const _LG  = LightGraphs
 
 # constants
-dt      = 3.0u"hr"
+dt      = 0.1u"hr"
 tsim    = 4500.0u"hr"
 t       = zero(dt):dt:tsim
 
@@ -50,7 +50,7 @@ add_transitions!(std, distr = [Exponential(1000.0u"hr"), Weibull(250.0u"hr", 1.5
                       states = [(1,2),(2,3)])
 
 # trapping
-# _MSS.set_info!(std, 3, :trapping, true)
+_MSS.set_info!(std, 3, :trapping, true)
 
 # # solve the std - Markov
 # solve!(std, cls, tsim = tsim, dt = dt)
@@ -68,14 +68,14 @@ add_transitions!(std, distr = [Exponential(1000.0u"hr"), Weibull(250.0u"hr", 1.5
 #         ylabel="probability")
 
 # # solve the std - Analytical
-# dτ = dt / 1
-# dst1 = _MSS.get_prop(std,_LG.Edge(1,2),:distr)
-# dst2 = _MSS.get_prop(std,_LG.Edge(2,3),:distr)
+dτ = dt / 10
+dst1 = _MSS.get_prop(std,_LG.Edge(1,2),:distr)
+dst2 = _MSS.get_prop(std,_LG.Edge(2,3),:distr)
 
-# PA1 = 1.0 .- _MSS.cdf.(dst1,t,zero(dt))
-# PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]
-# PA22= [sum(dτ * _MSS.weights(length(zero(nt):dτ:nt))[ni] * _MSS.pdf.(dst1,nl,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-nl,nt)) for (ni,nl) in enumerate(zero(nt):dτ:nt)) for nt in t]
-# PA3 = 1.0 .- (PA1 .+ PA2)
+PA1 = 1.0 .- _MSS.cdf.(dst1,t,zero(dt))
+PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]
+PA22= [sum(dτ * _MSS.weights(length(zero(nt):dτ:nt))[ni] * _MSS.pdf.(dst1,nl,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-nl,nt)) for (ni,nl) in enumerate(zero(nt):dτ:nt)) for nt in t]
+PA3 = 1.0 .- (PA1 .+ PA2)
 
 
 
@@ -87,21 +87,28 @@ add_transitions!(std, distr = [Exponential(1000.0u"hr"), Weibull(250.0u"hr", 1.5
 solve!(std, cls, tsim = tsim, dt = dt)
 
 # # probabilities - SEMIMarkov 
-# PS1 = _MSS.get_prop(std,1,:prob)
-# PS2 = _MSS.get_prop(std,2,:prob)
-# PS3 = _MSS.get_prop(std,3,:prob)
+PS1 = _MSS.get_prop(std,1,:prob)
+PS2 = _MSS.get_prop(std,2,:prob)
+PS3 = _MSS.get_prop(std,3,:prob)
 
 
+plot(t, [PS1, PS2, PS3],
+         label=["State 1" "State 2" "State 3"],
+         xlabel="time",
+         ylabel="probability")
 
-
+plot(t, PA1.+PA2,
+         label="State 1+ State 2",
+         xlabel="time",
+         ylabel="probability")
     
-# ϵ = 1e-16;
+ϵ = 1e-16;
 
-# plot(t, [PA1.-PS1.+ϵ, PA2.-PS2.+ϵ, PA3.-PS3.+ ϵ],
-#          label=["State 1" "State 2" "State 3"],
-#          xlabel="time",
-#          yscale = :log,
-#          ylabel="probability difference")
+plot(t, [PA1.-PS1.+ϵ, PA2.-PS2.+ϵ, PA3.-PS3.+ ϵ],
+         label=["State 1" "State 2" "State 3"],
+         xlabel="time",
+         yscale = :log,
+         ylabel="probability difference")
 
 # plot!(t, PA2.-PS2.+ϵ,
 #          label="State 2",
@@ -133,9 +140,9 @@ solve!(std, cls, tsim = tsim, dt = dt)
 #          ylabel="rate (1/t)")
 
 
-# # # plot the reliability
-# # plot(_MSS.get_prop(std, :time),
-# #         _MSS.get_prop(std, 1, :prob) + _MSS.get_prop(std, 2, :prob),
-# #         label="reliability",
-# #         xlabel="time",
-# #         ylabel="probability")
+# plot the reliability
+  plot(_MSS.get_prop(std,:time),
+        _MSS.get_prop(std,1,:prob),
+        label="reliability",
+        xlabel="time",
+        ylabel="probability")
