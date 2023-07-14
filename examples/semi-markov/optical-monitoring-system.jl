@@ -24,6 +24,7 @@ using Plots
 using Unitful
 using UnitfulRecipes
 using MultiStateSystems
+using Revise
 
 
 
@@ -50,7 +51,14 @@ add_transitions!(std, states = [(1,1),(1,2),(2,1),(2,3),(3,1),(3,4)],
                                 LogNormal(4.0u"hr", 0.4u"hr", 0.38)])
                       
 # solve the std
-solve!(std, cls, tsim = 8760.0u"hr", dt = 5.84u"hr", tol=1e-8)
+@time solve!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol=1e-8)
+
+#To do: Testen of de resultaten van mijn eigen analyse goed uitkomen op 1, toch uitzoeken waar effect van weighting precies vandaan komt, wat doet die numerieke backslash operator precies?
+
+# 1. Set U with sparse matrix and H integrated numerically with simpson rule: 49.679 seconds; 1.00001173
+# 2. Set U with sparse matrix and H integrated with quadgk: 133.125 seconds; 0.999999001
+# 3. Set U with standard method and H integrated numerically with simpson rule; 40.318 seconds; 1.00001173
+# 4. Set U with standard method and H integrated with quadgk: 123.198 seconds; 0.999999001
 
 # plot the probabilities
 plot(_MSS.get_prop(std, :time), 
@@ -60,8 +68,8 @@ plot(_MSS.get_prop(std, :time),
         ylabel="probability")
 
 # plot the reliability
-plot!(_MSS.get_prop(std, :time),
-        _MSS.get_prop(std, 1, :prob),
-        label="reliability",
+plot(_MSS.get_prop(std, :time),
+        _MSS.get_prop(std, 1, :prob)+_MSS.get_prop(std, 2, :prob)+_MSS.get_prop(std, 3, :prob)+_MSS.get_prop(std, 4, :prob),
+        label="reliability weight trap",
         xlabel="time",
         ylabel="probability")

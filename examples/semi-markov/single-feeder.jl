@@ -9,7 +9,6 @@
 # load pkgs
 using Plots
 using Unitful
-using UnitfulRecipes
 using MultiStateSystems
 
 # pkg const
@@ -22,30 +21,26 @@ cls = SemiMarkovProcess()
 # the model
 
 std = STD()
-add_states!(std, name  = ["normal operation state","fault operation state f1","Primary post-fault state f1","Secondary post-fault state f1", "Fault operation state for f1", "Primary post-fault state for f2", "secondary post-fault state for f2", "fault operation state for f3", "Primary post-fault state for f3", "secondary post-fault state for f3"],
-                        power = [1.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW"],
-                        init  = [1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0])
+add_states!(std, name  = ["normal operation state","fault operation state f1","Primary post-fault state","Secondary post-fault state", "Fault operation state for f2", "Fault operation state for f3"],
+                        power = [1.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW", 0.0u"MW"],
+                        init  = [1.0,0.0,0.0,0.0,0.0,0.0])
 
-add_transitions!(std, states = [(1,2),(2,3),(2,4),(4,3),(3,1),(1,5),(5,6),(5,7),(7,6),(6,1),(1,8),(8,9),(8,10),(10,9),(9,1)],
-                      distr = [Weibull(10000.0u"hr", 1.25, 0.33),
+add_transitions!(std, states = [(1,2),(1,5),(1,6),(2,3),(5,3),(6,3),(2,4),(5,4),(6,4),(3,4),(4,1)],
+                      distr = [Exponential(4000.0u"hr", 0.3),
+                               Exponential(10000.0u"hr", 0.4),
+                               Exponential(25000.0u"hr", 0.3),
                                LogNormal(10.0u"hr", 0.08u"hr", 0.8),
-                               LogNormal(13.0u"hr", 0.08u"hr", 0.2),
-                               LogNormal(100.0u"hr", 0.08u"hr"),
-                               Weibull(1000.0u"hr", 10),
-                               Weibull(8000.0u"hr", 1.5, 0.33),
                                LogNormal(10.0u"hr", 0.08u"hr", 0.8),
-                               LogNormal(13.0u"hr", 0.08u"hr", 0.2),
+                               LogNormal(10.0u"hr", 0.08u"hr", 0.8),
+                               LogNormal(10.0u"hr", 0.08u"hr", 0.2),
+                               LogNormal(10.0u"hr", 0.08u"hr", 0.2),
+                               LogNormal(10.0u"hr", 0.08u"hr", 0.2),
                                LogNormal(100u"hr", 0.08u"hr"),
-                               Weibull(1000.0u"hr", 10),
-                               Weibull(12500.0u"hr", 1.75, 0.33),
-                               LogNormal(10.0u"hr", 0.08u"hr", 0.8),
-                               LogNormal(13.0u"hr", 0.08u"hr", 0.2),
-                               LogNormal(100.0u"hr", 0.08u"hr"),
-                               Weibull(1000.0u"hr", 10.0)])
+                               Weibull(1000.0u"hr", 10)])
                       
                       
 # solve the network
-solve!(std, cls , tsim = 4500.0u"hr", dt = 1800u"s")
+solve!(std, cls , tsim = 10000.0u"hr", dt = 10u"hr")
 
 # plot the probabilities
 plot(_MSS.get_prop(std, :time), 
@@ -55,15 +50,15 @@ plot(_MSS.get_prop(std, :time),
         ylabel="probability")
 
 # plot the reliability
-plot!(_MSS.get_prop(std, :time),
+plot(_MSS.get_prop(std, :time),
         _MSS.get_prop(std, 1, :prob),
-        label="reliability",
+        label="semi-Markov",
         xlabel="time",
-        ylabel="probability")
+        ylabel="Availability")
 
 
 tot_prob = []
-ns = 10
+ns = 11
 tot_prob .+= _MSS.get_prop(std, ns, :prob)
 for ns in _MSS.states(std)
         tot_prob .+= _MSS.get_prop(std, ns, :prob)

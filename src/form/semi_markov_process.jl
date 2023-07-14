@@ -50,6 +50,7 @@ and remains there until time t
 The unit of U is [-]
 """
 function set_U(std::AbstractSTD, t::StepRangeLen)
+    # 
     dt = step(t)
     Nt = length(t)
 
@@ -62,9 +63,9 @@ function set_U(std::AbstractSTD, t::StepRangeLen)
         for (nj,nl) in enumerate(l)
             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
             for tr in transitions(std)
-                # NB: GLENN additional clarification distr betreden op nϕ en blijven tot nt, φ =  nt - nl
-                # Comment
-                # pdf 
+                # The results of the pdf depends on two factors:
+                    # - How long has the system been in this particular state = sojourn time (nt - nl) with nt the index of the current time t and nl the index of entrance time.
+                    # - The time at which the system entered a certain state, with nl the index of this entrance time. This determines weight attributed to this particular transition.
                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
                     pdf(get_prop(std, tr, :distr), nt - nl, nl) |> unit(dt)^-1
             end
@@ -99,10 +100,10 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
         # dummy_value = ifelse(_LG.src(tr) == _LG.dst(tr),zero(1/dt),oneunit(1/dt)) # dummy_value voegt nu een 1 toe wanneer dest and source gelijk zijn, maar dit moet enkel in geval ni en nj ook nog gelijk zijn. Extra controle in de tijdslus.
         dst = get_prop(std, tr, :distr) 
         lb = floor(cquantile(dst, tol) / dt) * dt
-        @time for (ni,nt) in enumerate(t)
+        for (ni,nt) in enumerate(t)
             Φ = nt:-dt:t[1]
+            # Φ represents the sojourn time, ranging from
             lt = t[1]:dt:nt
-            # Φ = min(zero(dt),lb):dt:nt
             NΦ = length(Φ)
             
             append!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ))
@@ -141,14 +142,20 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
             # l   = zero(dt):dt:nt
             l = t[1]:dt:nt .|> unit(tsim)
             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
-            # Comment
+            # The probability of being in a state st at time nt depends on two things:
+            # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
+            # The probability of not having transitioned until time nt is characterized by the complementary cumulative density function evaluated at the time
+            # of entering the state (0) to determine the weight and the sojourn time (nt-0).
+            # Second, on the probability of having transitioned to state st at time x and the probability of not having transitioned out of that state during the sojourn time (nt-x).
+            # The probability of having transitioned to state st at time x is characterized by the integral of the transition frequency density h of state st.
+            # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
+            # The last transition time x and the sojourn time nt-x.
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), zero(dt),nt,rtol=1e-8)[1] 
-            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-8)[1] 
+            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
                                 
-            # Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-            #                     ccdf(std, st, nt-nl, nl) 
-            #                     for (nj,nl) in enumerate(l))
+            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+                                ccdf(std, st, nt-nl, nl) 
+                                for (nj,nl) in enumerate(l))
     end end
 
     
