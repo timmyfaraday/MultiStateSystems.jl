@@ -22,10 +22,10 @@ States:
 # load pkgs
 using Plots
 using Unitful
-using UnitfulRecipes
 using MultiStateSystems
 using Revise
-
+using CSV
+using DataFrames
 
 
 # pkg const
@@ -51,7 +51,17 @@ add_transitions!(std, states = [(1,1),(1,2),(2,1),(2,3),(3,1),(3,4)],
                                 LogNormal(4.0u"hr", 0.4u"hr", 0.38)])
                       
 # solve the std
-@time solve!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol=1e-8)
+@time H1, H1c, H = solve!(std, cls, tsim = 8760.0u"hr"; dt = 4u"hr", acc = 10, steps = 150, tol=1e-8)
+        # h = solve!(std, cls, tsim = 596.0u"hr", dt = 4u"hr", tol=1e-8)
+steps = 150;
+acc = 10;
+dt = 4u"hr";
+tsim = 8760.0u"hr";
+dt_n = dt/acc |> unit(tsim);
+t_n = zero(dt_n):dt_n:dt_n*(steps)*acc
+time = zero(dt):dt:149.0*dt;
+
+length(t_n)
 
 #To do: Testen of de resultaten van mijn eigen analyse goed uitkomen op 1, toch uitzoeken waar effect van weighting precies vandaan komt, wat doet die numerieke backslash operator precies?
 
@@ -73,3 +83,48 @@ plot(_MSS.get_prop(std, :time),
         label="reliability weight trap",
         xlabel="time",
         ylabel="probability")
+
+plot(_MSS.get_prop(std, :time),
+        _MSS.get_prop(std, 1, :prob),
+        label="State 1",
+        xlabel="time",
+        ylabel="State Probability")
+
+plot(_MSS.get_prop(std, :time),
+        ustrip(h[1]),
+        label="h[1]",
+        xlabel="time",
+        ylabel="State Probability")
+
+plot!(t_n[1:end-4],
+        ustrip(H1[4]),
+        label="H1[1]",
+        xlabel="time",
+        ylabel="Transition frequency density function")
+
+time = _MSS.get_prop(std, :time);
+state1 = _MSS.get_prop(std, 1, :prob);
+state2 = _MSS.get_prop(std, 2, :prob);
+state3 = _MSS.get_prop(std, 3, :prob);
+state4 = _MSS.get_prop(std, 4, :prob);
+stfd1 = ustrip(H[1]);
+stfd2 = ustrip(H[2]);
+stfd3 = ustrip(H[3]);
+stfd4 = ustrip(H[4]);
+
+ut = Array{String}(undef,length(time))
+for i in 1:1:length(time)
+        ut[i] = string(unit(time[1]))
+end
+
+results = DataFrames.DataFrame(time = ustrip(time), unit = ut,
+                                state1 = state1,
+                                state2 = state2,
+                                state3 = state3,
+                                state4 = state4,
+                                H1 = stfd1,
+                                H2 = stfd2,
+                                H3 = stfd3,
+                                H4 = stfd4);
+
+CSV.write("C:/Users/gemmers/Documents/GitHub/MSS/Results/Journal_Semi_Markov/OMS_results.csv", results)

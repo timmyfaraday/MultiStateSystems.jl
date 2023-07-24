@@ -36,7 +36,7 @@ add_transitions!(std, states = [(1,2),(1,5),(1,6),(2,3),(5,3),(6,3),(2,4),(5,4),
                                LogNormal(10.0u"hr", 0.08u"hr", 0.2),
                                LogNormal(10.0u"hr", 0.08u"hr", 0.2),
                                LogNormal(100u"hr", 0.08u"hr"),
-                               Weibull(1000.0u"hr", 10)])
+                               Weibull(100.0u"hr", 10)])
                       
                       
 # solve the network
@@ -56,10 +56,14 @@ plot(_MSS.get_prop(std, :time),
         xlabel="time",
         ylabel="Availability")
 
+plot(_MSS.get_prop(std, :time),
+        sum(_MSS.get_prop(std, ns, :prob) for ns in _MSS.states(std)),
+        label="semi-Markov",
+        xlabel="time",
+        ylabel="Availability")
 
+        sum.(_MSS.get_prop(std, ns, :prob) for ns in _MSS.states(std))
 tot_prob = []
-ns = 11
-tot_prob .+= _MSS.get_prop(std, ns, :prob)
 for ns in _MSS.states(std)
         tot_prob .+= _MSS.get_prop(std, ns, :prob)
 end

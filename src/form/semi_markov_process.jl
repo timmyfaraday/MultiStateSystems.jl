@@ -41,6 +41,31 @@ function set_A(std::AbstractSTD, t::StepRangeLen)
     return A
 end
 
+function set_A(std::AbstractSTD, t::StepRangeLen, H::Vector, steps::Number)
+    dt = step(t)
+    Nt = length(t)
+    Ns = ns(std)
+
+    A = zeros(typeof(1/dt), ns(std) * Nt)
+
+    A[1:length(H)] = H
+
+    for (ni,nt) in enumerate(t)
+        if ni > steps
+            for tr in transitions(std)
+                id      = ns(std) * (ni-1) + _LG.dst(tr)
+                # The content of the A-vector is the probability of initially being 
+                # in state (_LG.src(tr)) times the probability of transitioning out 
+                # of that state entered at sojourn time zero and evaluated at 
+                # time t = (nt)
+                A[id]   += get_prop(std, _LG.src(tr), :init) * 
+                                pdf(get_prop(std, tr, :distr), nt, zero(dt))
+    end end end
+    A[isnan.(A)] .= zero(1/dt)
+
+    return A
+end
+
 """
     MultiStateSystems.set_U(std::MultiStateSystems.AbstractSTD, t::StepRangeLen)
 
@@ -115,10 +140,45 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     return _SA.sparse(I, J, V)
 end
 
+function set_U(std::AbstractSTD, t::StepRangeLen, steps::Number, tol::Real)
+    dt = step(t)
+    Nt = length(t)   
+    Ns = ns(std)
+
+    # initialize three vectors I,J,V respectively row, column and value indices
+    I,J,V = Int[],Int[],Number[]
+
+    append!(I, 1:Ns*Nt)
+    append!(J, 1:Ns*Nt)
+    append!(V, ones(Number,Ns*Nt))
+  
+    for tr in transitions(std)
+        # dummy value not necessary, since every diagonal entry requires a one to be added to it.
+        # Sparse Arrays allow to add values to the same location twice and add those
+        # dummy_value = ifelse(_LG.src(tr) == _LG.dst(tr),zero(1/dt),oneunit(1/dt)) # dummy_value voegt nu een 1 toe wanneer dest and source gelijk zijn, maar dit moet enkel in geval ni en nj ook nog gelijk zijn. Extra controle in de tijdslus.
+        dst = get_prop(std, tr, :distr) 
+        lb = floor(cquantile(dst, tol) / dt) * dt
+        for (ni,nt) in enumerate(t)
+            if ni > steps
+                Φ = nt:-dt:t[1]
+                # Φ represents the sojourn time, ranging from
+                lt = t[1]:dt:nt
+                NΦ = length(Φ)
+                
+                append!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ))
+                append!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ])
+                # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
+                append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
+            end
+    end end
+    V[isnan.(V)] .= 0.0
+    return _SA.sparse(I, J, V)
+end
+
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-    tsim::Number=1.0u"yr", dt::Number=1u"hr", tol::Real=1e-8)
-    
+    tsim::Number=1.0u"yr", dt::Number=1u"hr")
+    tol = 1e-8;
     # get the input
     dt = dt |> unit(tsim)
     t = zero(dt):dt:tsim
@@ -133,7 +193,8 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     H=U\A*unit(1/t[1])
     
 
-    h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+    # h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+    h = [map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
 
     for st in states(std)
         for (ni,nt) in enumerate(t)
@@ -166,7 +227,90 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
+    return h
 end
+
+function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
+    tsim::Number=1.0u"yr", dt::Number=1u"hr", acc::Int64=10, steps::Number=100.0, tol::Real=1e-8)
+    
+    # Get the input for solving numerical inrush phase
+    dt_n = dt/acc |> unit(tsim);
+    t_n = zero(dt_n):dt_n:dt_n*(steps)*acc;
+
+    U = set_U(std,t_n[1:end-1],tol)
+    A = ustrip(set_A(std,t_n[1:end-1]))
+    H1 = U\A*unit(1/t_n[1])
+ 
+    H_c = compress(H1, acc, std)
+
+    H1o = [ map(x->H1[ns(std) * (x-1) + st], 1:length(t_n)-ns(std)) for st in states(std)];
+    H1co = [ map(x->H_c[ns(std) * (x-1) + st], 1:Int(length(H_c)/ns(std))) for st in states(std)];
+
+    # get the input for final problem solution
+    dt = dt |> unit(tsim)
+    t = zero(dt):dt:tsim
+    Nt  = length(t)
+
+    # solve the problem
+    Φ   = zeros(Nt, ns(std))
+
+    U = set_U(std,t,steps,tol)
+    A = ustrip(set_A(std,t,H_c,steps))
+    H=U\A*unit(1/t[1])
+
+    Ho = [ map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
+
+    for st in states(std)
+        for (ni,nt) in enumerate(t)
+            w   = weights(ni)
+            # TOM: φ <<< t, zero could be higher
+            # l   = zero(dt):dt:nt
+            l = t_n[1]:dt:nt .|> unit(tsim)
+            # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
+            # The probability of being in a state st at time nt depends on two things:
+            # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
+            # The probability of not having transitioned until time nt is characterized by the complementary cumulative density function evaluated at the time
+            # of entering the state (0) to determine the weight and the sojourn time (nt-0).
+            # Second, on the probability of having transitioned to state st at time x and the probability of not having transitioned out of that state during the sojourn time (nt-x).
+            # The probability of having transitioned to state st at time x is characterized by the integral of the transition frequency density h of state st.
+            # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
+            # The last transition time x and the sojourn time nt-x.
+            Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
+            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
+                                
+            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+                                ccdf(std, st, nt-nl, nl) 
+                                for (nj,nl) in enumerate(l))
+    end end
+
+    # set the output
+    set_prop!(std, :cls, cls)
+    set_prop!(std, :time, t)
+    set_prop!(std, states(std), :prob, [Φ[:,ns] for ns in states(std)])
+
+    # set the solved status
+    set_info!(std, :solved, true)
+
+    return H1o, H1co, Ho
+end
+
+function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
+    Ns  = ns(std)
+
+    for st in states(std)
+        init   = get_prop(std, _LG.src(tr), :init)
+
+        if init > 0.0
+            p = init .* ccdf.(std, st, t, zero(dt)) 
+                + integral(std, st, t, H[st:Ns:end], tol)
+        else
+            p = integral(std, st, t, H[st:Ns:end], tol)          
+        end
+        set_prop!(std, st, :prob, p)
+    end
+end
+
+
 
 """
     MultiStateSystems.weights(x::Int)
@@ -263,3 +407,38 @@ function battery_system_availability(i, T, ntw_av, θ)
     p_repair_time_ge_T = ccdf(Exponential(θ),T)
     return 1-p_failure*p_repair_time_ge_T
 end
+
+function integral(std::AbstractSTD, st::Int, t::StepRangeLen, h::Vector, tol::Real)
+    # controleer voor schaalfactor
+    d2h = abs.(diff(diff(h)))
+    id = 1
+    idx = [1]
+
+    while true
+        next_id = findfirst(x -> x > tol, cumsum(d2h[id:end]))
+        next_id == nothing ? break : ~ ;
+
+        global id += next_id
+        push!(idx,id)
+    end
+    push!(idx,length(d2h))
+    τ   = t[idx]
+
+    γ   = _INT.LinearInterpolation(collect(t), h)
+
+    ϕ   = [_QGK.quadgk(x -> h(x) * ccdf.(std, st, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ]
+    # niet gelijk gespacete interpolatie 
+    p   = _INT.LinearInterpolation(τ, ϕ)(t)
+end
+
+function compress(v::Vector, y::Int, std::AbstractSTD)
+    n = length(v)
+    Ns = ns(std)
+    compressed_v = zeros(Int(n ÷ y))*unit(v[1])
+    for st in 1:Ns
+        for i in 1:Int(n/Ns ÷ y)
+            compressed_v[Ns*(i-1)+st] = v[y*Ns*(i-1)+st];
+        end
+    end
+    return compressed_v
+  end

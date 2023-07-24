@@ -45,7 +45,7 @@ add_transitions!(std, states = [(1,2),(2,3),(2,4),(4,3),(3,1),(1,5),(5,6),(5,7),
                       
                       
 # solve the network
-solve!(std, cls , tsim = 4500.0u"hr", dt = 1800u"s")
+solve!(std, cls , tsim = 10000.0u"hr", dt = 10u"hr")
 
 # plot the probabilities
 plot(_MSS.get_prop(std, :time), 
@@ -55,7 +55,7 @@ plot(_MSS.get_prop(std, :time),
         ylabel="probability")
 
 # plot the reliability
-plot!(_MSS.get_prop(std, :time),
+plot(_MSS.get_prop(std, :time),
         _MSS.get_prop(std, 1, :prob),
         label="reliability",
         xlabel="time",
