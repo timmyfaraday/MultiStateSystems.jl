@@ -51,7 +51,7 @@ function set_A(std::AbstractSTD, t::StepRangeLen, H::Vector, steps::Number)
     A[1:length(H)] = H
 
     for (ni,nt) in enumerate(t)
-        if ni > steps
+        if ni > steps + 1
             for tr in transitions(std)
                 id      = ns(std) * (ni-1) + _LG.dst(tr)
                 # The content of the A-vector is the probability of initially being 
@@ -159,7 +159,7 @@ function set_U(std::AbstractSTD, t::StepRangeLen, steps::Number, tol::Real)
         dst = get_prop(std, tr, :distr) 
         lb = floor(cquantile(dst, tol) / dt) * dt
         for (ni,nt) in enumerate(t)
-            if ni > steps
+            if ni > steps + 1
                 Φ = nt:-dt:t[1]
                 # Φ represents the sojourn time, ranging from
                 lt = t[1]:dt:nt
@@ -177,8 +177,7 @@ end
 
 # stochastic process
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-    tsim::Number=1.0u"yr", dt::Number=1u"hr")
-    tol = 1e-8;
+    tsim::Number=1.0u"yr", dt::Number=1u"d", tol::Real=1e-8)
     # get the input
     dt = dt |> unit(tsim)
     t = zero(dt):dt:tsim
@@ -187,36 +186,40 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # solve the problem
     Φ   = zeros(Nt, ns(std))
 
-    U = set_U(std,t,tol)
-    # U = set_U(std,t)
-    A = ustrip(set_A(std,t))
+    println("set_U")
+    @time U = set_U(std,t,tol)
+    println("set_A")
+    @time A = ustrip(set_A(std,t))
     H=U\A*unit(1/t[1])
     
+    # println("set_P")
+    # @time set_P(std, t, H, tol)
+    println("Linear interpolation of H")
+    @time h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+    h_sol = [map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
 
-    # h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
-    h = [map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
-
-    for st in states(std)
+    println("Integration of H to Φ")
+    @time for st in states(std)
         for (ni,nt) in enumerate(t)
             w   = weights(ni)
             # TOM: φ <<< t, zero could be higher
             # l   = zero(dt):dt:nt
             l = t[1]:dt:nt .|> unit(tsim)
-            # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
-            # The probability of being in a state st at time nt depends on two things:
-            # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
-            # The probability of not having transitioned until time nt is characterized by the complementary cumulative density function evaluated at the time
-            # of entering the state (0) to determine the weight and the sojourn time (nt-0).
-            # Second, on the probability of having transitioned to state st at time x and the probability of not having transitioned out of that state during the sojourn time (nt-x).
-            # The probability of having transitioned to state st at time x is characterized by the integral of the transition frequency density h of state st.
-            # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
-            # The last transition time x and the sojourn time nt-x.
+    #         # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
+    #         # The probability of being in a state st at time nt depends on two things:
+    #         # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
+    #         # The probability of not having transitioned until time nt is characterized by the complementary cumulative density function evaluated at the time
+    #         # of entering the state (0) to determine the weight and the sojourn time (nt-0).
+    #         # Second, on the probability of having transitioned to state st at time x and the probability of not having transitioned out of that state during the sojourn time (nt-x).
+    #         # The probability of having transitioned to state st at time x is characterized by the integral of the transition frequency density h of state st.
+    #         # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
+    #         # The last transition time x and the sojourn time nt-x.
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
+            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
                                 
-            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-                                ccdf(std, st, nt-nl, nl) 
-                                for (nj,nl) in enumerate(l))
+            # Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+            #                     ccdf(std, st, nt-nl, nl) 
+            #                     for (nj,nl) in enumerate(l))
     end end
 
     
@@ -227,21 +230,48 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
-    return h
+    return h_sol
 end
 
-function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
+function solveP!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
+    tsim::Number=1.0u"yr", dt::Number=1u"hr", tol::Real=1e-8)
+    # get the input
+    dt = dt |> unit(tsim)
+    t = zero(dt):dt:tsim
+    Nt  = length(t)
+
+    # solve the problem
+    Φ   = zeros(Nt, ns(std))
+
+    println("set_U")
+    @time U = set_U(std,t,tol)
+    println("set_A")
+    @time A = ustrip(set_A(std,t))
+    H=U\A*unit(1/t[1])
+    
+    println("set_P")
+    @time set_P(std, t, H, tol)
+    
+    # set the output
+    set_prop!(std, :cls, cls)
+    set_prop!(std, :time, t)
+
+    # set the solved status
+    set_info!(std, :solved, true)
+end
+
+function solved!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
     tsim::Number=1.0u"yr", dt::Number=1u"hr", acc::Int64=10, steps::Number=100.0, tol::Real=1e-8)
     
     # Get the input for solving numerical inrush phase
     dt_n = dt/acc |> unit(tsim);
     t_n = zero(dt_n):dt_n:dt_n*(steps)*acc;
 
-    U = set_U(std,t_n[1:end-1],tol)
-    A = ustrip(set_A(std,t_n[1:end-1]))
+    U = set_U(std,t_n[1:end],tol)
+    A = ustrip(set_A(std,t_n[1:end]))
     H1 = U\A*unit(1/t_n[1])
  
-    H_c = compress(H1, acc, std)
+    H_c = compress(H1, steps, std)
 
     H1o = [ map(x->H1[ns(std) * (x-1) + st], 1:length(t_n)-ns(std)) for st in states(std)];
     H1co = [ map(x->H_c[ns(std) * (x-1) + st], 1:Int(length(H_c)/ns(std))) for st in states(std)];
@@ -260,12 +290,15 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     Ho = [ map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
 
+    # set_P(std, t, H, tol)
+    h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+
     for st in states(std)
         for (ni,nt) in enumerate(t)
             w   = weights(ni)
             # TOM: φ <<< t, zero could be higher
             # l   = zero(dt):dt:nt
-            l = t_n[1]:dt:nt .|> unit(tsim)
+            l = t[1]:dt:nt .|> unit(tsim)
             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
             # The probability of being in a state st at time nt depends on two things:
             # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
@@ -276,13 +309,14 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
             # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
             # The last transition time x and the sojourn time nt-x.
             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-            # Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
+            Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
                                 
-            Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-                                ccdf(std, st, nt-nl, nl) 
-                                for (nj,nl) in enumerate(l))
+            # Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
+            #                     ccdf(std, st, nt-nl, nl) 
+            #                     for (nj,nl) in enumerate(l))
     end end
 
+    
     # set the output
     set_prop!(std, :cls, cls)
     set_prop!(std, :time, t)
@@ -296,15 +330,17 @@ end
 
 function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
     Ns  = ns(std)
+    Nt = length(t)
+
+    idx_s = 
 
     for st in states(std)
-        init   = get_prop(std, _LG.src(tr), :init)
-
+        init   = get_prop(std, st, :init)
+        h = map(x->H[ns(std) * (x-1) + st], 1:Nt)        
         if init > 0.0
-            p = init .* ccdf.(std, st, t, zero(dt)) 
-                + integral(std, st, t, H[st:Ns:end], tol)
+            p = init .* ccdf.(std, st, t, zero(t[1])) .+ integral(std, st, t, h, tol)
         else
-            p = integral(std, st, t, H[st:Ns:end], tol)          
+            p = integral(std, st, t, h, tol)        
         end
         set_prop!(std, st, :prob, p)
     end
@@ -371,18 +407,6 @@ end
 # ccdf(std::AbstractSTD, ns::Int, φ::Number, t::Number)  = 
 #     ifelse(get_prop(std, ns, :trapping), 1.0, 1.0 - cdf(std, ns, φ, t))
 
-# check whether sum of ccdf could be suffient
-ccdf(std::AbstractSTD, ns::Int, φ::Quantity, t::Quantity)  = 
-    1.0 - mysum(std, ns, φ, t)
-
-function mysum(std::AbstractSTD, ns::Int, φ::Quantity, t::Quantity) 
-# Summation function to overcome summation error over empty collection.
-    if _LG.outneighbors(std.graph, ns) != Int64[]
-        F = sum(cdf(get_prop(std,_LG.Edge(ns,nx),:distr), φ, t)
-            for nx in _LG.outneighbors(std.graph, ns))
-    else
-        F = 0
-end end
 
 # TOM: added functionality to enable \ with units.
 elunit(A::Matrix{U}) where U = _UF.unit(U)
@@ -410,8 +434,8 @@ end
 
 function integral(std::AbstractSTD, st::Int, t::StepRangeLen, h::Vector, tol::Real)
     # controleer voor schaalfactor
-    d2h = abs.(diff(diff(h)))
-    id = 1
+    d2h = abs.(diff(diff(ustrip(h))))
+    global id = 1
     idx = [1]
 
     while true
@@ -421,24 +445,27 @@ function integral(std::AbstractSTD, st::Int, t::StepRangeLen, h::Vector, tol::Re
         global id += next_id
         push!(idx,id)
     end
-    push!(idx,length(d2h))
+    push!(idx,length(d2h)+2)
     τ   = t[idx]
+    γ   = _INT.interpolate((τ,), h[idx], _INT.Gridded(_INT.Linear()))
 
-    γ   = _INT.LinearInterpolation(collect(t), h)
-
-    ϕ   = [_QGK.quadgk(x -> h(x) * ccdf.(std, st, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ]
+    ϕ   = [_QGK.quadgk(x -> γ(x) * ccdf.(std, st, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ]
     # niet gelijk gespacete interpolatie 
+    # Y = interpolate((x,), y, Gridded(Linear()))
     p   = _INT.LinearInterpolation(τ, ϕ)(t)
+    println(size(idx))
+    return p
 end
 
-function compress(v::Vector, y::Int, std::AbstractSTD)
+function compress(v::Vector, steps::Int, std::AbstractSTD)
     n = length(v)
     Ns = ns(std)
-    compressed_v = zeros(Int(n ÷ y))*unit(v[1])
+    y = Int((n-Ns)/(Ns*steps))
+    compressed_v = zeros((steps+1)*Ns)*unit(v[1])
     for st in 1:Ns
-        for i in 1:Int(n/Ns ÷ y)
+        for i in 1:steps+1
             compressed_v[Ns*(i-1)+st] = v[y*Ns*(i-1)+st];
         end
     end
     return compressed_v
-  end
+end

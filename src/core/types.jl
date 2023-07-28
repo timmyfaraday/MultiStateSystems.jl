@@ -31,3 +31,4 @@ PropDict = Dict{Symbol,Any}
 
 # broadcastable
 Broadcast.broadcastable(dst::AbstractDistribution) = Ref(dst)
+Broadcast.broadcastable(std::AbstractSTD) = Ref(std)

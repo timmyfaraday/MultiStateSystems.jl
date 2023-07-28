@@ -117,6 +117,10 @@ set_prop!(std::AbstractSTD, prop::Symbol, value) =
     set_props!(std, Dict(prop => value))
 set_props!(std::AbstractSTD, dict::Dict) = merge!(std.props, dict)
 
+ccdf(std::AbstractSTD, ns::Int, φ::Quantity, t::Quantity) =
+        1.0 - sum(cdf(get_prop(std, _LG.Edge(ns,nx),:distr), φ, t)
+                for nx in _LG.outneighbors(std.graph, ns); init = 0.0)
+                    
 ## Info
 # structs
 mutable struct STDInfo{B<:Bool} <: AbstractInfo

@@ -51,15 +51,24 @@ add_transitions!(std, states = [(1,1),(1,2),(2,1),(2,3),(3,1),(3,4)],
                                 LogNormal(4.0u"hr", 0.4u"hr", 0.38)])
                       
 # solve the std
-@time H1, H1c, H = solve!(std, cls, tsim = 8760.0u"hr"; dt = 4u"hr", acc = 10, steps = 150, tol=1e-8)
-        # h = solve!(std, cls, tsim = 596.0u"hr", dt = 4u"hr", tol=1e-8)
+# @time H1_20, H1c_20, H_accurate_20 = _MSS.solved!(std, cls, tsim = 8760.0u"hr", dt = 10u"hr", acc = 20, steps = 50, tol=1e-8)
+# @time H1_40, H1c_40, H_accurate_40 = _MSS.solved!(std, cls, tsim = 200.0u"hr", dt = 4u"hr", acc = 10, steps = 40, tol=1e-8)
+h_base = solve!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol=1e-7);
+_MSS.solveP!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol = 1e-8);
+
+h_base_select=h_base[1][1:10:end]
+
+plot([h_base_select.-H_accurate_20[1],h_base_select.-H_accurate_40[1]])
+
+dH = abs.(diff(H_accurate_20[1]))
+append!(dH,zero(H[1][1]))
 steps = 150;
 acc = 10;
 dt = 4u"hr";
 tsim = 8760.0u"hr";
 dt_n = dt/acc |> unit(tsim);
 t_n = zero(dt_n):dt_n:dt_n*(steps)*acc
-time = zero(dt):dt:149.0*dt;
+time_c = zero(dt):dt:149.0*dt;
 
 length(t_n)
 
@@ -90,14 +99,14 @@ plot(_MSS.get_prop(std, :time),
         xlabel="time",
         ylabel="State Probability")
 
-plot(_MSS.get_prop(std, :time),
-        ustrip(h[1]),
-        label="h[1]",
+plot(_MSS.get_prop(std, :time)[1:length(dh)],
+        ustrip(h),
+        label="diff H",
         xlabel="time",
         ylabel="State Probability")
 
-plot!(t_n[1:end-4],
-        ustrip(H1[4]),
+plot(_MSS.get_prop(std, :time)[1:length(H[1])],
+        ustrip(H[1]),
         label="H1[1]",
         xlabel="time",
         ylabel="Transition frequency density function")
@@ -108,9 +117,12 @@ state2 = _MSS.get_prop(std, 2, :prob);
 state3 = _MSS.get_prop(std, 3, :prob);
 state4 = _MSS.get_prop(std, 4, :prob);
 stfd1 = ustrip(H[1]);
-stfd2 = ustrip(H[2]);
-stfd3 = ustrip(H[3]);
-stfd4 = ustrip(H[4]);
+diffstfd1 = ustrip(dh);
+stfd1d = ustrip(H1[1]);
+
+time2 = time_c;
+stfd3 = ustrip(h[3]);
+stfd4 = ustrip(h[4]);
 
 ut = Array{String}(undef,length(time))
 for i in 1:1:length(time)
@@ -122,9 +134,16 @@ results = DataFrames.DataFrame(time = ustrip(time), unit = ut,
                                 state2 = state2,
                                 state3 = state3,
                                 state4 = state4,
-                                H1 = stfd1,
-                                H2 = stfd2,
-                                H3 = stfd3,
-                                H4 = stfd4);
+                                h1 = stfd1,
+                                h2 = stfd2,
+                                h3 = stfd3,
+                                h4 = stfd4);
 
-CSV.write("C:/Users/gemmers/Documents/GitHub/MSS/Results/Journal_Semi_Markov/OMS_results.csv", results)
+results = DataFrames.DataFrame(time = ustrip(time), unit = ut,
+                                h1 = stfd1,
+                                H1 = stfd1d,
+                                dh = diffstfd1);
+
+
+
+CSV.write("C:/Users/gemmers/Documents/GitHub/MSS/Results/Journal_Semi_Markov/diffH_results.csv", results) 
