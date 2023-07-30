@@ -52,15 +52,20 @@ add_transitions!(std, states = [(1,1),(1,2),(2,1),(2,3),(3,1),(3,4)],
                       
 # solve the std
 # @time H1_20, H1c_20, H_accurate_20 = _MSS.solved!(std, cls, tsim = 8760.0u"hr", dt = 10u"hr", acc = 20, steps = 50, tol=1e-8)
-# @time H1_40, H1c_40, H_accurate_40 = _MSS.solved!(std, cls, tsim = 200.0u"hr", dt = 4u"hr", acc = 10, steps = 40, tol=1e-8)
-h_base = solve!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol=1e-7);
+# @time H1_40, H1c_40, H_accurate_40 = _MSS.solved!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", acc = 10, steps = 40, tol=1e-8);
+# h_base = solve!(std, cls, tsim =400.0u"hr", dt = 4u"hr", tol=1e-7);
 _MSS.solveP!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol = 1e-8);
+
+dt = 4u"hr"
+t = 0u"hr":dt:400.0u"hr";
+
+@time U = set_U(std, t, 1e-8)
 
 h_base_select=h_base[1][1:10:end]
 
 plot([h_base_select.-H_accurate_20[1],h_base_select.-H_accurate_40[1]])
 
-dH = abs.(diff(H_accurate_20[1]))
+dH = abs.(diff(H_accurate_40[1]))
 append!(dH,zero(H[1][1]))
 steps = 150;
 acc = 10;

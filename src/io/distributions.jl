@@ -47,23 +47,23 @@ f(x; θ, ω) = \begin{cases}
 abstract type AbstractExponential{X,Y,Z} <: AbstractDistribution{X,Y,Z} end
 
 # struct - θ::Number, ω::Real
-struct ExponentialNR{X<:Number, Y<:Real, Z<:Function} <: AbstractExponential{X,Y,Z}
+struct ExponentialNR{X<:Number, Y<:Real} <: AbstractExponential{X,Y,Function}
     θ::X            # scale 
     ω::Y            # weight: 0.0 < ω <= 1.0
 end
 # constructors
-Exponential() = ExponentialNR{Number,Real,Function}(1.0, 1.0)
-Exponential(θ::Number) = ExponentialNR{Number,Real,Function}(θ, 1.0)
-Exponential(θ::Number, ω::Real) = ExponentialNR{Number,Real,Function}(θ, ω)
+Exponential() = ExponentialNR(1.0, 1.0)
+Exponential(θ::X) where {X<:Number}= ExponentialNR(θ, 1.0)
+Exponential(θ::X, ω::Y) where {X<:Number,Y<:Real}= ExponentialNR(θ, ω)
 
 # struct - θ::Number, ω::Function
-struct ExponentialNF{X<:Number, Y<:Real, Z<:Function} <: AbstractExponential{X,Y,Z}
+struct ExponentialNF{X<:Number, Z<:Function} <: AbstractExponential{X,Real,Z}
     θ::X            # scale
     ω::Z            # weight: 0.0 < ω(t) <= 1.0
 end
 # constructors
-Exponential(θ::Number, ω::Function) = ExponentialNF{Number,Real,Function}(θ, ω)
-
+Exponential(θ::X, ω::Z) where {X<:Number,Z<:Function}= ExponentialNF(θ, ω)
+#Exponential(θ::Number, ω::Function) = ExponentialNF{Number,Real,Function}(θ, ω)
 # shortened constructors
 𝑬() = Exponential()
 𝑬(θ::Number) = Exponential(θ)

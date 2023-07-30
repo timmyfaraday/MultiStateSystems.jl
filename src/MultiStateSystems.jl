@@ -68,5 +68,8 @@ export  STD, solvedSTD, add_state!, add_states!, add_transition!, add_transition
 export  UGF
 export  solve!
 export  solve_network!
+export  set_U
+export  set_A
+export  set_P
 
 end
