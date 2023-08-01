@@ -158,10 +158,10 @@ struct WeibullNRR{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
     ω::Y            # weight: 0.0 < ω <= 1.0
 end
 # constructors
-Weibull() = WeibullNRR{Number,Real,Function}(1.0, 1.0, 1.0)
-Weibull(θ::Number) = WeibullNRR{Number,Real,Function}(θ, 1.0, 1.0)
-Weibull(θ::Number, α::Real) = WeibullNRR{Number,Real,Function}(θ, α, 1.0)
-Weibull(θ::Number, α::Real, ω::Real) = WeibullNRR{Number,Real,Function}(θ, α, ω)
+Weibull() = WeibullNRR(1.0, 1.0, 1.0)
+Weibull(θ::X) where {X<:Number} = WeibullNRR(θ, 1.0, 1.0)
+Weibull(θ::X, α::Y) where{X<:Number, Y<:Real}= WeibullNRR(θ, α, 1.0)
+Weibull(θ::X, α::Y, ω::Z) where{X<:Number, Y<:Real, Z<:Real}= WeibullNRR(θ, α, ω)
 
 # struct - θ::Number, α::Real, ω::Function
 struct WeibullNRF{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
@@ -170,8 +170,8 @@ struct WeibullNRF{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
     ω::Z            # weight: 0.0 < ω(t) <= 1.0
 end
 # constructors
-Weibull(θ::Number, α::Real, ω::Function) = 
-    WeibullNRF{Number,Real,Function}(θ, α, ω)
+Weibull(θ::X, α::Y, ω::Z) where{X<:Number, Y<:Real, Z<:Function}= 
+    WeibullNRF(θ, α, ω)
 
 # shortened constructors
 𝑾() = Weibull()
@@ -264,28 +264,28 @@ julia> 𝑳(10.0,0.5,0.2)      # scaled Log-normal distr. with μ = 10.0, σ = 0
 abstract type AbstractLogNormal{X,Y,Z} <: AbstractDistribution{X,Y,Z} end
 
 # struct - μ::Number, σ::Number, ω::Real
-struct LogNormalNNR{X<:Number, Y<:Real, Z<:Function} <: AbstractLogNormal{X,Y,Z}
+struct LogNormalNNR{X<:Number, Y<:Number, Z<:Real} <: AbstractLogNormal{X,Y,Z}
     μ::X            # mean of the corresponding normal distribution
-    σ::X            # shape of the corresponding normal distribution
-    ω::Y            # weight: 0.0 < ω <= 1.0
+    σ::Y            # shape of the corresponding normal distribution
+    ω::Z            # weight: 0.0 < ω <= 1.0
 end
 # constructors
-LogNormal() = LogNormalNNR{Number,Real,Function}(1.0, 1.0, 1.0)
-LogNormal(μ::Number) = LogNormalNNR{Number,Real,Function}(μ, 1.0unit(μ), 1.0)
-LogNormal(μ::Number, σ::Number) = 
-    LogNormalNNR{Number,Real,Function}(μ, uconvert(unit(μ),σ), 1.0)
-LogNormal(μ::Number, σ::Number, ω::Real) = 
-    LogNormalNNR{Number,Real,Function}(μ, uconvert(unit(μ),σ), ω)
+LogNormal() = LogNormalNNR(1.0, 1.0, 1.0)
+LogNormal(μ::X) where {X<:Number} = LogNormalNNR(μ, 1.0unit(μ), 1.0)
+LogNormal(μ::X, σ::Y) where {X<:Number, Y<:Number} = 
+    LogNormalNNR(μ, uconvert(unit(μ),σ), 1.0)
+LogNormal(μ::X, σ::Y, ω::Z) where {X<:Number, Y<:Number, Z<:Real} = 
+    LogNormalNNR(μ, uconvert(unit(μ),σ), ω)
 
 # struct - μ::Number, σ::Number, ω::Function
-struct LogNormalNNF{X<:Number, Y<:Real, Z<:Function} <: AbstractLogNormal{X,Y,Z}
+struct LogNormalNNF{X<:Number, Y<:Number, Z<:Function} <: AbstractLogNormal{X,Y,Z}
     μ::X            # mean of the corresponding normal distribution
-    σ::X            # shape of the corresponding normal distribution
+    σ::Y            # shape of the corresponding normal distribution
     ω::Z            # weight: 0.0 < ω(t) <= 1.0
 end
 # constructors
-LogNormal(μ::Number, σ::Number, ω::Function) = 
-    LogNormalNNF{Number,Real,Function}(μ, uconvert(unit(μ),σ), ω)
+LogNormal(μ::X, σ::Y, ω::Z) where {X<:Number, Y<:Number, Z<:Function}= 
+    LogNormalNNF(μ, uconvert(unit(μ),σ), ω)
 
 # shortened constructors
 𝑳() = LogNormal()
