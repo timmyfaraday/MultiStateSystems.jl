@@ -30,7 +30,7 @@
         # Generating Unit by A. Lisnianski, D. Elmakias, and H. Ben Haim (2012)
 
         stdᵒᵐˢ = include(joinpath(_MSS.BASE_DIR,"test/elements/optical_monitoring_system.jl"))
-        solve!(stdᵒᵐˢ, SemiMarkovProcess(), tsim = 1.0u"yr", dt = 4.01u"hr")
+        solve!(stdᵒᵐˢ, SemiMarkovProcess(), tsim = 1.0u"yr")
         prb_oms = [np[end] for np in _MSS.get_sprop(stdᵒᵐˢ, :prob)]
         @test isapprox(sum(prb_oms), 1.0, rtol=1e-6)
     end

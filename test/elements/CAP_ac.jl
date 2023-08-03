@@ -29,19 +29,6 @@ add_states!(stdᶜᵃᵖᵃᶜ, name  = ["available", "unavailable"],
 add_transitions!(stdᶜᵃᵖᵃᶜ, states = [(1,2),(2,1)],
                       distr = [ Exponential(5.0u"yr"),
                                 Exponential(48.0u"d")])
-                              
-                                # LogNormal(3.0u"yr", 1.0u"yr")
-
-# dt = 4u"hr"
-# t = 0u"hr":dt:8760.0u"hr";
-
-# @time U = set_U(stdᶜᵃᵖᵃᶜ, t, 1e-8)
-
-_MSS.solveP!(stdᶜᵃᵖᵃᶜ, cls, tsim = 20.0u"hr", dt = 4u"hr", tol = 1e-9);
-
-t = 0.0u"hr":4u"hr":1.0u"yr";
-
-
 
 # solve the std
 return stdᶜᵃᵖᵃᶜ

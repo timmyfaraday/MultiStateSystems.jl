@@ -20,25 +20,37 @@ and remains there until time t.
 
 The unit of A is [unit(1/t)]
 """ 
-function set_A(std::AbstractSTD, t::StepRangeLen)
+function set_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
     dt = step(t)
     Nt = length(t)
 
     A = zeros(typeof(1/dt), ns(std) * Nt)
 
+    for tr in transitions(std)
+        init = get_prop(std, _LG.src(tr), :init)
+        if init > 0.0
+            dst = get_prop(std, tr, :distr)
+            idx = _LG.dst(tr)
+            lb = floor(cquantile(dst, tol) / dt) * dt
+            _fill_A!(std, t, A, idx, dst, init, lb)
+        end
+    end
+    return A
+end
+
+function _fill_A!(std, t, A, idx, dst, init, lb)
     for (ni,nt) in enumerate(t)
-        for tr in transitions(std)
-            id      = ns(std) * (ni-1) + _LG.dst(tr)
+        # if nt <= lb
+            id      = ns(std) * (ni-1) + idx
             # The content of the A-vector is the probability of initially being 
             # in state (_LG.src(tr)) times the probability of transitioning out 
             # of that state entered at sojourn time zero and evaluated at 
             # time t = (nt)
-            A[id]   += get_prop(std, _LG.src(tr), :init) * 
-                            pdf(get_prop(std, tr, :distr), nt, zero(dt))
-    end end 
-    A[isnan.(A)] .= zero(1/dt)
-
-    return A
+            A[id]   += init * pdf(dst, nt, zero(t[1]))
+            if isnan(A[id])
+                A[id] = zero(1/t[1])
+            end
+    end 
 end
 
 function set_A(std::AbstractSTD, t::StepRangeLen, H::Vector, steps::Number)
@@ -198,21 +210,36 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     return _SA.sparse(I, J, V)
 end
 
-function _fill_U!(tr, dt, t, Ns, dst, I, J, V, tol)
-        # lb = floor(cquantile(dst, tol) / dt) * dt
+function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
+    # lb = floor(cquantile(dst, tol/1000) / dt) * dt    
     for (ni,nt) in enumerate(t)
-        Φ = nt:-dt:t[1]
-        # Φ represents the sojourn time, ranging from
-        lt = t[1]:dt:nt
-        NΦ = length(Φ)
-        for nj in 1:NΦ
-            push!(I, Ns * (ni-1) + _LG.dst(tr))
-            push!(J, Ns * (nj-1) + _LG.src(tr))
-            push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
-            if isnan(V[end])
-                V[end] = 0.0
-            end
-        end
+        # if nt <= lb
+            Φ = nt:-dt:t[1]
+            # Φ represents the sojourn time, ranging from
+            lt = t[1]:dt:nt
+            NΦ = length(Φ)
+            for nj in 1:NΦ
+                push!(I, Ns * (ni-1) + _LG.dst(tr))
+                push!(J, Ns * (nj-1) + _LG.src(tr))
+                push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
+                if isnan(V[end])
+                    V[end] = 0.0
+                end
+            end 
+        # else
+        #     Φ = lb:-dt:t[1]
+        #     # Φ represents the sojourn time, ranging from
+        #     lt = t[1]:dt:nt
+        #     NΦ = length(Φ)
+        #     for nj in 1:NΦ
+        #         push!(I, Ns * (ni-1) + _LG.dst(tr))
+        #         push!(J, Ns * (nj-1) + _LG.src(tr))
+        #         push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
+        #         if isnan(V[end])
+        #             V[end] = 0.0
+        #         end
+        #     end 
+        # end
         # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
         # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
     end 
@@ -263,25 +290,24 @@ end
 
 #     # solve the problem
 #     Φ   = zeros(Nt, ns(std))
-#     QTI = Quantity{Float64, 𝐓 ^-1, Unitful.FreeUnits{(unit(1/dt)), 𝐓 ^-1, nothing}}[]
 
 
 #     println("set_U")
-#     @time U = set_U(std,t,tol)
+#     U = set_U(std,t,tol)
 #     println("set_A")
-#     @time A = ustrip(set_A(std,t))
+#     A = ustrip(set_A(std,t,tol))
 #     H=U\A*unit(1/t[1])
     
 #     # println("set_P")
 #     # @time set_P(std, t, H, tol)
 #     println("Linear interpolation of H")
-#     @time h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
+#     h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
 #     h_sol = [map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
 
 #     println("Integration of H to Φ")
-#     @time for st in states(std)
+#     for st in states(std)
 #         for (ni,nt) in enumerate(t)
-#             w   = weights(ni)
+#             # w   = weights(ni)
 #             # TOM: φ <<< t, zero could be higher
 #             # l   = zero(dt):dt:nt
 #             l = t[1]:dt:nt .|> unit(tsim)
@@ -313,24 +339,24 @@ end
 #     return h_sol
 # end
 
-function solveP!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-    tsim::Number=1.0u"yr", dt::Number=1u"hr", tol::Real=1e-8)
+function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
+    tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
     # get the input
     dt = dt |> unit(tsim)
     t = zero(dt):dt:tsim
-    Nt  = length(t)
+
 
     # solve the problem
-    Φ   = zeros(Nt, ns(std))
-
     println("set_U")
-    @time U = set_U(std,t,tol)
+    U = set_U(std,t,tol)
     println("set_A")
-    @time A = ustrip(set_A(std,t))
+    A = ustrip(set_A(std,t,tol))
     H=U\A*unit(1/t[1])
 
+    # h = [map(x->H[ns(std) * (x-1) + st], 1:Nt)  for st in states(std)]
+
     println("set_P")
-    @time set_P(std, t, H, tol)
+    set_P(std, t, H, tol)
     
     # set the output
     set_prop!(std, :cls, cls)
@@ -338,6 +364,7 @@ function solveP!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
+    # return h
 end
 
 # function solved!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
@@ -409,22 +436,38 @@ end
 # end
 
 function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
-    Ns  = ns(std)
     Nt = length(t)
 
     for st in states(std)
         dst_v = [get_prop(std, _LG.Edge(st,nx),:distr) for nx in _LG.outneighbors(std.graph, st)]
         init   = get_prop(std, st, :init)
-        h = map(x->H[ns(std) * (x-1) + st], 1:Nt)        
-        if init > 0.0
-            p = init .*  1-sum(cdf(dstr, 0, zero(t[1])) for dstr in dst_v) .+ integral(dst_v, t, h, tol)
-        else
-            p = integral(dst_v, t, h, tol)        
-        end
+        h = map(x->H[ns(std) * (x-1) + st], 1:Nt)
+        p = set_int(dst_v, t, h, init, tol)
         set_prop!(std, st, :prob, p)
-    end
+    end    
 end
 
+# function set_int(dst_v, t, h, init, tol)
+#     if init > 0.0 
+#         p = init .* [ccdf(dst_v, φ, zero(t[1])) for φ in t] .+ integral(dst_v, t, h, tol)
+#     else
+#         p = integral(dst_v, t, h, tol)        
+#     end
+#     return p
+# end
+
+function set_int(dst_v, t, h, init, tol)
+    if init > 0.0 
+        CDF = zeros(Float64, length(t))
+        for dst in dst_v
+            CDF = cdf!(dst, t, CDF)
+        end
+        p = init .* (1 .- CDF) .+ integral(dst_v, t, h, tol)
+    else
+        p = integral(dst_v, t, h, tol)        
+    end
+    return p
+end
 
 
 """
@@ -464,14 +507,34 @@ w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.
 # end
 
 function weights(N::Int, p::Int)
-    if N==1 
-        return 0.0
-    elseif p == 1 || p == N
+    if p == 1 || p == N
         return 0.5
     else
         return 1.0
     end
 end
+
+# function weights(N::Int, p::Int)
+#     if N==1 
+#         return 0.0
+#     elseif p == 1 || p == N
+#         return 0.5
+#     else
+#         return 1.0
+#     end
+# end
+
+# function weights(N::Int, p::Int)
+#     if N==1 
+#         return 0.0
+#     elseif p == 1 || p == N
+#         return 1/3
+#     elseif p % 2 == 0
+#         return 2/3
+#     else
+#         return 4/3
+#     end
+# end
 
 # function weights(x::Int)
 #     w = ones(x)
@@ -514,10 +577,12 @@ function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
     # controleer voor schaalfactor
     d2h = abs.(diff(diff(ustrip(h))))
     id = 1
-    idx = [1]
+    idx = Int[1]
+    reltol = maximum(ustrip(h))*tol
+    # reltol = (maximum(d2h)-Base.minimum(d2h))*tol
 
     while true
-        next_id = findfirst(x -> x > tol, cumsum(d2h[id:end]))
+        next_id = findfirst(x -> x > reltol, cumsum(d2h[id:end]))
         next_id == nothing ? break : ~ ;
 
         id += next_id
@@ -526,13 +591,18 @@ function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
     push!(idx,length(d2h)+2)
     τ   = t[idx]
     γ   = _INT.interpolate((τ,), h[idx], _INT.Gridded(_INT.Linear()))
-    ϕ   = [_QGK.quadgk(x -> γ(x) * (1-sum(cdf(dstr, nτ-x, x) for dstr in dst_v)), t[1], nτ, rtol=tol)[1] for nτ in τ]
+    if isempty(dst_v)
+        ϕ   = [_QGK.quadgk(x -> γ(x), t[1], nτ, rtol=tol)[1] for nτ in τ]
+    else
+        ϕ   = [_QGK.quadgk(x -> γ(x) * ccdf(dst_v, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ]
+    end
     # niet gelijk gespacete interpolatie 
     # Y = interpolate((x,), y, Gridded(Linear()))
     p   = _INT.LinearInterpolation(τ, ϕ)(t)
-    println(size(idx))
     return p
 end
+
+
 
 function compress(v::Vector, steps::Int, std::AbstractSTD)
     n = length(v)
@@ -545,4 +615,25 @@ function compress(v::Vector, steps::Int, std::AbstractSTD)
         end
     end
     return compressed_v
+end
+
+ccdf(dst_v::Vector, φ::Quantity, t::Quantity) =
+    1.0 - cdfsum(dst_v, φ, t)
+
+function cdfsum(dst_v::Vector, φ::Quantity, t::Quantity)
+    val = zero(Float64)
+    for dst in dst_v
+        val::Float64 = cdf!(dst, φ, t, val)
+    end
+    return val
+end
+
+function cdf!(dst::AbstractDistribution, t::StepRangeLen, C::Vector)
+    C += cdf.(dst, t, zero(t[1]))
+    return C
+end
+
+function cdf!(dst::AbstractDistribution, φ::Quantity, t::Quantity, c::Float64)
+    c += cdf(dst, φ, t)
+    return c
 end
