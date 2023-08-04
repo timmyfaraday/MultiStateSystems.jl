@@ -31,7 +31,7 @@ function set_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
         if init > 0.0
             dst = get_prop(std, tr, :distr)
             idx = _LG.dst(tr)
-            lb = floor(cquantile(dst, tol) / dt) * dt
+            lb = floor(cquantile(dst, tol*1e-3) / dt) * dt
             _fill_A!(std, t, A, idx, dst, init, lb)
         end
     end
@@ -40,7 +40,7 @@ end
 
 function _fill_A!(std, t, A, idx, dst, init, lb)
     for (ni,nt) in enumerate(t)
-        # if nt <= lb
+        if nt <= lb
             id      = ns(std) * (ni-1) + idx
             # The content of the A-vector is the probability of initially being 
             # in state (_LG.src(tr)) times the probability of transitioning out 
@@ -50,33 +50,9 @@ function _fill_A!(std, t, A, idx, dst, init, lb)
             if isnan(A[id])
                 A[id] = zero(1/t[1])
             end
-    end 
+    end end
 end
 
-function set_A(std::AbstractSTD, t::StepRangeLen, H::Vector, steps::Number)
-    dt = step(t)
-    Nt = length(t)
-    Ns = ns(std)
-
-    A = zeros(typeof(1/dt), ns(std) * Nt)
-
-    A[1:length(H)] = H
-
-    for (ni,nt) in enumerate(t)
-        if ni > steps + 1
-            for tr in transitions(std)
-                id      = ns(std) * (ni-1) + _LG.dst(tr)
-                # The content of the A-vector is the probability of initially being 
-                # in state (_LG.src(tr)) times the probability of transitioning out 
-                # of that state entered at sojourn time zero and evaluated at 
-                # time t = (nt)
-                A[id]   += get_prop(std, _LG.src(tr), :init) * 
-                                pdf(get_prop(std, tr, :distr), nt, zero(dt))
-    end end end
-    A[isnan.(A)] .= zero(1/dt)
-
-    return A
-end
 
 """
     MultiStateSystems.set_U(std::MultiStateSystems.AbstractSTD, t::StepRangeLen)
@@ -86,108 +62,6 @@ and remains there until time t
 
 The unit of U is [-]
 """
-# function set_U(std::AbstractSTD, t::StepRangeLen)
-#     # 
-#     dt = step(t)
-#     Nt = length(t)
-
-#     U = zeros(Float64, ns(std) * Nt, ns(std) * Nt)
-
-#     for (ni,nt) in enumerate(t)
-#         w = weights(ni)
-#         # l = zero(dt):dt:nt
-#         l = t[1]:dt:nt
-#         for (nj,nl) in enumerate(l)
-#             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
-#             for tr in transitions(std)
-#                 # The results of the pdf depends on two factors:
-#                     # - How long has the system been in this particular state = sojourn time (nt - nl) with nt the index of the current time t and nl the index of entrance time.
-#                     # - The time at which the system entered a certain state, with nl the index of this entrance time. This determines weight attributed to this particular transition.
-#                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
-#                     pdf(get_prop(std, tr, :distr), nt - nl, nl) |> unit(dt)^-1
-#             end
-#             rT = (ns(std) * (ni - 1) + 1):(ns(std) * ni)
-#             rΦ = (ns(std) * (nj - 1) + 1):(ns(std) * nj)
-#             if ni == nj
-#                 U[rT,rΦ] = Matrix(1.0_LA.I, ns(std), ns(std)) .- dt .* w[nj] .* Ψ
-#             else
-#                 U[rT,rΦ] = -dt .* w[nj] .* Ψ
-#             end
-#     end end
-#     U[isnan.(U)] .= 0.0
-
-#     return U
-# end
-# function set_U(std::AbstractSTD, t::StepRangeLen)
-#     # 
-#     dt = step(t)
-#     Nt = length(t)
-
-#     I,J,V = Int[],Int[],Number[]
-
-#     append!(I, 1:Ns*Nt)
-#     append!(J, 1:Ns*Nt)
-#     append!(V, ones(Number,Ns*Nt))
-
-#     for (ni,nt) in enumerate(t)
-#         w = weights(ni)
-#         # l = zero(dt):dt:nt
-#         l = t[1]:dt:nt
-#         for (nj,nl) in enumerate(l)
-#             Ψ = zeros(typeof(1/dt), ns(std), ns(std))
-#             for tr in transitions(std)
-#                 # The results of the pdf depends on two factors:
-#                     # - How long has the system been in this particular state = sojourn time (nt - nl) with nt the index of the current time t and nl the index of entrance time.
-#                     # - The time at which the system entered a certain state, with nl the index of this entrance time. This determines weight attributed to this particular transition.
-#                 Ψ[_LG.dst(tr), _LG.src(tr)] = 
-#                     pdf(get_prop(std, tr, :distr), nt - nl, nl) |> unit(dt)^-1
-#             end
-#             append!(I,(ns(std) * (ni - 1) + 1):(ns(std) * ni))
-#             append!(J,(ns(std) * (nj - 1) + 1):(ns(std) * nj))
-#             if ni == nj
-#                 U[rT,rΦ] = Matrix(1.0_LA.I, ns(std), ns(std)) .- dt .* w[nj] .* Ψ
-#             else
-#                 U[rT,rΦ] = -dt .* w[nj] .* Ψ
-#             end
-#     end end
-#     U[isnan.(U)] .= 0.0
-
-#     return U
-# end
-
-# function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
-#     dt = step(t)
-#     Nt = length(t)   
-#     Ns = ns(std)
-
-#     # initialize three vectors I,J,V respectively row, column and value indices
-#     I,J,V = Int[],Int[],Number[]
-
-#     append!(I, 1:Ns*Nt)
-#     append!(J, 1:Ns*Nt)
-#     append!(V, ones(Number,Ns*Nt))
-  
-#     for tr in transitions(std)
-#         # dummy value not necessary, since every diagonal entry requires a one to be added to it.
-#         # Sparse Arrays allow to add values to the same location twice and add those
-#         # dummy_value = ifelse(_LG.src(tr) == _LG.dst(tr),zero(1/dt),oneunit(1/dt)) # dummy_value voegt nu een 1 toe wanneer dest and source gelijk zijn, maar dit moet enkel in geval ni en nj ook nog gelijk zijn. Extra controle in de tijdslus.
-#         dst = get_prop(std, tr, :distr) 
-#         lb = floor(cquantile(dst, tol) / dt) * dt
-#         for (ni,nt) in enumerate(t)
-#             Φ = nt:-dt:t[1]
-#             # Φ represents the sojourn time, ranging from
-#             lt = t[1]:dt:nt
-#             NΦ = length(Φ)
-            
-#             append!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ))
-#             append!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ])
-#             # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
-#             append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
-#     end end
-#     V[isnan.(V)] .= 0.0
-#     return _SA.sparse(I, J, V)
-# end
-
 
 function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     dt = step(t)
@@ -211,9 +85,9 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
 end
 
 function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
-    # lb = floor(cquantile(dst, tol/1000) / dt) * dt    
+    lb = Int(floor(cquantile(dst, tol*1e-3) / dt))    
     for (ni,nt) in enumerate(t)
-        # if nt <= lb
+        if ni <= lb
             Φ = nt:-dt:t[1]
             # Φ represents the sojourn time, ranging from
             lt = t[1]:dt:nt
@@ -226,118 +100,24 @@ function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t:
                     V[end] = 0.0
                 end
             end 
-        # else
-        #     Φ = lb:-dt:t[1]
-        #     # Φ represents the sojourn time, ranging from
-        #     lt = t[1]:dt:nt
-        #     NΦ = length(Φ)
-        #     for nj in 1:NΦ
-        #         push!(I, Ns * (ni-1) + _LG.dst(tr))
-        #         push!(J, Ns * (nj-1) + _LG.src(tr))
-        #         push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
-        #         if isnan(V[end])
-        #             V[end] = 0.0
-        #         end
-        #     end 
-        # end
+        else
+            Φ = nt:-dt:t[1]
+            # Φ represents the sojourn time, ranging from
+            lt = t[1]:dt:nt
+            NΦ = length(lt)
+            for nj in NΦ:-1:NΦ-lb
+                push!(I, Ns * (ni-1) + _LG.dst(tr))
+                push!(J, Ns * (nj-1) + _LG.src(tr))
+                push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
+                if isnan(V[end])
+                    V[end] = 0.0
+                end
+            end 
+        end
         # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
         # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
     end 
 end
-   
-# function set_U(std::AbstractSTD, t::StepRangeLen, steps::Number, tol::Real)
-#     dt = step(t)
-#     Nt = length(t)   
-#     Ns = ns(std)
-
-#     # initialize three vectors I,J,V respectively row, column and value indices
-#     I,J,V = Int[],Int[],Number[]
-
-#     append!(I, 1:Ns*Nt)
-#     append!(J, 1:Ns*Nt)
-#     append!(V, ones(Number,Ns*Nt))
-  
-#     for tr in transitions(std)
-#         # dummy value not necessary, since every diagonal entry requires a one to be added to it.
-#         # Sparse Arrays allow to add values to the same location twice and add those
-#         # dummy_value = ifelse(_LG.src(tr) == _LG.dst(tr),zero(1/dt),oneunit(1/dt)) # dummy_value voegt nu een 1 toe wanneer dest and source gelijk zijn, maar dit moet enkel in geval ni en nj ook nog gelijk zijn. Extra controle in de tijdslus.
-#         dst = get_prop(std, tr, :distr) 
-#         lb = floor(cquantile(dst, tol) / dt) * dt
-#         for (ni,nt) in enumerate(t)
-#             if ni > steps + 1
-#                 Φ = nt:-dt:t[1]
-#                 # Φ represents the sojourn time, ranging from
-#                 lt = t[1]:dt:nt
-#                 NΦ = length(Φ)
-                
-#                 append!(I, (Ns * (ni-1) + _LG.dst(tr)).*ones(Int,NΦ))
-#                 append!(J, [Ns * (nj-1) + _LG.src(tr) for nj in 1:NΦ])
-#                 # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
-#                 append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
-#             end
-#     end end
-#     V[isnan.(V)] .= 0.0
-#     return _SA.sparse(I, J, V)
-# end
-
-# stochastic process
-# function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-#     tsim::Number=1.0u"yr", dt::Number=1u"d", tol::Real=1e-8)
-#     # get the input
-#     dt = dt |> unit(tsim)
-#     t = zero(dt):dt:tsim
-#     Nt  = length(t)
-
-#     # solve the problem
-#     Φ   = zeros(Nt, ns(std))
-
-
-#     println("set_U")
-#     U = set_U(std,t,tol)
-#     println("set_A")
-#     A = ustrip(set_A(std,t,tol))
-#     H=U\A*unit(1/t[1])
-    
-#     # println("set_P")
-#     # @time set_P(std, t, H, tol)
-#     println("Linear interpolation of H")
-#     h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
-#     h_sol = [map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
-
-#     println("Integration of H to Φ")
-#     for st in states(std)
-#         for (ni,nt) in enumerate(t)
-#             # w   = weights(ni)
-#             # TOM: φ <<< t, zero could be higher
-#             # l   = zero(dt):dt:nt
-#             l = t[1]:dt:nt .|> unit(tsim)
-#     #         # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
-#     #         # The probability of being in a state st at time nt depends on two things:
-#     #         # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
-#     #         # The probability of not having transitioned until time nt is characterized by the complementary cumulative density function evaluated at the time
-#     #         # of entering the state (0) to determine the weight and the sojourn time (nt-0).
-#     #         # Second, on the probability of having transitioned to state st at time x and the probability of not having transitioned out of that state during the sojourn time (nt-x).
-#     #         # The probability of having transitioned to state st at time x is characterized by the integral of the transition frequency density h of state st.
-#     #         # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
-#     #         # The last transition time x and the sojourn time nt-x.
-#             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-#             Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
-                                
-#             # Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-#             #                     ccdf(std, st, nt-nl, nl) 
-#             #                     for (nj,nl) in enumerate(l))
-#     end end
-
-    
-#     # set the output
-#     set_prop!(std, :cls, cls)
-#     set_prop!(std, :time, t)
-#     set_prop!(std, states(std), :prob, [Φ[:,ns] for ns in states(std)])
-
-#     # set the solved status
-#     set_info!(std, :solved, true)
-#     return h_sol
-# end
 
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
     tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
@@ -347,15 +127,10 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
 
     # solve the problem
-    println("set_U")
     U = set_U(std,t,tol)
-    println("set_A")
     A = ustrip(set_A(std,t,tol))
     H=U\A*unit(1/t[1])
 
-    # h = [map(x->H[ns(std) * (x-1) + st], 1:Nt)  for st in states(std)]
-
-    println("set_P")
     set_P(std, t, H, tol)
     
     # set the output
@@ -367,73 +142,6 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # return h
 end
 
-# function solved!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-#     tsim::Number=1.0u"yr", dt::Number=1u"hr", acc::Int64=10, steps::Number=100.0, tol::Real=1e-8)
-    
-#     # Get the input for solving numerical inrush phase
-#     dt_n = dt/acc |> unit(tsim);
-#     t_n = zero(dt_n):dt_n:dt_n*(steps)*acc;
-
-#     U = set_U(std,t_n[1:end],tol)
-#     A = ustrip(set_A(std,t_n[1:end]))
-#     H1 = U\A*unit(1/t_n[1])
- 
-#     H_c = compress(H1, steps, std)
-
-#     H1o = [ map(x->H1[ns(std) * (x-1) + st], 1:length(t_n)-ns(std)) for st in states(std)];
-#     H1co = [ map(x->H_c[ns(std) * (x-1) + st], 1:Int(length(H_c)/ns(std))) for st in states(std)];
-
-#     # get the input for final problem solution
-#     dt = dt |> unit(tsim)
-#     t = zero(dt):dt:tsim
-#     Nt  = length(t)
-
-#     # solve the problem
-#     Φ   = zeros(Nt, ns(std))
-
-#     U = set_U(std,t,steps,tol)
-#     A = ustrip(set_A(std,t,H_c,steps))
-#     H=U\A*unit(1/t[1])
-
-#     Ho = [ map(x->H[ns(std) * (x-1) + st], 1:Nt) for st in states(std)];
-
-#     # set_P(std, t, H, tol)
-#     h = [_INT.LinearInterpolation(collect(t), map(x->H[ns(std) * (x-1) + st], 1:Nt)) for st in states(std)]; # splice id H = st:NS:end
-
-#     for st in states(std)
-#         for (ni,nt) in enumerate(t)
-#             w   = weights(ni)
-#             # TOM: φ <<< t, zero could be higher
-#             # l   = zero(dt):dt:nt
-#             l = t[1]:dt:nt .|> unit(tsim)
-#             # NB: ccdf(t-l,φ) where φ = 0.0, GLENN, additional clarification
-#             # The probability of being in a state st at time nt depends on two things:
-#             # First, the probability of being in that state initially, times the probability of not having transitioned out of that state until time nt.
-#             # The probability of not having transitioned until time nt is characterized by the complementary cumulative density function evaluated at the time
-#             # of entering the state (0) to determine the weight and the sojourn time (nt-0).
-#             # Second, on the probability of having transitioned to state st at time x and the probability of not having transitioned out of that state during the sojourn time (nt-x).
-#             # The probability of having transitioned to state st at time x is characterized by the integral of the transition frequency density h of state st.
-#             # The probability of not having transitioned out of that state during the sojourn time (nt-x) is characterized by the complementary cumulative density function evaluated at 
-#             # The last transition time x and the sojourn time nt-x.
-#             Φ[ni,st] += get_prop(std, st, :init) * ccdf(std, st, nt, zero(dt))
-#             Φ[ni,st] += _QGK.quadgk(x -> h[st](x) * ccdf(std, st, nt-x, x), t[1],nt,rtol=1e-7)[1] 
-                                
-#             # Φ[ni,st] += sum(dt .* w[nj] .* H[ns(std) * (nj-1) + st] .* 
-#             #                     ccdf(std, st, nt-nl, nl) 
-#             #                     for (nj,nl) in enumerate(l))
-#     end end
-
-    
-#     # set the output
-#     set_prop!(std, :cls, cls)
-#     set_prop!(std, :time, t)
-#     set_prop!(std, states(std), :prob, [Φ[:,ns] for ns in states(std)])
-
-#     # set the solved status
-#     set_info!(std, :solved, true)
-
-#     return H1o, H1co, Ho
-# end
 
 function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
     Nt = length(t)
@@ -446,15 +154,6 @@ function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
         set_prop!(std, st, :prob, p)
     end    
 end
-
-# function set_int(dst_v, t, h, init, tol)
-#     if init > 0.0 
-#         p = init .* [ccdf(dst_v, φ, zero(t[1])) for φ in t] .+ integral(dst_v, t, h, tol)
-#     else
-#         p = integral(dst_v, t, h, tol)        
-#     end
-#     return p
-# end
 
 function set_int(dst_v, t, h, init, tol)
     if init > 0.0 
@@ -473,38 +172,9 @@ end
 """
     MultiStateSystems.weights(x::Int)
 
-Determine integration weights based on extended Simpson's rule. 
-w[1] and w[end] = 1/3, even weights = 4/3 and uneven weights = 2/3.
+Determine integration weights based on Simpson's rule. 
+w[1] and w[end] = 1/2, other weights = 1.
 """
-# function weights(x::Int)
-#     x==1 && return [0]
-#     x==2 && return [1/2, 1/2]
-#     x==3 && return [1/3, 4/3, 1/3]
-#     x==4 && return [3/8, 9/8, 9/8, 3/8]
-#     x==5 && return (2/45) .* [7, 32, 12, 32, 7]
-#     x==6 && return (5/288) .* [19, 75, 50, 50, 75, 19]
-#     x==7 && return (1/140) .* [41, 216, 27, 272, 27, 216, 41]
-#     x==8 && return (7/17280) .* [751, 3577, 1323, 2989, 2989, 1323, 3577, 751]
-    
-#     weights             = 48 * ones(x)
-#     weights[1:4]        = [17, 59, 43, 49]
-#     weights[end-3:end]  = [49, 43, 59, 17]
-#     return (1/48) .* weights
-# end 
-
-# function weights(x::Int)
-#     w = zeros(x)
-#     for i in 1:length(w)
-#         if i % 2 == 0
-#            w[i] = 2/3 
-#         else
-#             w[i] = 4/3
-#     end end
-#     w[1] = 1/3
-#     w[end] = 1/3
-
-#     return w
-# end
 
 function weights(N::Int, p::Int)
     if p == 1 || p == N
@@ -513,34 +183,6 @@ function weights(N::Int, p::Int)
         return 1.0
     end
 end
-
-# function weights(N::Int, p::Int)
-#     if N==1 
-#         return 0.0
-#     elseif p == 1 || p == N
-#         return 0.5
-#     else
-#         return 1.0
-#     end
-# end
-
-# function weights(N::Int, p::Int)
-#     if N==1 
-#         return 0.0
-#     elseif p == 1 || p == N
-#         return 1/3
-#     elseif p % 2 == 0
-#         return 2/3
-#     else
-#         return 4/3
-#     end
-# end
-
-# function weights(x::Int)
-#     w = ones(x)
-#     return w
-# end
-
 
 # # TOM: Alternative formulation for the state ccdf, using the trapping info prop
 # cdf(std::AbstractSTD, ns::Int, φ::Number, t::Number) = 
@@ -555,23 +197,6 @@ elunit(b::Vector{U}) where U = _UF.unit(U)
 _LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) = 
     (ustrip.(A) \ ustrip(b)) * (elunit(b) / elunit(A))
 
-function battery_system_availability(i, T, ntw_av, μ, σ)
-    # Calculate the probability that the battery does not run out of charge before
-    # the power sources are repaired at time t. With a lognormal distribution for 
-    # the repair time with mean μ and standard deviation σ.
-    p_failure = 1 - ntw_av[i]
-    p_repair_time_ge_T = ccdf(LogNormal(μ, σ),T)
-    return 1-p_failure*p_repair_time_ge_T
-end
-
-function battery_system_availability(i, T, ntw_av, θ)
-    # Calculate the probability that the battery does not run out of charge before
-    # the power sources are repaired at time t. With a lognormal distribution for 
-    # the repair time with mean μ and standard deviation σ.
-    p_failure = 1 - ntw_av[i]
-    p_repair_time_ge_T = ccdf(Exponential(θ),T)
-    return 1-p_failure*p_repair_time_ge_T
-end
 
 function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
     # controleer voor schaalfactor
@@ -628,12 +253,71 @@ function cdfsum(dst_v::Vector, φ::Quantity, t::Quantity)
     return val
 end
 
-function cdf!(dst::AbstractDistribution, t::StepRangeLen, C::Vector)
-    C += cdf.(dst, t, zero(t[1]))
+
+function cdf!(dst::AbstractDistribution, t::StepRangeLen, C::Vector)::Vector
+    C .+= cdf.(dst, t, zero(t[1]))
     return C
 end
 
-function cdf!(dst::AbstractDistribution, φ::Quantity, t::Quantity, c::Float64)
+
+function cdf!(dst::AbstractDistribution, φ::Quantity, t::Quantity, c::Float64)::Float64
     c += cdf(dst, φ, t)
     return c
+end
+
+# function cdfsum(dst_v::Vector{T}, φ::Quantity, t::Quantity) where T<:AbstractDistribution
+#     val::Float64 = 0.0
+#     for dst in dst_v
+#         val = cdfsum_inner(dst, φ, t, val)
+#     end
+#     return val
+# end
+
+# function cdfsum_inner(dst::AbstractExponential, φ::Quantity, t::Quantity, c::Float64)::Float64
+#     c += cdf(dst, φ, t)
+#     return c
+# end
+
+# # cdfsum_inner for the specific AbstractExponential types
+# function cdfsum_inner(dst::AbstractWeibull, φ::Quantity, t::Quantity, c::Float64)::Float64
+#     c += cdf(dst, φ, t)
+#     return c
+# end
+
+# function cdfsum_inner(dst::AbstractLogNormal, φ::Quantity, t::Quantity, c::Float64)::Float64
+#     c += cdf(dst, φ, t)
+#     return c
+# end
+
+# function cdf!(dst::AbstractExponential, t::StepRangeLen, C::Vector)::Vector
+#     C .+= cdf.(dst, t, zero(t[1]))
+#     return C
+# end
+
+# function cdf!(dst::AbstractWeibull, t::StepRangeLen, C::Vector)::Vector
+#     C .+= cdf.(dst, t, zero(t[1]))
+#     return C
+# end
+
+# function cdf!(dst::AbstractLogNormal, t::StepRangeLen, C::Vector)::Vector
+#     C .+= cdf.(dst, t, zero(t[1]))
+#     return C
+# end
+
+function battery_system_availability(i, T, ntw_av, μ, σ)
+    # Calculate the probability that the battery does not run out of charge before
+    # the power sources are repaired at time t. With a lognormal distribution for 
+    # the repair time with mean μ and standard deviation σ.
+    p_failure = 1 - ntw_av[i]
+    p_repair_time_ge_T = ccdf(LogNormal(μ, σ),T)
+    return 1-p_failure*p_repair_time_ge_T
+end
+
+function battery_system_availability(i, T, ntw_av, θ)
+    # Calculate the probability that the battery does not run out of charge before
+    # the power sources are repaired at time t. With an exponential distribution for 
+    # the repair time with mean μ and standard deviation σ.
+    p_failure = 1 - ntw_av[i]
+    p_repair_time_ge_T = ccdf(Exponential(θ),T)
+    return 1-p_failure*p_repair_time_ge_T
 end

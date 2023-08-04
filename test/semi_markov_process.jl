@@ -13,13 +13,13 @@
         # of LVDC systems with integrated battery storage
         stdᶜᵃᵖ = include(joinpath(_MSS.BASE_DIR,"test/elements/CAP_ac.jl"))
         
-        solve!(stdᶜᵃᵖ, MarkovProcess(), tsim = 1.0u"yr")
+        solve!(stdᶜᵃᵖ, MarkovProcess(), tsim = 2.0u"yr")
         prb_m = [np[end] for np in _MSS.get_sprop(stdᶜᵃᵖ, :prob)]
         
-        solve!(stdᶜᵃᵖ, SemiMarkovProcess(), tsim = 1.0u"yr")  
+        solve!(stdᶜᵃᵖ, SemiMarkovProcess(), tsim = 2.0u"yr")  
         prb_s = [np[end] for np in _MSS.get_sprop(stdᶜᵃᵖ, :prob)]
         
-        @test isapprox(sum(prb_m), 1.0, rtol=1e-6)
+        @test isapprox(sum(prb_s), 1.0, rtol=1e-6)
         @test all(isapprox.(prb_m, prb_s, rtol=1e-6))
     end
 
