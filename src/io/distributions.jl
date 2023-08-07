@@ -152,16 +152,16 @@ julia> 𝑾(10.0,0.5,0.2)     # scaled Weibull distr. with θ = 10.0, α = 0.5 a
 abstract type AbstractWeibull{X,Y,Z} <: AbstractDistribution{X,Y,Z} end
 
 # struct - θ::Number, α::Real, ω::Real
-struct WeibullNRR{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
+struct WeibullNRR{X<:Number, Y<:Real, Z<:Real} <: AbstractWeibull{X,Y,Z}
     θ::X            # scale
     α::Y            # shape
-    ω::Y            # weight: 0.0 < ω <= 1.0
+    ω::Z            # weight: 0.0 < ω <= 1.0
 end
 # constructors
 Weibull() = WeibullNRR(1.0, 1.0, 1.0)
 Weibull(θ::X) where {X<:Number} = WeibullNRR(θ, 1.0, 1.0)
-Weibull(θ::X, α::Y) where{X<:Number, Y<:Real}= WeibullNRR(θ, α, 1.0)
-Weibull(θ::X, α::Y, ω::Z) where{X<:Number, Y<:Real, Z<:Real}= WeibullNRR(θ, α, ω)
+Weibull(θ::X, α::Y) where {X<:Number, Y<:Real} = WeibullNRR(θ, α, 1.0)
+Weibull(θ::X, α::Y, ω::Z) where {X<:Number, Y<:Real, Z<:Real} = WeibullNRR(θ, α, ω)
 
 # struct - θ::Number, α::Real, ω::Function
 struct WeibullNRF{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
@@ -170,7 +170,7 @@ struct WeibullNRF{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
     ω::Z            # weight: 0.0 < ω(t) <= 1.0
 end
 # constructors
-Weibull(θ::X, α::Y, ω::Z) where{X<:Number, Y<:Real, Z<:Function}= 
+Weibull(θ::X, α::Y, ω::Z) where {X<:Number, Y<:Real, Z<:Function} = 
     WeibullNRF(θ, α, ω)
 
 # shortened constructors
