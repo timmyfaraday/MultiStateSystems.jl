@@ -82,6 +82,21 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
 end
 
 function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
+    # id_lb, id_ub = Int(ceil(quantile(dst, tol*1e-3) / dt)), Int(floor(cquantile(dst, tol*1e-3) / dt))
+    # lb, ub = id_lb * dt - dt, id_ub * dt    
+    # for (ni,nt) in enumerate(t)
+    #     φ   = min(nt,ub):-dt:lb
+    #     lt  = reverse(φ)
+    #     idx = min(ni,id_ub):-1:id_lb
+    #     for (nj,id) in enumerate(idx)
+    #         push!(I, Ns * (ni-1) + _LG.dst(tr))
+    #         push!(J, Ns * (id-1) + _LG.src(tr))
+    #         push!(V,- dt * weights(ni, id) * (pdf(dst, φ[nj], lt[nj]) |> unit(dt)^-1))
+    #         if isnan(V[end])
+    #             V[end] = 0.0
+    #         end
+    #     end
+    # end
     lb = Int(floor(cquantile(dst, tol*1e-3) / dt))    
     for (ni,nt) in enumerate(t)
         if ni <= lb
@@ -124,11 +139,12 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
 
     # solve the problem
-    U = set_U(std,t,tol)
-    A = ustrip(set_A(std,t,tol))
-    H=U\A*unit(1/t[1])
+    @time U = set_U(std,t,tol)
+    @time A = ustrip(set_A(std,t,tol))
+    @time H=U\A*unit(1/t[1])
 
-    set_P(std, t, H, tol)
+    println("set_P")
+    @time set_P(std, t, H, tol)
     
     # set the output
     set_prop!(std, :cls, cls)
@@ -146,18 +162,14 @@ function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
         dst_v = [get_prop(std, _LG.Edge(st,nx),:distr) for nx in _LG.outneighbors(std.graph, st)]
         init   = get_prop(std, st, :init)
         h = map(x->H[ns(std) * (x-1) + st], 1:Nt)
-        p = set_int(dst_v, t, h, init, tol)
+        p = set_int(std, st, dst_v, t, h, init, tol)
         set_prop!(std, st, :prob, p)
     end    
 end
 
-function set_int(dst_v, t, h, init, tol)
+function set_int(std, st, dst_v, t, h, init, tol)
     if init > 0.0 
-        CDF = zeros(Float64, length(t))
-        for dst in dst_v
-            CDF = cdf!(dst, t, CDF)
-        end
-        p = init .* (1 .- CDF) .+ integral(dst_v, t, h, tol)
+        p = init .* ccdf.(std, st, t, zero(t[1])) .+ integral(dst_v, t, h, tol)
     else
         p = integral(dst_v, t, h, tol)        
     end
@@ -205,105 +217,11 @@ function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
     τ   = t[idx]
     γ   = _INT.interpolate((τ,), h[idx], _INT.Gridded(_INT.Linear()))
     if isempty(dst_v)
-        ϕ   = [_QGK.quadgk(x -> γ(x), t[1], nτ, rtol=tol)[1] for nτ in τ]
+        ϕ = [_QGK.quadgk(x -> γ(x), t[1], nτ, rtol=tol)[1] for nτ in τ]
     else
-        ϕ   = [_QGK.quadgk(x -> γ(x) * ccdf(dst_v, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ]
+        ϕ = [_QGK.quadgk(x -> γ(x), t[1], nτ, rtol = tol)[1] for nτ in τ] .- 
+        sum([_QGK.quadgk(x -> γ(x) * cdf(dst, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ] for dst in dst_v)        
     end
     p   = _INT.LinearInterpolation(τ, ϕ)(t)
     return p
-end
-
-
-
-function compress(v::Vector, steps::Int, std::AbstractSTD)
-    n = length(v)
-    Ns = ns(std)
-    y = Int((n-Ns)/(Ns*steps))
-    compressed_v = zeros((steps+1)*Ns)*unit(v[1])
-    for st in 1:Ns
-        for i in 1:steps+1
-            compressed_v[Ns*(i-1)+st] = v[y*Ns*(i-1)+st];
-        end
-    end
-    return compressed_v
-end
-
-ccdf(dst_v::Vector, φ::Quantity, t::Quantity) =
-    1.0 - cdfsum(dst_v, φ, t)
-
-function cdfsum(dst_v::Vector, φ::Quantity, t::Quantity)
-    val = zero(Float64)
-    for dst in dst_v
-        val::Float64 = cdf!(dst, φ, t, val)
-    end
-    return val
-end
-
-
-function cdf!(dst::AbstractDistribution, t::StepRangeLen, C::Vector)::Vector
-    C .+= cdf.(dst, t, zero(t[1]))
-    return C
-end
-
-
-function cdf!(dst::AbstractDistribution, φ::Quantity, t::Quantity, c::Float64)::Float64
-    c += cdf(dst, φ, t)
-    return c
-end
-
-# function cdfsum(dst_v::Vector{T}, φ::Quantity, t::Quantity) where T<:AbstractDistribution
-#     val::Float64 = 0.0
-#     for dst in dst_v
-#         val = cdfsum_inner(dst, φ, t, val)
-#     end
-#     return val
-# end
-
-# function cdfsum_inner(dst::AbstractExponential, φ::Quantity, t::Quantity, c::Float64)::Float64
-#     c += cdf(dst, φ, t)
-#     return c
-# end
-
-# # cdfsum_inner for the specific AbstractExponential types
-# function cdfsum_inner(dst::AbstractWeibull, φ::Quantity, t::Quantity, c::Float64)::Float64
-#     c += cdf(dst, φ, t)
-#     return c
-# end
-
-# function cdfsum_inner(dst::AbstractLogNormal, φ::Quantity, t::Quantity, c::Float64)::Float64
-#     c += cdf(dst, φ, t)
-#     return c
-# end
-
-# function cdf!(dst::AbstractExponential, t::StepRangeLen, C::Vector)::Vector
-#     C .+= cdf.(dst, t, zero(t[1]))
-#     return C
-# end
-
-# function cdf!(dst::AbstractWeibull, t::StepRangeLen, C::Vector)::Vector
-#     C .+= cdf.(dst, t, zero(t[1]))
-#     return C
-# end
-
-# function cdf!(dst::AbstractLogNormal, t::StepRangeLen, C::Vector)::Vector
-#     C .+= cdf.(dst, t, zero(t[1]))
-#     return C
-# end
-
-function battery_system_availability(i, T, ntw_av, μ, σ)
-    # Calculate the probability that the battery does not run out of charge before
-    # the power sources are repaired at time t. With a lognormal distribution for 
-    # the repair time with mean μ and standard deviation σ.
-    p_failure = 1 - ntw_av[i]
-    p_repair_time_ge_T = ccdf(LogNormal(μ, σ),T)
-    return 1-p_failure*p_repair_time_ge_T
-end
-
-function battery_system_availability(i, T, ntw_av, θ)
-    # Calculate the probability that the battery does not run out of charge before
-    # the power sources are repaired at time t. With an exponential distribution for 
-    # the repair time with mean μ and standard deviation σ.
-    p_failure = 1 - ntw_av[i]
-    p_repair_time_ge_T = ccdf(Exponential(θ),T)
-    return 1-p_failure*p_repair_time_ge_T
 end

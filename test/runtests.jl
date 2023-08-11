@@ -21,6 +21,7 @@ const _MSS = MultiStateSystems
     # form
     include("steady_state_process.jl")
     include("markov_process.jl")
+    include("semi_markov_process.jl")
 
     # io
     include("distributions.jl")

@@ -121,8 +121,8 @@ ccdf(std::AbstractSTD, ns::Int, φ::Quantity, t::Quantity) =
         1.0 - sum(cdf(get_prop(std, _LG.Edge(ns,nx),:distr), φ, t)
                 for nx in _LG.outneighbors(std.graph, ns); init = 0.0)
 
-# ccdf(dst_v::Vector, φ::Quantity, t::Quantity) =
-#         1.0 - sum(cdf(dst, φ, t) for dst in dst_v; init = 0.0)                    
+ccdf(dst_v::Vector, φ::Quantity, t::Quantity) =
+        1.0 - sum(cdf(dst, φ, t) for dst in dst_v; init = 0.0)                    
 ## Info
 # structs
 mutable struct STDInfo{B<:Bool} <: AbstractInfo
