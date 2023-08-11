@@ -82,53 +82,52 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
 end
 
 function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
-    # id_lb, id_ub = Int(ceil(quantile(dst, tol*1e-3) / dt)), Int(floor(cquantile(dst, tol*1e-3) / dt))
-    # lb, ub = id_lb * dt - dt, id_ub * dt    
-    # for (ni,nt) in enumerate(t)
-    #     φ   = min(nt,ub):-dt:lb
-    #     lt  = reverse(φ)
-    #     idx = min(ni,id_ub):-1:id_lb
-    #     for (nj,id) in enumerate(idx)
-    #         push!(I, Ns * (ni-1) + _LG.dst(tr))
-    #         push!(J, Ns * (id-1) + _LG.src(tr))
-    #         push!(V,- dt * weights(ni, id) * (pdf(dst, φ[nj], lt[nj]) |> unit(dt)^-1))
-    #         if isnan(V[end])
-    #             V[end] = 0.0
-    #         end
-    #     end
-    # end
-    lb = Int(floor(cquantile(dst, tol*1e-3) / dt))    
+    id_lb, id_ub = Int(ceil(quantile(dst, tol*1e-3) / dt)), Int(floor(cquantile(dst, tol*1e-3) / dt))  
     for (ni,nt) in enumerate(t)
-        if ni <= lb
-            Φ = nt:-dt:t[1]
-            # Φ represents the sojourn time
-            lt = t[1]:dt:nt
-            # lt is the last transition time
-            NΦ = length(Φ)
-            for nj in 1:NΦ
-                push!(I, Ns * (ni-1) + _LG.dst(tr))
-                push!(J, Ns * (nj-1) + _LG.src(tr))
-                push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
-                if isnan(V[end])
-                    V[end] = 0.0
-                end
-            end 
-        else
-            Φ = nt:-dt:t[1]
-            # Φ represents the sojourn time
-            lt = t[1]:dt:nt
-            # lt is the last transition time
-            NΦ = length(lt)
-            for nj in NΦ:-1:NΦ-lb
-                push!(I, Ns * (ni-1) + _LG.dst(tr))
-                push!(J, Ns * (nj-1) + _LG.src(tr))
-                push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
-                if isnan(V[end])
-                    V[end] = 0.0
-                end
-            end 
+        φ   = nt:-dt:t[1]
+        lt  = reverse(φ)
+        idx = ni-id_lb+1:-1:max(1,ni-id_ub)
+        for id in idx
+            push!(I, Ns * (ni-1) + _LG.dst(tr))
+            push!(J, Ns * (id-1) + _LG.src(tr))
+            push!(V,- dt * weights(ni, id) * (pdf(dst, φ[id], lt[id]) |> unit(dt)^-1))
+            if isnan(V[end])
+                V[end] = 0.0
+            end
         end
-    end 
+    end
+    # lb = Int(floor(cquantile(dst, tol*1e-3) / dt))    
+    # for (ni,nt) in enumerate(t)
+    #     if ni <= lb
+    #         Φ = nt:-dt:t[1]
+    #         # Φ represents the sojourn time
+    #         lt = t[1]:dt:nt
+    #         # lt is the last transition time
+    #         NΦ = length(Φ)
+    #         for nj in 1:NΦ
+    #             push!(I, Ns * (ni-1) + _LG.dst(tr))
+    #             push!(J, Ns * (nj-1) + _LG.src(tr))
+    #             push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
+    #             if isnan(V[end])
+    #                 V[end] = 0.0
+    #             end
+    #         end 
+    #     else
+    #         Φ = nt:-dt:t[1]
+    #         # Φ represents the sojourn time
+    #         lt = t[1]:dt:nt
+    #         # lt is the last transition time
+    #         NΦ = length(lt)
+    #         for nj in NΦ:-1:NΦ-lb
+    #             push!(I, Ns * (ni-1) + _LG.dst(tr))
+    #             push!(J, Ns * (nj-1) + _LG.src(tr))
+    #             push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
+    #             if isnan(V[end])
+    #                 V[end] = 0.0
+    #             end
+    #         end 
+    #     end
+    # end 
 end
 
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
@@ -139,12 +138,11 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
 
     # solve the problem
-    @time U = set_U(std,t,tol)
-    @time A = ustrip(set_A(std,t,tol))
-    @time H=U\A*unit(1/t[1])
+    U = set_U(std,t,tol)
+    A = ustrip(set_A(std,t,tol))
+    H=U\A*unit(1/t[1])
 
-    println("set_P")
-    @time set_P(std, t, H, tol)
+    set_P(std, t, H, tol)
     
     # set the output
     set_prop!(std, :cls, cls)
