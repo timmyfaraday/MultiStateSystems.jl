@@ -75,9 +75,6 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     append!(V, ones(Float64,Ns*Nt))
   
     for tr in transitions(std)
-        # dummy value not necessary, since every diagonal entry requires a one to be added to it.
-        # Sparse Arrays allow to add values to the same location twice and add those
-        # dummy_value = ifelse(_LG.src(tr) == _LG.dst(tr),zero(1/dt),oneunit(1/dt)) # dummy_value voegt nu een 1 toe wanneer dest and source gelijk zijn, maar dit moet enkel in geval ni en nj ook nog gelijk zijn. Extra controle in de tijdslus.
         dst = get_prop(std, tr, :distr)
         _fill_U!(tr, dt, t, Ns, dst, I, J, V, tol)
     end
@@ -89,8 +86,9 @@ function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t:
     for (ni,nt) in enumerate(t)
         if ni <= lb
             Φ = nt:-dt:t[1]
-            # Φ represents the sojourn time, ranging from
+            # Φ represents the sojourn time
             lt = t[1]:dt:nt
+            # lt is the last transition time
             NΦ = length(Φ)
             for nj in 1:NΦ
                 push!(I, Ns * (ni-1) + _LG.dst(tr))
@@ -102,8 +100,9 @@ function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t:
             end 
         else
             Φ = nt:-dt:t[1]
-            # Φ represents the sojourn time, ranging from
+            # Φ represents the sojourn time
             lt = t[1]:dt:nt
+            # lt is the last transition time
             NΦ = length(lt)
             for nj in NΦ:-1:NΦ-lb
                 push!(I, Ns * (ni-1) + _LG.dst(tr))
@@ -114,8 +113,6 @@ function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t:
                 end
             end 
         end
-        # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, nt.-Φ, Φ) .|> unit(dt)^-1))
-        # append!(V, .- dt .* weights(ni)[1:NΦ] .* (pdf.(dst, Φ, lt) .|> unit(dt)^-1))
     end 
 end
 
@@ -139,7 +136,6 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
-    # return h
 end
 
 
@@ -184,13 +180,6 @@ function weights(N::Int, p::Int)
     end
 end
 
-# # TOM: Alternative formulation for the state ccdf, using the trapping info prop
-# cdf(std::AbstractSTD, ns::Int, φ::Number, t::Number) = 
-#     sum(cdf(get_prop(std, _LG.Edge(ns,nx), :distr), φ, t) for nx in _LG.outneighbors(std.graph, ns))
-# ccdf(std::AbstractSTD, ns::Int, φ::Number, t::Number)  = 
-#     ifelse(get_prop(std, ns, :trapping), 1.0, 1.0 - cdf(std, ns, φ, t))
-
-
 # TOM: added functionality to enable \ with units.
 elunit(A::Matrix{U}) where U = _UF.unit(U)
 elunit(b::Vector{U}) where U = _UF.unit(U)
@@ -199,7 +188,6 @@ _LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) =
 
 
 function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
-    # controleer voor schaalfactor
     d2h = abs.(diff(diff(ustrip(h))))
     id = 1
     idx = Int[1]
@@ -221,8 +209,6 @@ function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
     else
         ϕ   = [_QGK.quadgk(x -> γ(x) * ccdf(dst_v, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ]
     end
-    # niet gelijk gespacete interpolatie 
-    # Y = interpolate((x,), y, Gridded(Linear()))
     p   = _INT.LinearInterpolation(τ, ϕ)(t)
     return p
 end
