@@ -96,38 +96,6 @@ function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t:
             end
         end
     end
-    # lb = Int(floor(cquantile(dst, tol*1e-3) / dt))    
-    # for (ni,nt) in enumerate(t)
-    #     if ni <= lb
-    #         Φ = nt:-dt:t[1]
-    #         # Φ represents the sojourn time
-    #         lt = t[1]:dt:nt
-    #         # lt is the last transition time
-    #         NΦ = length(Φ)
-    #         for nj in 1:NΦ
-    #             push!(I, Ns * (ni-1) + _LG.dst(tr))
-    #             push!(J, Ns * (nj-1) + _LG.src(tr))
-    #             push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
-    #             if isnan(V[end])
-    #                 V[end] = 0.0
-    #             end
-    #         end 
-    #     else
-    #         Φ = nt:-dt:t[1]
-    #         # Φ represents the sojourn time
-    #         lt = t[1]:dt:nt
-    #         # lt is the last transition time
-    #         NΦ = length(lt)
-    #         for nj in NΦ:-1:NΦ-lb
-    #             push!(I, Ns * (ni-1) + _LG.dst(tr))
-    #             push!(J, Ns * (nj-1) + _LG.src(tr))
-    #             push!(V,- dt * weights(NΦ, nj) * (pdf(dst, Φ[nj], lt[nj]) |> unit(dt)^-1))
-    #             if isnan(V[end])
-    #                 V[end] = 0.0
-    #             end
-    #         end 
-    #     end
-    # end 
 end
 
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
@@ -135,7 +103,6 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # get the input
     dt = dt |> unit(tsim)
     t = zero(dt):dt:tsim
-
 
     # solve the problem
     U = set_U(std,t,tol)
@@ -153,16 +120,55 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 end
 
 
-function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
-    Nt = length(t)
+# function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
+#     Nt = length(t)
 
+#     for st in states(std)
+#         dst_v = [get_prop(std, _LG.Edge(st,nx),:distr) for nx in _LG.outneighbors(std.graph, st)]
+#         init   = get_prop(std, st, :init)
+#         h = map(x->H[ns(std) * (x-1) + st], 1:Nt)
+#         p = set_int(std, st, dst_v, t, h, init, tol)
+#         set_prop!(std, st, :prob, p)
+#     end    
+# end
+
+function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
+    dt = step(t)
+    Nt = length(t)
     for st in states(std)
         dst_v = [get_prop(std, _LG.Edge(st,nx),:distr) for nx in _LG.outneighbors(std.graph, st)]
         init   = get_prop(std, st, :init)
-        h = map(x->H[ns(std) * (x-1) + st], 1:Nt)
-        p = set_int(std, st, dst_v, t, h, init, tol)
+
+        if init > 0.0
+            p = init .* ccdf.(std, st, t, zero(t[1])) .+ num_integral(std, dst_v, t, dt, st, H, tol)
+        else 
+            p = num_integral(std, dst_v, t, dt, st, H, tol)
+        end 
         set_prop!(std, st, :prob, p)
-    end    
+    end
+end
+
+function num_integral(std::AbstractSTD, dst_v::Vector, t::StepRangeLen, dt::Quantity, st::Int, H::Vector, tol::Real)
+    Φ = Float64[]       
+    if isempty(dst_v)
+        for (ni,nt) in enumerate(t)
+            l = t[1]:dt:nt 
+            push!(Φ, sum(dt .* weights(ni, nj) .* H[ns(std) * (nj-1) + st]  
+            for (nj,nl) in enumerate(l)))
+        end
+    else
+        for (ni,nt) in enumerate(t)
+            l = t[1]:dt:nt 
+            push!(Φ, sum(dt .* weights(ni, nj) .* H[ns(std) * (nj-1) + st]  
+                for (nj,nl) in enumerate(l)))
+            for dst in dst_v
+                Φ[ni] -= sum(dt .* weights(ni, nj) .* H[ns(std) * (nj-1) + st] .*
+                cdf(dst, nt-nl, nl)
+                for (nj,nl) in enumerate(l))
+            end
+        end
+    end
+    return Φ
 end
 
 function set_int(std, st, dst_v, t, h, init, tol)
@@ -195,31 +201,3 @@ elunit(A::Matrix{U}) where U = _UF.unit(U)
 elunit(b::Vector{U}) where U = _UF.unit(U)
 _LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) = 
     (ustrip.(A) \ ustrip(b)) * (elunit(b) / elunit(A))
-
-
-function integral(dst_v::Vector, t::StepRangeLen, h::Vector, tol::Real)
-    d2h = abs.(diff(diff(ustrip(h))))
-    id = 1
-    idx = Int[1]
-    reltol = maximum(ustrip(h))*tol
-    # reltol = (maximum(d2h)-Base.minimum(d2h))*tol
-
-    while true
-        next_id = findfirst(x -> x > reltol, cumsum(d2h[id:end]))
-        next_id == nothing ? break : ~ ;
-
-        id += next_id
-        push!(idx,id)
-    end
-    push!(idx,length(d2h)+2)
-    τ   = t[idx]
-    γ   = _INT.interpolate((τ,), h[idx], _INT.Gridded(_INT.Linear()))
-    if isempty(dst_v)
-        ϕ = [_QGK.quadgk(x -> γ(x), t[1], nτ, rtol=tol)[1] for nτ in τ]
-    else
-        ϕ = [_QGK.quadgk(x -> γ(x), t[1], nτ, rtol = tol)[1] for nτ in τ] .- 
-        sum([_QGK.quadgk(x -> γ(x) * cdf(dst, nτ-x, x), t[1], nτ, rtol=tol)[1] for nτ in τ] for dst in dst_v)        
-    end
-    p   = _INT.LinearInterpolation(τ, ϕ)(t)
-    return p
-end

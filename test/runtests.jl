@@ -11,6 +11,7 @@ using Test
 using Unitful
 using Measurements
 using AdditionalUnits
+using QuadGK
 using MultiStateSystems
 
 # pkg const
