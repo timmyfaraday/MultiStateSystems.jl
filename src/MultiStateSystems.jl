@@ -11,7 +11,7 @@ module MultiStateSystems
 # import pkgs
 import Base: maximum
 
-import LightGraphs
+import Graphs
 import LinearAlgebra
 import Multigraphs
 import OrdinaryDiffEq
@@ -27,7 +27,6 @@ using AdditionalUnits
 
 # pkg const
 const _LA  = LinearAlgebra
-const _LG  = LightGraphs
 const _MG  = Multigraphs
 const _ODE = OrdinaryDiffEq
 const _UF  = Unitful

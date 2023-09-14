@@ -27,10 +27,10 @@ function set_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
     A = zeros(typeof(1/dt), ns(std) * Nt)
 
     for tr in transitions(std)
-        init = get_prop(std, _LG.src(tr), :init)
+        init = get_prop(std, Graphs.src(tr), :init)
         if init > 0.0
             dst = get_prop(std, tr, :distr)
-            idx = _LG.dst(tr)
+            idx = Graphs.dst(tr)
             lb = floor(cquantile(dst, tol*1e-3) / dt) * dt
             _fill_A!(std, t, A, idx, dst, init, lb)
         end
@@ -43,7 +43,7 @@ function _fill_A!(std, t, A, idx, dst, init, lb)
         if nt <= lb
             id      = ns(std) * (ni-1) + idx
             # The content of the A-vector is the probability of initially being 
-            # in state (_LG.src(tr)) times the probability of transitioning out 
+            # in state (Graphs.src(tr)) times the probability of transitioning out 
             # of that state entered at sojourn time zero and evaluated at 
             # time t = (nt)
             A[id]   += init * pdf(dst, nt, zero(t[1]))
@@ -81,15 +81,15 @@ function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     return _SA.sparse(I, J, V)
 end
 
-function _fill_U!(tr::LightGraphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
+function _fill_U!(tr::Graphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
     id_lb, id_ub = Int(ceil(quantile(dst, tol*1e-3) / dt)), Int(floor(cquantile(dst, tol*1e-3) / dt))  
     for (ni,nt) in enumerate(t)
         φ   = nt:-dt:t[1]
         lt  = reverse(φ)
         idx = ni-id_lb+1:-1:max(1,ni-id_ub)
         for id in idx
-            push!(I, Ns * (ni-1) + _LG.dst(tr))
-            push!(J, Ns * (id-1) + _LG.src(tr))
+            push!(I, Ns * (ni-1) + Graphs.dst(tr))
+            push!(J, Ns * (id-1) + Graphs.src(tr))
             push!(V,- dt * weights(ni, id) * (pdf(dst, φ[id], lt[id]) |> unit(dt)^-1))
             if isnan(V[end])
                 V[end] = 0.0
@@ -124,7 +124,7 @@ end
 #     Nt = length(t)
 
 #     for st in states(std)
-#         dst_v = [get_prop(std, _LG.Edge(st,nx),:distr) for nx in _LG.outneighbors(std.graph, st)]
+#         dst_v = [get_prop(std, Graphs.Edge(st,nx),:distr) for nx in Graphs.outneighbors(std.graph, st)]
 #         init   = get_prop(std, st, :init)
 #         h = map(x->H[ns(std) * (x-1) + st], 1:Nt)
 #         p = set_int(std, st, dst_v, t, h, init, tol)
@@ -136,7 +136,7 @@ function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
     dt = step(t)
     Nt = length(t)
     for st in states(std)
-        dst_v = [get_prop(std, _LG.Edge(st,nx),:distr) for nx in _LG.outneighbors(std.graph, st)]
+        dst_v = [get_prop(std, Graphs.Edge(st,nx),:distr) for nx in Graphs.outneighbors(std.graph, st)]
         init   = get_prop(std, st, :init)
 
         if init > 0.0

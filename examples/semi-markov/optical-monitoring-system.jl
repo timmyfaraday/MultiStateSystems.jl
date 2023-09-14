@@ -22,7 +22,6 @@ States:
 # load pkgs
 using Unitful
 using MultiStateSystems
-using Revise
 using Plots
 
 # pkg const

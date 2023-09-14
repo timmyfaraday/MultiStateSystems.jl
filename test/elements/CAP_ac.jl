@@ -9,7 +9,6 @@
 # load pkgs
 using Unitful
 using MultiStateSystems
-using Revise
 
 const _MSS = MultiStateSystems
 

@@ -17,7 +17,7 @@ function set_markov_chain_matrix!(std::AbstractSTD, cls::SteadyStateProcess)
     P = zeros(_MSM.Measurement, ns(std), ns(std))
     for nt in transitions(std)
         rate = get_prop(std, nt, :rate)
-        P[_LG.src(nt),_LG.dst(nt)] = 
+        P[Graphs.src(nt),Graphs.dst(nt)] = 
             ifelse(_UF.unit(rate)==_UF.NoUnits, rate, rate * 1.0u"s" |> u"s/s")
     end
     for ns in 1:ns(std)
