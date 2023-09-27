@@ -12,104 +12,135 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 # properties
 const semi_markov_process_props = [:renewal, :dynamic]
 
-"""
-    MultiStateSystems.set_A(std::MultiStateSystems.AbstractSTD, t::StepRangeLen)
-
-A indicates that state j can be reached if the process was initially in state i 
-and remains there until time t.
-
-The unit of A is [unit(1/t)]
-""" 
-function set_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
+# stochastic process
+# A indicates that state j can be reached if the process was initially in 
+# state i and remains there until time t. The unit of A is [unit(1/t)]
+function get_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
     dt = step(t)
+    Ns = ns(std)
     Nt = length(t)
 
-    A = zeros(typeof(1/dt), ns(std) * Nt)
+    A = zeros(typeof(1/dt), Ns*Nt)
 
     for tr in transitions(std)
-        init = get_prop(std, Graphs.src(tr), :init)
-        if init > 0.0
-            dst = get_prop(std, tr, :distr)
-            idx = Graphs.dst(tr)
-            lb = floor(cquantile(dst, tol*1e-3) / dt) * dt
-            _fill_A!(std, t, A, idx, dst, init, lb)
-        end
+        dst     = get_prop(std, tr, :distr)
+        fr, to  = Graphs.src(tr), Graphs.dst(tr)
+        init    = get_prop(std, fr, :init)
+
+        init > 0.0 ? _fill_A!(to, init, Ns, tol, dst, t, A) : ~ ;
     end
+
     return A
 end
+function _fill_A!(to::Int, init::Real, Ns::Int, tol::Real, 
+                  dst::AbstractDistribution, t::StepRangeLen, A::Vector)
+    dt      = step(t)
+    lb, ub  = quantile(dst, tol) - dt, cquantile(dst, tol) + dt
+    
+    for (ni,nt) in enumerate(t) if lb <= nt <= ub
+        id = Ns * (ni-1) + to
 
-function _fill_A!(std, t, A, idx, dst, init, lb)
-    for (ni,nt) in enumerate(t)
-        if nt <= lb
-            id      = ns(std) * (ni-1) + idx
-            # The content of the A-vector is the probability of initially being 
-            # in state (Graphs.src(tr)) times the probability of transitioning out 
-            # of that state entered at sojourn time zero and evaluated at 
-            # time t = (nt)
-            A[id]   += init * pdf(dst, nt, zero(t[1]))
-            if isnan(A[id])
-                A[id] = zero(1/t[1])
-            end
+        A[id] += init * pdf(dst, nt, zero(dt))
+        isnan(A[id]) ? A[id] = zero(1/dt) : ~ ;
     end end
 end
-
-
-"""
-    MultiStateSystems.set_U(std::MultiStateSystems.AbstractSTD, t::StepRangeLen)
-
-U indicates that state j can be reached if the process enters state i at time φ 
-and remains there until time t
-
-The unit of U is [-]
-"""
-
-function set_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
-    dt = step(t)
-    Nt = length(t)   
+# U indicates that state j can be reached if the process enters state i at 
+# sojourn time φ and remains there until calendar time t. The unit of U is [-]
+function get_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     Ns = ns(std)
-    # initialize three vectors I,J,V respectively row, column and value indices
-    I,J,V = Int[],Int[],Float64[]
+    Nt = length(t)
 
-    append!(I, 1:Ns*Nt)
-    append!(J, 1:Ns*Nt)
-    append!(V, ones(Float64,Ns*Nt))
+    I, J, V = Int[1:Ns*Nt;], Int[1:Ns*Nt;], ones(Float64,Ns*Nt)
   
     for tr in transitions(std)
-        dst = get_prop(std, tr, :distr)
-        _fill_U!(tr, dt, t, Ns, dst, I, J, V, tol)
+        dst     = get_prop(std, tr, :distr)
+        fr, to  = Graphs.src(tr), Graphs.dst(tr)
+
+        _fill_U!(fr, to, Ns, tol, dst, t, I, J, V)
     end
+
     return _SA.sparse(I, J, V)
 end
+function _fill_U!(fr::Int, to::Int, Ns::Int, tol::Real, dst::AbstractDistribution,
+                  t::StepRangeLen, I::Vector, J::Vector, V::Vector)
+    dt      = step(t)
+    lb, ub  = quantile(dst, tol) - dt, cquantile(dst, tol) + dt
 
-function _fill_U!(tr::Graphs.SimpleGraphs.SimpleEdge{Int64}, dt::Number, t::StepRangeLen, Ns::Int, dst::AbstractDistribution, I::Vector, J::Vector, V::Vector, tol::Real)
-    id_lb, id_ub = Int(ceil(quantile(dst, tol*1e-3) / dt)), Int(floor(cquantile(dst, tol*1e-3) / dt))  
     for (ni,nt) in enumerate(t)
-        φ   = nt:-dt:t[1]
-        lt  = reverse(φ)
-        idx = ni-id_lb+1:-1:max(1,ni-id_ub)
-        for id in idx
-            push!(I, Ns * (ni-1) + Graphs.dst(tr))
-            push!(J, Ns * (id-1) + Graphs.src(tr))
-            push!(V,- dt * weights(ni, id) * (pdf(dst, φ[id], lt[id]) |> unit(dt)^-1))
-            if isnan(V[end])
-                V[end] = 0.0
-            end
+        φ = nt:-dt:t[1]
+        τ = reverse(φ)
+
+        for (nj,nφ) in enumerate(φ) if lb <= nφ <= ub
+            push!(I, Ns * (ni-1) + to)
+            push!(J, Ns * (nj-1) + fr)
+            push!(V, -dt * weights(ni,nj) * (pdf(dst, nφ, τ[nj]) |> unit(1/dt)))
+            isnan(V[end]) ? V[end] = 0.0 : ~ ;
+        end end
+    end
+end
+# p indicates the probability of being in a state i at calendar time t. The unit
+# of p is [-].
+function set_p!(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
+    Ns = ns(std)
+    Nt = length(t)
+
+    for st in states(std)
+        h       = map(x -> H[Ns * (x-1) + st], 1:Nt)
+        init    = get_prop(std, st, :init)
+        DST     = [get_prop(std, Graphs.Edge(st,nx), :distr)
+                        for nx in Graphs.outneighbors(std.graph, st)]
+
+        _set_p!(std, st, init, tol, DST, t, h)
+    end
+end
+# p = init ⋅ ccdf(st) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt
+# p = init - ∑ᵢ init * cdf(dstᵢ) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt 
+# p = init + ∫ h dt - ∑ᵢ init ⋅ cdf(dstᵢ) + ∫ h ⋅ cdf(dstᵢ) dt
+function _set_p!(std::AbstractSTD, st::Int, init::Real, tol::Real, DST::Vector, 
+                 t::StepRangeLen, h::Vector)
+    dt = step(t)
+
+    p = init .+ [sum(dt * weights(ni,nj) * h[nj] for nj in 1:ni) 
+                                                 for (ni,nt) in enumerate(t)]
+    for dst in DST 
+        _fill_p!(init, dst, t, h, p) 
+    end
+
+    set_prop!(std, st, :prob, p)
+end
+function _fill_p!(init::Real, dst::AbstractDistribution, t::StepRangeLen, 
+                  h::Vector, p::Vector)
+    dt = step(t)
+
+    if init > 0
+        for (ni,nt) in enumerate(t)
+            τ = t[1]:dt:nt
+            
+            p[ni] -= init * cdf(dst, nt, t[1])
+            p[ni] -= sum(dt * weights(ni,nj) * h[nj] * cdf(dst, nt-nτ, nτ)
+                            for (nj,nτ) in enumerate(τ))
+        end
+    else
+        for (ni,nt) in enumerate(t)
+            τ = t[1]:dt:nt
+
+            p[ni] -= sum(dt * weights(ni,nj) * h[nj] * cdf(dst, nt-nτ, nτ)
+                            for (nj,nτ) in enumerate(τ))
         end
     end
 end
-
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
-    tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
+                tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
     # get the input
     dt = dt |> unit(tsim)
     t = zero(dt):dt:tsim
 
     # solve the problem
-    U = set_U(std,t,tol)
-    A = ustrip(set_A(std,t,tol))
-    H=U\A*unit(1/t[1])
+    U = get_U(std,t,tol)
+    A = ustrip(get_A(std,t,tol))
+    H = U \ A * unit(1/dt)
 
-    set_P(std, t, H, tol)
+    set_p!(std, t, H, tol)
     
     # set the output
     set_prop!(std, :cls, cls)
@@ -118,86 +149,3 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # set the solved status
     set_info!(std, :solved, true)
 end
-
-
-# function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
-#     Nt = length(t)
-
-#     for st in states(std)
-#         dst_v = [get_prop(std, Graphs.Edge(st,nx),:distr) for nx in Graphs.outneighbors(std.graph, st)]
-#         init   = get_prop(std, st, :init)
-#         h = map(x->H[ns(std) * (x-1) + st], 1:Nt)
-#         p = set_int(std, st, dst_v, t, h, init, tol)
-#         set_prop!(std, st, :prob, p)
-#     end    
-# end
-
-function set_P(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
-    dt = step(t)
-    Nt = length(t)
-    for st in states(std)
-        dst_v = [get_prop(std, Graphs.Edge(st,nx),:distr) for nx in Graphs.outneighbors(std.graph, st)]
-        init   = get_prop(std, st, :init)
-
-        if init > 0.0
-            p = init .* ccdf.(std, st, t, zero(t[1])) .+ num_integral(std, dst_v, t, dt, st, H, tol)
-        else 
-            p = num_integral(std, dst_v, t, dt, st, H, tol)
-        end 
-        set_prop!(std, st, :prob, p)
-    end
-end
-
-function num_integral(std::AbstractSTD, dst_v::Vector, t::StepRangeLen, dt::Quantity, st::Int, H::Vector, tol::Real)
-    Φ = Float64[]       
-    if isempty(dst_v)
-        for (ni,nt) in enumerate(t)
-            l = t[1]:dt:nt 
-            push!(Φ, sum(dt .* weights(ni, nj) .* H[ns(std) * (nj-1) + st]  
-            for (nj,nl) in enumerate(l)))
-        end
-    else
-        for (ni,nt) in enumerate(t)
-            l = t[1]:dt:nt 
-            push!(Φ, sum(dt .* weights(ni, nj) .* H[ns(std) * (nj-1) + st]  
-                for (nj,nl) in enumerate(l)))
-            for dst in dst_v
-                Φ[ni] -= sum(dt .* weights(ni, nj) .* H[ns(std) * (nj-1) + st] .*
-                cdf(dst, nt-nl, nl)
-                for (nj,nl) in enumerate(l))
-            end
-        end
-    end
-    return Φ
-end
-
-function set_int(std, st, dst_v, t, h, init, tol)
-    if init > 0.0 
-        p = init .* ccdf.(std, st, t, zero(t[1])) .+ integral(dst_v, t, h, tol)
-    else
-        p = integral(dst_v, t, h, tol)        
-    end
-    return p
-end
-
-
-"""
-    MultiStateSystems.weights(x::Int)
-
-Determine integration weights based on Simpson's rule. 
-w[1] and w[end] = 1/2, other weights = 1.
-"""
-
-function weights(N::Int, p::Int)
-    if p == 1 || p == N
-        return 0.5
-    else
-        return 1.0
-    end
-end
-
-# TOM: added functionality to enable \ with units.
-elunit(A::Matrix{U}) where U = _UF.unit(U)
-elunit(b::Vector{U}) where U = _UF.unit(U)
-_LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) = 
-    (ustrip.(A) \ ustrip(b)) * (elunit(b) / elunit(A))
