@@ -10,18 +10,18 @@
 using Unitful
 using MultiStateSystems
 
-# initialize the state-transition diagram corresponding to the front-end ac/dc 
-# converter
-stdᵃᵈ = STD()
+# initialize the state-transition diagram corresponding to the front-end ac/dc converter
+stdⁱⁿᵛ² = STD() 
 
 # add the states to the std
-add_states!(stdᵃᵈ, name  = ["available", "unavailable"],
-                   power = [1.0u"MW", 0.0u"MW"],
+add_states!(stdⁱⁿᵛ², name  = ["available", "unavailable_weibull"],
+                   power = [10.0u"MW", 0.0u"MW"],
                    init  = [1.0, 0.0])
 
 # add the transitions to the std
-add_transitions!(stdᵃᵈ, rate = [0.0u"1/hr"    12.8928e-6u"1/hr"
-                                0.0833u"1/hr" 0.0u"1/hr"])
+add_transitions!(stdⁱⁿᵛ², states = [(1,2),(2,1)],
+                      distr = [ Weibull(22.1u"yr", 2.13),
+                                LogNormal(log(4)u"d", 0.3u"d")])
 
-# return the std
-return stdᵃᵈ
+# solve the std
+return stdⁱⁿᵛ²

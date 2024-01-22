@@ -11,6 +11,7 @@ using Test
 using Unitful
 using Measurements
 using AdditionalUnits
+using QuadGK
 using MultiStateSystems
 
 # pkg const
@@ -21,8 +22,10 @@ const _MSS = MultiStateSystems
     # form
     include("steady_state_process.jl")
     include("markov_process.jl")
+    include("semi_markov_process.jl")
 
     # io
+    include("distributions.jl")
     include("indices.jl")
     include("universal_generating_function.jl")
 

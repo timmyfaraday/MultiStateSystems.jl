@@ -12,16 +12,16 @@ using MultiStateSystems
 
 # initialize the state-transition diagram corresponding to the front-end ac/dc 
 # converter
-stdᵃᵈ = STD()
+stdˢʷ = STD()
 
 # add the states to the std
-add_states!(stdᵃᵈ, name  = ["available", "unavailable"],
+add_states!(stdˢʷ, name  = ["available", "unavailable"],
                    power = [1.0u"MW", 0.0u"MW"],
                    init  = [1.0, 0.0])
 
 # add the transitions to the std
-add_transitions!(stdᵃᵈ, rate = [0.0u"1/hr"    12.8928e-6u"1/hr"
-                                0.0833u"1/hr" 0.0u"1/hr"])
+add_transitions!(stdˢʷ, rate = [0.0u"1/hr"    4.21667e-6u"1/hr"
+                                0.4269u"1/hr" 0.0u"1/hr"])
 
 # return the std
-return stdᵃᵈ
+return stdˢʷ

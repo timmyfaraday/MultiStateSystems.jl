@@ -13,18 +13,11 @@ mutable struct SteadyStateProcess <: AbstractMarkovProcess end
 const steady_state_process_props = [:renewal, :markovian, :steady_state]
 
 # parameters 
-function set_rates!(std::AbstractSTD, cls::AbstractMarkovProcess)
-    for nt in transitions(std)
-        if !has_prop(std, nt, :rate) && has_prop(std, nt, :distr)
-            if get_prop(std, nt, :distr) isa Exponential
-                set_prop!(std, nt, :rate, rate(get_prop(std, nt, :distr)))
-    end end end
-end
 function set_markov_chain_matrix!(std::AbstractSTD, cls::SteadyStateProcess)
     P = zeros(_MSM.Measurement, ns(std), ns(std))
     for nt in transitions(std)
         rate = get_prop(std, nt, :rate)
-        P[_LG.src(nt),_LG.dst(nt)] = 
+        P[Graphs.src(nt),Graphs.dst(nt)] = 
             ifelse(_UF.unit(rate)==_UF.NoUnits, rate, rate * 1.0u"s" |> u"s/s")
     end
     for ns in 1:ns(std)
@@ -40,14 +33,24 @@ function set_parameters!(std::AbstractSTD, cls::SteadyStateProcess)
 end
 
 # stochastic process
-solve_steady_state(std) =
-    hcat(get_prop(std, :P) .- _LA.I(ns(std)),ones(ns(std)))' \ [zeros(ns(std))..., 1.0]
-function solve!(std::AbstractSTD, cls::SteadyStateProcess)
+function solve!(std::AbstractSTD, cls::SteadyStateProcess;
+                tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+    # set the input
     set_parameters!(std, cls)
-
+    
+    # get the input
+    t   = [Inf]
+    P   = get_prop(std, :P)
+    Ns  = ns(std)
+    
+    # solve the problem
+    sol = hcat(P .- _LA.I(Ns),ones(Ns))' \ [zeros(Ns)..., 1.0]
+    
+    # set the output
     set_prop!(std, :cls, cls)
-    set_prop!(std, :time, [Inf])
-    set_prop!(std, states(std), :prob, solve_steady_state(std))
-
+    set_prop!(std, :time, t)
+    set_prop!(std, states(std), :prob, sol)
+    
+    # set the solved status
     set_info!(std, :solved, true)
 end

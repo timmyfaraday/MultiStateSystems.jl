@@ -11,55 +11,40 @@ it to allow for weighted distributions as well as the
 ## Distributions
 
 Each distribution has a number of constructors, both based on its full name and
-abbreviation, e.g., `Weibull()` is equivalent to `𝑾()`. Furthermore,
-additional constructors are included for limited input, where all remaining
-parameters are set to their default, e.g., `Weibull(10.0u"hr")` is equivalent
-to `Weibull(10.0u"hr",1.0,1.0)`.
+abbreviation, e.g., `Weibull()` is equivalent to `𝑾()`. The abbreviation 
+constructor is the first letter of the distribution in the `\bi` font.
+Furthermore, additional constructors are included for limited input, where all 
+remaining parameters are set to their default, e.g., `Weibull(10.0u"hr")` is 
+equivalent to `Weibull(10.0u"hr",1.0,1.0)`.
 
-All input parameters are either of the type `Number` or its subtype `Real`:
+All input parameters are either of the type `Number`, its subtype `Real` or a 
+`Function`:
 ```
 Number
  |- Unitful.Quantity, e.g., 10.0u"hr"
  |- Real
      |- AbstractFloat, e.g., 10.0
      |- Integer, e.g., 10
+Function
 ```
 
 All distributions may be scaled using a weight parameter `ω`, where
-`0.0 < ω ≤ 1.0`.
-
-### Dirac Distribution
-
-```@docs
-Dirac
-```
-
-## Uniform Distribution
-
-```@docs
-Uniform
-```
+`0.0 < ω::Real ≤ 1.0` or `0.0 < ω(t)::Fuction ≤ 1.0`.
 
 ## Exponential Distribution
 
 ```@docs
-Exponential
+MultiStateSystems.Exponential
 ```
 
 ## Weibull Distribution
 
 ```@docs
-Weibull
-```
-
-## Raised Cosine Distribution
-
-```@docs
-Cosine
+MultiStateSystems.Weibull
 ```
 
 ## LogNormal Distribution
 
 ```@docs
-LogNormal
+MultiStateSystems.LogNormal
 ```

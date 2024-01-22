@@ -40,7 +40,7 @@ end
 
 ## Probability Function
 probability_function(pr::Vector) = 
-    vec([prod(np) for np in Iterators.product(pr...)])
+    vec([.*(np...) for np in Iterators.product(pr...)])
 
 ## Structure Function
 function user_structure_function(ntw::AbstractNetwork, u_node::Int)
@@ -99,6 +99,7 @@ function unique_sequence(npaths::Vector{<:Vector})
         for ni in 1:length(npath)-3+1
             seq = npath[ni:ni+3-1]
             push!(all_seqs, seq)
+            if all(x -> has_subvector(x,seq), npaths) push!(nogo_seqs, seq) end ### needs to be improved, once it occurs twice it should be a nogo_seq
             for xpath in npaths
                 if check_sequence(seq, xpath) push!(nogo_seqs, seq) end
             end

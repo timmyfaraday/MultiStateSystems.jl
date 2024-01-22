@@ -4,12 +4,14 @@
 
 A number of stochastic processes are available to determine the state
 probabilities of an `std`:
-
-* Steady state process `SteadyStateProcess <: AbstractMarkovProcess`
-* Markov chain `:markov_process`
-* Markov process `:markov_process`
-* Semi-Markov process `:semimarkov_process`
-* Van Acker process `:vanacker_process`
+```
+AbstractStochasticProcess
+  |- AbstractMarkovProcess
+      |- SteadyStateProcess
+      |- MarkovProcess
+  |- AbstractSemiMarkovProcess
+      |- SemiMarkovProcess
+```
 
 Solving a stochastic process may be accomplished through:
 ```@docs
@@ -59,6 +61,19 @@ probabilities, given transition rates ρ$_{ij}$(t) and initial values δ$_{i}$:
 ```math
 dp_i(t)/dt = - ∑_j ρ_{ij}(t)p_i(t) + ∑_j ρ_{ji}(t)p_j(t),  ∀ i ∈ 𝓢.
 ```
+
+## Semi-Markov Process
+
+| Spaces      |             	| Properties  |             |
+| :---------- | :-------------- | :---------- | :---------- |
+| State-space | discrete    	| Renewal     | ✅          |
+| Time-space  | continuous  	| Markov      | ❎          |
+
+A semi-Markov process is described by a random variable $X_t$, where $t$ denotes
+the calendar time. The possible values of $X_t$ are represented by the discrete
+state-space 𝓢 of the state transition diagram `std`.
+
+A semi-Markov process...
 
 ## Van Acker Process
 
