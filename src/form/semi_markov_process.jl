@@ -106,6 +106,7 @@ function _set_p!(std::AbstractSTD, st::Int, init::Real, tol::Real, DST::Vector,
         _fill_p!(init, dst, t, h, p) 
     end
 
+    set_prop!(std, st, :h, h)
     set_prop!(std, st, :prob, p)
 end
 function _fill_p!(init::Real, dst::AbstractDistribution, t::StepRangeLen, 
@@ -136,8 +137,8 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     t = zero(dt):dt:tsim
 
     # solve the problem
-    U = get_U(std,t,tol)
-    A = ustrip(get_A(std,t,tol))
+    U = get_U(std, t, tol)
+    A = ustrip(get_A(std, t, tol))
     H = U \ A * unit(1/dt)
 
     set_p!(std, t, H, tol)
