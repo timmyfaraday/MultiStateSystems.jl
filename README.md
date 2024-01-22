@@ -27,7 +27,7 @@ In order to test whether the package works, run:
 
 ## Acknowledgements
 
-The primary developer is Tom Van Acker ([@timmyfaraday](https://github.com/timmyfaraday)), 
+The primary developer is Tom Van Acker ([@timmyfaraday](https://github.com/timmyfaraday)), BASF, 
 with support from the following contributors:
 - Glenn Emmers ([@glenn-sergej](https://github.com/Glenn-sergej)), KU Leuven, semi-Markov implementation, LVDC examples
 - Gayan Abeynayake ([@gayan86](https://github.com/gayan86)), Ørsted, Anholt wind farm example
