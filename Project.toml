@@ -1,7 +1,7 @@
 name = "MultiStateSystems"
 uuid = "63dd226a-9d27-42a2-9f4c-7f7a071798e0"
-authors = ["Tom Van Acker"]
-version = "0.2.0"
+authors = ["Tom Van Acker","Glenn Emmers"]
+version = "0.2.1"
 
 [deps]
 AdditionalUnits = "02d9b4f0-7821-44c6-acbd-01a1ab91b72e"
