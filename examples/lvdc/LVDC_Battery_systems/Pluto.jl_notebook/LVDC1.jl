@@ -54,55 +54,55 @@ begin
 end
 
 # ╔═╡ 73890b8b-c585-49bb-87f1-92e47f8da3a1
-stdᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/acdc.jl"));
+stdᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/acdc.jl"));
 
 # ╔═╡ 8b4f434b-d1f3-4217-b439-c0c6ef547214
-stdⁱⁿᵛ¹         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/inv1.jl"));
+stdⁱⁿᵛ¹         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/inv1.jl"));
 
 # ╔═╡ 7dfa474c-fb70-4d82-b2fa-26cfd71e6f56
-stdⁱⁿᵛ²         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/inv2.jl"));
+stdⁱⁿᵛ²         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/inv2.jl"));
 
 # ╔═╡ e9a896df-3443-48c6-a786-21538604ed43
-stdᶜᵃᵖᵃᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/CAP_ac.jl"));
+stdᶜᵃᵖᵃᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_ac.jl"));
 
 # ╔═╡ cb5ae9ee-a1d4-42d0-add1-81a7249bfba5
-stdᶜᵃᵖᵈᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/CAP_dc.jl"));
+stdᶜᵃᵖᵈᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_dc.jl"));
 
 # ╔═╡ c54d1e5a-ab14-4179-9e1d-a193c522ae52
-stdᶜᵃᵖᴸ¹        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/CAP_L1.jl"));
+stdᶜᵃᵖᴸ¹        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_L1.jl"));
 
 # ╔═╡ 1e093c6c-2f2f-4fd6-9ddc-bec451728eb2
-stdᶜᵃᵖᴸ²        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/CAP_L2.jl"));
+stdᶜᵃᵖᴸ²        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_L2.jl"));
 
 # ╔═╡ c2dd4e66-ddb3-4928-86fb-e69ce603bfae
-stdᵇᵃᵗ          = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements/battery.jl"));
+stdᵇᵃᵗ          = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/battery.jl"));
 
 # ╔═╡ 1d4b223e-af9e-49f2-a3a8-f97da6fe4796
-stdmᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/acdc.jl"));
+stdmᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/acdc.jl"));
 
 # ╔═╡ 46ccc9eb-5a5a-49bc-8792-9dc98c96a47a
-stdmᵈᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/dcdc.jl"));
+stdmᵈᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/dcdc.jl"));
 
 # ╔═╡ 54ad935a-f5ab-4dde-bf33-b349c17efdca
-stdmⁱⁿᵛ¹         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/inv1.jl"));
+stdmⁱⁿᵛ¹         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/inv1.jl"));
 
 # ╔═╡ a58db239-8ca1-4c0c-b97a-6be7ae4463b1
-stdmⁱⁿᵛ²         = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/inv2.jl"));
+stdmⁱⁿᵛ²         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/inv2.jl"));
 
 # ╔═╡ d394788d-8181-49ac-9b72-7ee8f5572b43
-stdmᶜᵃᵖᵃᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/CAP_ac.jl"));
+stdmᶜᵃᵖᵃᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/CAP_ac.jl"));
 
 # ╔═╡ 2b2736b4-4e3d-4fb0-b447-49e38b826e4a
-stdmᶜᵃᵖᵈᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/CAP_dc.jl"));
+stdmᶜᵃᵖᵈᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/CAP_dc.jl"));
 
 # ╔═╡ c73cbbde-b4e9-44c6-ab24-dade0407706e
-stdmᶜᵃᵖᴸ¹        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/CAP_L1.jl"));
+stdmᶜᵃᵖᴸ¹        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/CAP_L1.jl"));
 
 # ╔═╡ 4b852660-2472-452f-8c8b-5d959f9c56a8
-stdmᶜᵃᵖᴸ²        = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/CAP_L2.jl"));
+stdmᶜᵃᵖᴸ²        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/CAP_L2.jl"));
 
 # ╔═╡ 8331f4c9-9d5d-486a-9f24-8eece99a0596
-stdmᵇᵃᵗ          = include(joinpath(_MSS.BASE_DIR,"examples/LVDC_Battery_systems/elements_m/battery.jl"));
+stdmᵇᵃᵗ          = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements_m/battery.jl"));
 
 # ╔═╡ 6998b663-a5d9-43f9-ad57-487d7754720f
 md"""
@@ -545,7 +545,7 @@ Unitful = "~1.19.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.10.0"
 manifest_format = "2.0"
 project_hash = "78b74ccb9b44cd4207f296d24703a4c6da714ff2"
 
@@ -716,7 +716,7 @@ version = "3.47.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.5+1"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -1221,21 +1221,26 @@ version = "0.1.8"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-version = "0.6.3"
+version = "0.6.4"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "7.84.0+0"
+version = "8.4.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.6.4+0"
 
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.10.2+0"
+version = "1.11.0+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1364,7 +1369,7 @@ version = "1.1.9"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.2+1"
 
 [[deps.Measurements]]
 deps = ["Calculus", "LinearAlgebra", "Printf", "Requires"]
@@ -1402,7 +1407,7 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2023.1.10"
 
 [[deps.MuladdMacro]]
 git-tree-sha1 = "cac9cc5499c25554cba55cd3c30543cff5ca4fab"
@@ -1467,12 +1472,12 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.23+2"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+0"
+version = "0.8.1+2"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1512,7 +1517,7 @@ version = "5.71.2"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+0"
+version = "10.42.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -1546,7 +1551,7 @@ version = "0.42.2+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.10.0"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Statistics"]
@@ -1649,7 +1654,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[deps.Random]]
-deps = ["SHA", "Serialization"]
+deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RecipesBase]]
@@ -1798,6 +1803,7 @@ version = "1.2.0"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
 
 [[deps.SparseDiffTools]]
 deps = ["Adapt", "ArrayInterface", "Compat", "DataStructures", "FiniteDiff", "ForwardDiff", "Graphs", "LinearAlgebra", "Requires", "SparseArrays", "StaticArrays", "VertexSafeGraphs"]
@@ -1840,7 +1846,7 @@ version = "1.4.2"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.StatsAPI]]
 deps = ["LinearAlgebra"]
@@ -1879,9 +1885,9 @@ deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
-deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
+version = "7.2.1+1"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -2195,7 +2201,7 @@ version = "1.5.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.13+1"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2242,7 +2248,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.8.0+1"
 
 [[deps.libevdev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2283,12 +2289,12 @@ version = "1.1.6+0"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.48.0+0"
+version = "1.52.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
+version = "17.4.0+2"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]

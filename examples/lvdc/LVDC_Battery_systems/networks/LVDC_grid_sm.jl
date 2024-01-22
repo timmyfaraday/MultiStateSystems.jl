@@ -14,7 +14,6 @@ Pluto.jl environment is also available on at http://github.com/timmyfaraday/Mult
 """
 
 # Load pkgs
-using Plots
 using Unitful
 using MultiStateSystems
 
@@ -39,15 +38,15 @@ function battery_system_availability(i, T, ntw_av, μ, σ)
 end
 
 # Include the stochastic models for the wind turbines and cables
-stdᵃᶜᵈᶜ         = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/acdc.jl"));
-stdᵈᶜᵈᶜ         = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/dcdc.jl"));
-stdⁱⁿᵛ¹         = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/inv1.jl"));
-stdⁱⁿᵛ²         = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/inv2.jl"));
-stdᶜᵃᵖᵃᶜ        = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/CAP_ac.jl"));
-stdᶜᵃᵖᵈᶜ        = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/CAP_dc.jl"));
-stdᶜᵃᵖᴸ¹        = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/CAP_L1.jl"));
-stdᶜᵃᵖᴸ²        = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/CAP_L2.jl"));
-stdᵇᵃᵗ          = include(joinpath("C:/Users/gemmers/Documents/GitHub/MultiStateSystems.jl/examples/LVDC_Battery_systems/elements/battery.jl"));
+stdᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/acdc.jl"));
+stdᵈᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/dcdc.jl"));
+stdⁱⁿᵛ¹         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/inv1.jl"));
+stdⁱⁿᵛ²         = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/inv2.jl"));
+stdᶜᵃᵖᵃᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_ac.jl"));
+stdᶜᵃᵖᵈᶜ        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_dc.jl"));
+stdᶜᵃᵖᴸ¹        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_L1.jl"));
+stdᶜᵃᵖᴸ²        = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/CAP_L2.jl"));
+stdᵇᵃᵗ          = include(joinpath(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/elements/battery.jl"));
 
 # Solve the state transition diagrams
 solve!(stdᵃᶜᵈᶜ, cls; tsim, dt)
@@ -62,9 +61,11 @@ solve!(stdᵇᵃᵗ, cls; tsim, dt)
 
 """
 The DC/DC converter can take a lot of memory to solve.
-The solved std is provided as data and can be accessed by uncommenting the following two lines:
+The solved std is provided as data and can be accessed by uncommenting the following four lines:
 """
-# dcdc_data = CSV.read("Z:/MyOwn/Journal/semi-Markov/std_DCDC_40.csv", DataFrame)
+# using CSV
+# using DataFrames
+# dcdc_data = CSV.read(_MSS.BASE_DIR,"examples/lvdc/LVDC_Battery_systems/data/std_DCDC_40.csv", DataFrame)
 # stdᵈᶜᵈᶜ = solvedSTD(prob = [dcdc_data[!, :dcdc_state1], dcdc_data[!, :dcdc_state2], dcdc_data[!, :dcdc_state3]], time = collect(t), power = [10.0u"MW", 0.0u"MW", 0.0u"MW"]);
 
 # Set up the state transition diagram for the AC-grid with a constant availability of four nines.
