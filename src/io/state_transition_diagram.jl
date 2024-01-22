@@ -9,20 +9,20 @@
 ## State-Transition Diagram
 # structs
 struct STD{I<:Int} <: AbstractSTD{I}
-    graph::_LG.DiGraph{I}
+    graph::Graphs.DiGraph{I}
 
     props::PropDict
     sprops::Dict{I,PropDict}
-    tprops::Dict{_LG.Edge{I},PropDict}
+    tprops::Dict{Graphs.Edge{I},PropDict}
 end
 
 # constructors
 function STD(Ns::Int)
-    graph = _LG.DiGraph(Ns)
+    graph = Graphs.DiGraph(Ns)
 
     props = PropDict(:info => STDInfo())
     sprops = Dict{Int,PropDict}(ns => PropDict() for ns in 1:Ns)
-    tprops = Dict{_LG.Edge{Int},PropDict}()
+    tprops = Dict{Graphs.Edge{Int},PropDict}()
 
     return STD(graph, props, sprops, tprops)
 end
@@ -92,11 +92,11 @@ julia> stdᵍᵉⁿ = STD()
 ```
 """
 function STD()
-    graph = _LG.DiGraph()
+    graph = Graphs.DiGraph()
 
     props = PropDict(:info => STDInfo())
     sprops = Dict{Int,PropDict}()
-    tprops = Dict{_LG.Edge{Int},PropDict}()
+    tprops = Dict{Graphs.Edge{Int},PropDict}()
 
     return STD(graph, props, sprops, tprops)
 end
@@ -108,7 +108,7 @@ is_directed(std::STD) = true
 
 props(std::AbstractSTD) = std.props
 props(std::AbstractSTD, s::Int) = get(std.sprops, s, PropDict())
-props(std::AbstractSTD, t::_LG.Edge) = get(std.tprops, t, PropDict())
+props(std::AbstractSTD, t::Graphs.Edge) = get(std.tprops, t, PropDict())
 
 get_prop(std::AbstractSTD, prop::Symbol) =
     haskey(props(std), prop) ? props(std)[prop] : ~ ;
@@ -118,8 +118,8 @@ set_prop!(std::AbstractSTD, prop::Symbol, value) =
 set_props!(std::AbstractSTD, dict::Dict) = merge!(std.props, dict)
 
 ccdf(std::AbstractSTD, ns::Int, φ::Quantity, t::Quantity) =
-        1.0 - sum(cdf(get_prop(std, _LG.Edge(ns,nx),:distr), φ, t)
-                for nx in _LG.outneighbors(std.graph, ns); init = 0.0)
+        1.0 - sum(cdf(get_prop(std, Graphs.Edge(ns,nx),:distr), φ, t)
+                for nx in Graphs.outneighbors(std.graph, ns); init = 0.0)
 
 ccdf(dst_v::Vector, φ::Quantity, t::Quantity) =
         1.0 - sum(cdf(dst, φ, t) for dst in dst_v; init = 0.0)                    
@@ -158,17 +158,17 @@ get_info(std::AbstractSTD, ns::Int, info::Symbol) =
     getproperty(std.sprops[ns][:info],info)
 set_info!(std::AbstractSTD, ns::Int, info::Symbol, value::Bool) =
     setproperty!(std.sprops[ns][:info],info,value)
-get_info(std::AbstractSTD, nt::_LG.Edge, info::Symbol) =
+get_info(std::AbstractSTD, nt::Graphs.Edge, info::Symbol) =
     getproperty(std.tprops[nt][:info],info)
-set_info!(std::AbstractSTD, nt::_LG.Edge, info::Symbol, value::Bool) =
+set_info!(std::AbstractSTD, nt::Graphs.Edge, info::Symbol, value::Bool) =
     setproperty!(std.tprops[nt][:info],info,value)
 
 ## State
 # functions
-ns(std::AbstractSTD) = _LG.nv(std.graph)
-states(std::AbstractSTD) = _LG.vertices(std.graph)
-add_vertex!(std::AbstractSTD) = _LG.add_vertex!(std.graph)
-has_vertex(std::AbstractSTD, x...) = _LG.has_vertex(std.graph, x...)
+ns(std::AbstractSTD) = Graphs.nv(std.graph)
+states(std::AbstractSTD) = Graphs.vertices(std.graph)
+add_vertex!(std::AbstractSTD) = Graphs.add_vertex!(std.graph)
+has_vertex(std::AbstractSTD, x...) = Graphs.has_vertex(std.graph, x...)
 
 get_sprop(std::AbstractSTD, prop::Symbol) =
     [get_prop(std, ns, prop) for ns in states(std)]
@@ -236,19 +236,19 @@ end
 
 ## Transition
 # functions
-nt(std::AbstractSTD) = _LG.ne(std.graph)
-transitions(std::AbstractSTD) = _LG.edges(std.graph)
-has_edge(std::AbstractSTD, x...) = _LG.has_edge(std.graph, x...)
-add_edge!(std::AbstractSTD, x...) = _LG.add_edge!(std.graph, x...)
+nt(std::AbstractSTD) = Graphs.ne(std.graph)
+transitions(std::AbstractSTD) = Graphs.edges(std.graph)
+has_edge(std::AbstractSTD, x...) = Graphs.has_edge(std.graph, x...)
+add_edge!(std::AbstractSTD, x...) = Graphs.add_edge!(std.graph, x...)
 
 get_tprop(std::AbstractSTD, prop::Symbol) =
     Dict(nt => get_prop(std,nt,prop) for nt in transitions(std))
-get_prop(std::AbstractSTD, nt::_LG.Edge, prop::Symbol) = props(std,nt)[prop]
-has_prop(std::AbstractSTD, nt::_LG.Edge, prop::Symbol) =
+get_prop(std::AbstractSTD, nt::Graphs.Edge, prop::Symbol) = props(std,nt)[prop]
+has_prop(std::AbstractSTD, nt::Graphs.Edge, prop::Symbol) =
     haskey(props(std,nt), prop)
-set_prop!(std::AbstractSTD, nt::_LG.Edge, prop::Symbol, value::Any) =
+set_prop!(std::AbstractSTD, nt::Graphs.Edge, prop::Symbol, value::Any) =
     set_props!(std,nt,Dict{Symbol,Any}(prop => value))
-set_props!(std::AbstractSTD, nt::_LG.Edge, prop_dict::Dict) =
+set_props!(std::AbstractSTD, nt::Graphs.Edge, prop_dict::Dict) =
     haskey(std.tprops,nt) ? merge!(std.tprops[nt],prop_dict) :
                             std.tprops[nt] = prop_dict ;
 
@@ -273,14 +273,14 @@ julia> add_transition!(stdᵍᵉⁿ, rate = 0.001u"1/hr",
 function add_transition!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
     haskey(kwargs,:states) || return false
-    edge = _LG.Edge(kwargs[:states])
+    edge = Graphs.Edge(kwargs[:states])
     add_edge!(std, edge) || return false
     set_prop!(std, edge, :info, TransInfo())                                    # TODO auto capture info prop
     set_props!(std, edge, Dict(kwargs...))
     return true
 end
 function add_transition!(std::AbstractSTD, crd::Tuple{Int,Int}, prop_dict::Dict)
-    edge = _LG.Edge(crd)
+    edge = Graphs.Edge(crd)
     add_edge!(std, edge) || return false
     set_prop!(std, edge, :info, TransInfo())                                    # TODO auto capture info prop
     set_props!(std, edge, prop_dict)

@@ -68,3 +68,12 @@ reduce(kwargs::Iterators.Pairs, nc; excl=[]) =
 """
 Base.log(a::Quantity{T,D,U}) where T <: Real where D where U = log(a.val)unit(a)
 Base.exp(a::Quantity{T,D,U}) where T <: Real where D where U = exp(a.val)unit(a)
+
+elunit(A::Matrix{U}) where U = _UF.unit(U)
+elunit(b::Vector{U}) where U = _UF.unit(U)
+_LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) = (ustrip.(A) \ ustrip(b)) * (elunit(b) / elunit(A))
+
+"""
+# Integral 
+"""
+weights(N::Int, p::Int) = p == 1 || p == N ? 0.5 : 1.0 ;

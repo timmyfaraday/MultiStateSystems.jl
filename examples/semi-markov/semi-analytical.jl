@@ -23,12 +23,12 @@ using Plots
 using Unitful
 using UnitfulRecipes
 using MultiStateSystems
-using LightGraphs
+using Graphs
 using QuadGK
 
 # pkg const
 const _MSS = MultiStateSystems
-const _LG  = LightGraphs
+const Graphs  = Graphs
 
 # constants
 dt      = 0.1u"hr"
@@ -69,8 +69,8 @@ _MSS.set_info!(std, 3, :trapping, true)
 
 # # solve the std - Analytical
 dτ = dt / 10
-dst1 = _MSS.get_prop(std,_LG.Edge(1,2),:distr)
-dst2 = _MSS.get_prop(std,_LG.Edge(2,3),:distr)
+dst1 = _MSS.get_prop(std,Graphs.Edge(1,2),:distr)
+dst2 = _MSS.get_prop(std,Graphs.Edge(2,3),:distr)
 
 PA1 = 1.0 .- _MSS.cdf.(dst1,t,zero(dt))
 PA2 = [quadgk(x -> _MSS.pdf.(dst1,x,zero(nt)) * (1.0 - _MSS.cdf(dst2,nt.-x,nt)),zero(nt),nt,rtol=1e-8)[1] for nt in t]

@@ -27,37 +27,37 @@ end
 # stochastic process 
 function homogeneous_markov_process(du, u, p, t)
     G, ρ, info = p
-    for ns in 1:_LG.nv(G)
-        if isempty(_LG.outneighbors(G,ns))
-            du[ns] = sum(ρ[_LG.Edge(nt,ns)]*u[nt]
-                            for nt in _LG.inneighbors(G,ns)
+    for ns in 1:Graphs.nv(G)
+        if isempty(Graphs.outneighbors(G,ns))
+            du[ns] = sum(ρ[Graphs.Edge(nt,ns)]*u[nt]
+                            for nt in Graphs.inneighbors(G,ns)
                             if ns ≠ nt)
-        elseif isempty(_LG.inneighbors(G,ns))
-            du[ns] = - sum(ρ[_LG.Edge(ns,nt)]*u[ns]
-                            for nt in _LG.outneighbors(G,ns)
+        elseif isempty(Graphs.inneighbors(G,ns))
+            du[ns] = - sum(ρ[Graphs.Edge(ns,nt)]*u[ns]
+                            for nt in Graphs.outneighbors(G,ns)
                             if ns ≠ nt)
         else                    
-            du[ns] = sum(ρ[_LG.Edge(nt,ns)]*u[nt]
-                            for nt in _LG.inneighbors(G,ns)
+            du[ns] = sum(ρ[Graphs.Edge(nt,ns)]*u[nt]
+                            for nt in Graphs.inneighbors(G,ns)
                             if ns ≠ nt) -
-                     sum(ρ[_LG.Edge(ns,nt)]*u[ns]
-                            for nt in _LG.outneighbors(G,ns)
+                     sum(ρ[Graphs.Edge(ns,nt)]*u[ns]
+                            for nt in Graphs.outneighbors(G,ns)
                             if ns ≠ nt)
     end end
 end
 function inhomogeneous_markov_process(du, u, p, t)
     G, ρ, info = p
-    for ns in 1:_LG.nv(G)
+    for ns in 1:Graphs.nv(G)
         if info[ns].trapping
-            du[ns] = sum(ρ[_LG.Edge(nt,ns)](t)*u[nt]
-                            for nt in _LG.inneighbors(G,ns)
+            du[ns] = sum(ρ[Graphs.Edge(nt,ns)](t)*u[nt]
+                            for nt in Graphs.inneighbors(G,ns)
                             if ns ≠ nt)
         else
-            du[ns] = sum(ρ[_LG.Edge(nt,ns)](t)*u[nt]
-                            for nt in _LG.inneighbors(G,ns)
+            du[ns] = sum(ρ[Graphs.Edge(nt,ns)](t)*u[nt]
+                            for nt in Graphs.inneighbors(G,ns)
                             if ns ≠ nt) -
-                     sum(ρ[_LG.Edge(ns,nt)](t)*u[ns]
-                            for nt in _LG.outneighbors(G,ns)
+                     sum(ρ[Graphs.Edge(ns,nt)](t)*u[ns]
+                            for nt in Graphs.outneighbors(G,ns)
                             if ns ≠ nt)
     end end
 end

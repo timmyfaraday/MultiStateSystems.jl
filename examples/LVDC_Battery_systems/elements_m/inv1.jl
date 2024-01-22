@@ -10,24 +10,18 @@
 using Unitful
 using MultiStateSystems
 
-const _MSS = MultiStateSystems
-
-# setting for a specific analysis
-cls = SemiMarkovProcess()
-
-# initialize the state-transition diagram corresponding to the front-end ac/dc capacitance
-stdᶜᵃᵖᵃᶜ = STD() 
+# initialize the state-transition diagram corresponding to the front-end ac/dc converter
+stdmⁱⁿᵛ¹ = STD() 
 
 # add the states to the std
-add_states!(stdᶜᵃᵖᵃᶜ, name  = ["available", "unavailable"],
+add_states!(stdmⁱⁿᵛ¹, name  = ["available", "unavailable_weibull"],
                    power = [10.0u"MW", 0.0u"MW"],
                    init  = [1.0, 0.0])
 
-
 # add the transitions to the std
-add_transitions!(stdᶜᵃᵖᵃᶜ, states = [(1,2),(2,1)],
-                      distr = [ Exponential(5.0u"yr"),
-                                Exponential(48.0u"d")])
+add_transitions!(stdmⁱⁿᵛ¹, states = [(1,2),(2,1)],
+                      distr = [ Exponential((19.2*gamma(1+1/2.64))u"yr"),
+                                Exponential((exp(log(4)+(0.3^2)/2))u"d")])
 
 # solve the std
-return stdᶜᵃᵖᵃᶜ
+return stdmⁱⁿᵛ¹

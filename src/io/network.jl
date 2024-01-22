@@ -80,14 +80,14 @@ update_lib!(type::Symbol,array::Array,lib::Dict) =
     haskey(lib,array[end][type]) ? push!(lib[array[end][type]],length(array)) :
                                    lib[array[end][type]] = [length(array)] ;
 
-weights(ntw::AbstractNetwork) = _LG.weights(ntw.graph)
+weights(ntw::AbstractNetwork) = Graphs.weights(ntw.graph)
 has_path(ntw::AbstractNetwork, s_node::Int, u_node::Int) =
-    _LG.has_path(ntw.graph, s_node, u_node)
+    Graphs.has_path(ntw.graph, s_node, u_node)
 max_paths(graph::_MG.DiMultigraph) = 
     _MG.nv(graph) + _MG.ne(graph, count_mul = true)
 nodal_paths(graph::_MG.DiMultigraph, s_node::Int, u_node::Int) =
-    sort(_LG.yen_k_shortest_paths(graph, s_node, u_node, 
-                             _LG.weights(graph), max_paths(graph)).paths)
+    sort(Graphs.yen_k_shortest_paths(graph, s_node, u_node, 
+                             Graphs.weights(graph), max_paths(graph)).paths)
 mul_path(graph::_MG.DiMultigraph, npath::Array{Int,1}) =
     [1:mul_edge(graph,(npath[ni],npath[ni+1])) for ni in 1:length(npath)-1]
 
