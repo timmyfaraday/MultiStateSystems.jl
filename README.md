@@ -7,7 +7,7 @@
 
 ## Overview
 
-MultiStateSystems.jl is a Julia package to solve multi-state systems,
+MultiStateSystems.jl is a Julia package (v1.8+) to solve multi-state systems,
 often found in reliability engineering.
 
 ## Installation
