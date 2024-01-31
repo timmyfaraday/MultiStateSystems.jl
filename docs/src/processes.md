@@ -13,10 +13,7 @@ AbstractStochasticProcess
       |- SemiMarkovProcess
 ```
 
-Solving a stochastic process may be accomplished through:
-```@docs
-solve!(std::MultiStateSystems.AbstractSTD, tsim::Number; alg::Symbol=:nothing)
-```
+Solving a stochastic process may be accomplished through excecuting: `solve(std, cls; tsim, dt, tol)`, where `cls` denotes the class of stochastic process you want to use.
 
 ## Steady State Process
 | Spaces      |             	| Properties  |             |

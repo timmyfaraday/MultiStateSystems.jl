@@ -27,20 +27,20 @@ function STD(Ns::Int)
     return STD(graph, props, sprops, tprops)
 end
 
-"""
-    STD(ugf::MultiStateSystems.UGF)
+# """
+#     STD(ugf::MultiStateSystems.UGF)
 
-An state-transition diagram constructor based on an universal generating 
-function `ugf`.
+# An state-transition diagram constructor based on an universal generating 
+# function `ugf`.
 
-Sets `solved` of the STDInfo to true.
+# Sets `solved` of the STDInfo to true.
 
-# Example
-```julia-repl
-julia> ugfᵍᵉⁿ = UGF(:power, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7])
-julia> stdᵍᵉⁿ = STD(ugfᵍᵉⁿ)
-```
-"""
+# # Example
+# ```julia-repl
+# julia> ugfᵍᵉⁿ = UGF(:power, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7])
+# julia> stdᵍᵉⁿ = STD(ugfᵍᵉⁿ)
+# ```
+# """
 function STD(ugf::AbstractUGF)
     msr, val, prb = ugf.msr, ugf.val, ugf.prb
     msr = Expr(:kw, msr, val)
@@ -48,20 +48,20 @@ function STD(ugf::AbstractUGF)
     return eval(:(solvedSTD(prob = $(prb), $msr)))
 end
 
-"""
-    solvedSTD(;prob::Vector, kwargs...)
+# """
+#     solvedSTD(;prob::Vector, kwargs...)
 
-An state-transition diagram constructor with given state probabilities `prob`
-and any number of other arguments `kwargs`.
+# An state-transition diagram constructor with given state probabilities `prob`
+# and any number of other arguments `kwargs`.
 
-Sets `solved` of the STDInfo to true.
+# Sets `solved` of the STDInfo to true.
 
-# Example
-```julia-repl
-julia> stdᵍᵉⁿ = solvedSTD(prob  = [0.1,0.2,0.7],
-                          power = [0.0u"MW",0.0u"MW",2.0u"MW"])
-```
-"""
+# # Example
+# ```julia-repl
+# julia> stdᵍᵉⁿ = solvedSTD(prob  = [0.1,0.2,0.7],
+#                           power = [0.0u"MW",0.0u"MW",2.0u"MW"])
+# ```
+# """
 function solvedSTD(;prob::Vector, time::Vector=[(Inf)u"yr"], kwargs...)
     length(first(prob)) == length(time) || return false
     all(isapprox.(1.0, sum(prob), rtol=1e-6)) || return false

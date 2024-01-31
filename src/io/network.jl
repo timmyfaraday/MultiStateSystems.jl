@@ -484,6 +484,7 @@ function add_source!(ntw::AbstractNetwork, node::Int, dict::Dict=PropDict())
     
     update_lib!(:node, ntw.src, ntw.slib)
 end
+
 """
     add_sources!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
 
@@ -502,7 +503,6 @@ julia> add_sources!(ntwᵖʷʳ, node = 1:5,
                             dep  = true)
 ```
 """
-
 function add_sources!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs,:node)) || return false
 
@@ -530,6 +530,7 @@ usr(ntw::AbstractNetwork,u_node::Int) = ntw.usr[ntw.ulib[u_node]]
 usr_ids(ntw::AbstractNetwork) = 1:nu(ntw)
 usr_ids(ntw::AbstractNetwork,u_node::Int) = ntw.ulib[u_node]
 usr_nodes(ntw::AbstractNetwork) = keys(ntw.ulib)
+
 """
     add_user!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
 
