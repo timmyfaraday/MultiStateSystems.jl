@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright 2020, Tom Van Acker                                               #
+# Copyright, 2020, Tom Van Acker                                               #
 ################################################################################
 # MultiStateSystems.jl                                                         #
 # A Julia package to solve multi-state system models.                          #
@@ -68,12 +68,12 @@ function solve!(std::AbstractSTD, cls::MarkovProcess;
 
     # get the input
     t   = zero(dt):dt:tsim
-    p   = [std.graph,get_tprop(std,:rate),get_sprop(std,:info)]
-    u₀  = get_sprop(std,:init)
-    ts  = (zero(tsim),tsim)
+    p   = [std.graph, get_tprop(std, :rate), get_sprop(std, :info)]
+    u₀  = get_sprop(std, :init)
+    ts  = (zero(tsim), tsim)
 
     # solve the problem
-    if get_info(std,:time_homogeneous)
+    if get_info(std, :time_homogeneous)
         prob = _ODE.ODEProblem(homogeneous_markov_process, u₀, ts, p)
     else
         prob = _ODE.ODEProblem(inhomogeneous_markov_process, u₀, ts, p)

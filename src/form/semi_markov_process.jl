@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright 2022, Tom Van Acker, Glenn Emmers                                 #
+# Copyright, 2022, Tom Van Acker, Glenn Emmers                                 #
 ################################################################################
 # MultiStateSystems.jl                                                         #
 # A Julia package to solve multi-state system models.                          #
@@ -13,9 +13,9 @@ mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 const semi_markov_process_props = [:renewal, :dynamic]
 
 # stochastic process
-# A indicates that state j can be reached if the process was initially in 
-# state i and remains there until time t. The unit of A is [unit(1/t)]
 function get_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
+    # A indicates that state j can be reached if the process was initially in 
+    # state i and remains there until time t. The unit of A is [unit(1/t)]
     dt = step(t)
     Ns = ns(std)
     Nt = length(t)
@@ -44,9 +44,9 @@ function _fill_A!(to::Int, init::Real, Ns::Int, tol::Real,
         isnan(A[id]) ? A[id] = zero(1/dt) : ~ ;
     end end
 end
-# U indicates that state j can be reached if the process enters state i at 
-# sojourn time φ and remains there until calendar time t. The unit of U is [-]
 function get_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
+    # U indicates that state j can be reached if the process enters state i at 
+    # sojourn time φ and remains there until calendar time t. The unit of U is [-]
     Ns = ns(std)
     Nt = length(t)
 
@@ -78,9 +78,9 @@ function _fill_U!(fr::Int, to::Int, Ns::Int, tol::Real, dst::AbstractDistributio
         end end
     end
 end
-# p indicates the probability of being in a state i at calendar time t. The unit
-# of p is [-].
 function set_p!(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
+    # p indicates the probability of being in a state i at calendar time t. The 
+    # unit of p is [-].
     Ns = ns(std)
     Nt = length(t)
 
@@ -93,11 +93,11 @@ function set_p!(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
         _set_p!(std, st, init, tol, DST, t, h)
     end
 end
-# p = init ⋅ ccdf(st) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt
-# p = init - ∑ᵢ init * cdf(dstᵢ) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt 
-# p = init + ∫ h dt - ∑ᵢ init ⋅ cdf(dstᵢ) + ∫ h ⋅ cdf(dstᵢ) dt
 function _set_p!(std::AbstractSTD, st::Int, init::Real, tol::Real, DST::Vector, 
                  t::StepRangeLen, h::Vector)
+    # p = init ⋅ ccdf(st) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt
+    # p = init - ∑ᵢ init * cdf(dstᵢ) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt 
+    # p = init + ∫ h dt - ∑ᵢ init ⋅ cdf(dstᵢ) + ∫ h ⋅ cdf(dstᵢ) dt
     dt = step(t)
 
     p = init .+ [sum(dt * weights(ni,nj) * h[nj] for nj in 1:ni) 

@@ -1,5 +1,5 @@
 ################################################################################
-#  Copyright 2020, Tom Van Acker                                               #
+# Copyright, 2020, Tom Van Acker                                               #
 ################################################################################
 # MultiStateSystems.jl                                                         #
 # A Julia package to solve multi-state system models.                          #

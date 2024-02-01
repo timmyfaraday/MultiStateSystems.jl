@@ -16,7 +16,9 @@ makedocs(
                     "Models Manual"     =>
                         [ "Dependence"              => "dependence.md"
                           "Stochastic Processes"    => "processes.md"
-                          "Generating Operators"    => "ugo.md"]
+                          "Generating Operators"    => "ugo.md"],
+                    "Output"            =>
+                        [ "Indices"                 => "indices.md"]
                   ]
 )
 
