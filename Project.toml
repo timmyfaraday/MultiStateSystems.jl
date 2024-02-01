@@ -1,6 +1,6 @@
 name = "MultiStateSystems"
 uuid = "63dd226a-9d27-42a2-9f4c-7f7a071798e0"
-authors = ["Tom Van Acker","Glenn Emmers"]
+authors = ["Tom Van Acker", "Glenn Emmers"]
 version = "0.2.2"
 
 [deps]
@@ -19,7 +19,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [compat]
 AdditionalUnits = "0.1.4"
 Graphs = "1.9.0"
-Interpolations = "0.14.7"
+Interpolations = "0.14.7, 0.15"
 Measurements = "2.11.0"
 Multigraphs = "0.3.0"
 OrdinaryDiffEq = "6.58.2"
