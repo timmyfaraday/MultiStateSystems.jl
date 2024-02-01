@@ -19,7 +19,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [compat]
 AdditionalUnits = "0.1.4"
 Graphs = "1.9.0"
-Interpolations = "0.14.7, 0.15"
+Interpolations = "0.15"
 Measurements = "2.11.0"
 Multigraphs = "0.3.0"
 OrdinaryDiffEq = "6.58.2"
