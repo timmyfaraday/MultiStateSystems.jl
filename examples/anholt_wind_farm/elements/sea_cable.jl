@@ -6,10 +6,6 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-# Load Pkgs
-using Unitful
-using MultiStateSystems
-
 # Listing of possible combination of lengths and diameters
 ld = [(0.603u"km",150u"mm^2"),(0.691u"km",150u"mm^2"),(0.809u"km",150u"mm^2"),
       (0.873u"km",150u"mm^2"),(0.952u"km",150u"mm^2"),(1.095u"km",150u"mm^2"),

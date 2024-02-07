@@ -1,20 +1,19 @@
 ################################################################################
-#  Copyright 2020, Tom Van Acker                                               #
+# Copyright, 2020, Tom Van Acker                                               #
 ################################################################################
 # MultiStateSystems.jl                                                         #
 # A Julia package to solve multi-state system models.                          #
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-"""
 # Measure (abbr: msr)
-"""
 # sets
 const MsrSet   = Set{Symbol}([:flow,:power])
 const UnitDict = Dict{Symbol,_UF.FreeUnits}(:flow   => u"m^3/hr",
                                             :power  => u"MW")
 const MaxVal   = Dict{Symbol,_UF.Quantity}( :flow   => (Inf)u"m^3/hr",
                                             :power  => (Inf)u"MW")
+
 # functions
 get_max(msr::Symbol) = MaxVal[msr]
 get_unit(msr::Symbol) = UnitDict[msr]

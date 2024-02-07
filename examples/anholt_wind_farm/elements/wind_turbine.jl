@@ -6,33 +6,24 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-# Load Pkgs
-using XLSX
-using Jenks
-using Unitful
-using LinearAlgebra
-using MultiStateSystems
-
-# Cluster function
-function cluster_wind_power(input::Vector{Float64}; number_of_clusters::Int=10)
+# cluster function
+function cluster_wind_power(input::Matrix{Float64}; number_of_clusters::Int=10)
     if any(x->x.<=0.0,input) input[input.<=0.0] .= 0.0 end
 
-    temp = deepcopy(input)
     number_of_samples = length(input)
-    clusters = Jenks.JenksClassification(number_of_clusters-2,input,errornorm=2)
+    temp = vec(reshape(deepcopy(input), number_of_samples, 1))
+    clusters = Clustering.kmeans(input, number_of_clusters-2)
 
-    output = round.([minimum(temp),clusters.centres...,maximum(temp)],digits=3)
-    bounds = clusters.bounds
-    assign = zeros(Int,number_of_samples)
-    assign[temp.==bounds[1]] .= 1
-    for nc in 2:number_of_clusters-1
-        assign[bounds[nc-1].<temp.<=bounds[nc]] .= nc
-    end
-    assign[temp.==bounds[end]] .= number_of_clusters
+    idx = sortperm(vec(clusters.centers))
+
+    output = round.([minimum(temp),clusters.centers[idx]...,maximum(temp)],digits=3)
+    assign = [idx[nx] for nx in clusters.assignments] .+ 1
+    assign[temp.==0.0] .= 1
+    assign[temp.==3.6] .= number_of_clusters
 
     rate = zeros(Float64,number_of_clusters,number_of_clusters)
     for ni in 1:number_of_samples-1 rate[assign[ni],assign[ni+1]] += 1 end
-    rate ./= (sum(rate,dims=2)/number_of_samples)
+    rate ./= (sum(rate, dims=2) / number_of_samples)
     rate[LinearAlgebra.diagind(rate)] .= 0
     rate[isnan.(rate)] .= 0.0
 
@@ -44,8 +35,8 @@ end
 # corresponding rates.
 path = joinpath(BASE_DIR,"examples/anholt_wind_farm/data/Anholt.xlsx")
 wind_power = XLSX.readdata(path,"Sheet1!D2:D52215")
-wind_power = convert(Vector{Float64},vec(wind_power))
-output, rate = cluster_wind_power(wind_power,number_of_clusters = number_of_clusters)
+wind_power = convert(Matrix{Float64}, reshape(wind_power, 1, length(wind_power)))
+output, rate = cluster_wind_power(wind_power, number_of_clusters = number_of_clusters)
 init = zeros(length(output)); init[1] = 1.0
 
 # Initialize the state-transition diagrams corresponding to the output (wto) and
@@ -98,5 +89,5 @@ ntwʷᵗ = Network()
 # Add the user, sources and components to the wind turbine network ntwʷᵗᵒ
 add_user!(ntwʷᵗ, node = 1)
 add_source!(ntwʷᵗ, node = 2, std = stdʷᵗᵒ, dep = true)
-wtr ? add_component!(ntwʷᵗ, edge = (1,2), std = stdʷᵗʳ) :
-      add_component!(ntwʷᵗ, edge = (1,2)) ;
+wtr ? add_component!(ntwʷᵗ, edge = (2,1), std = stdʷᵗʳ) :
+      add_component!(ntwʷᵗ, edge = (2,1)) ;

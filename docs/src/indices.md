@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Indices are an attempt to quantitatively assess the reliability of a system using a single numerical value. 
+Indices attempt to quantitatively assess the reliability of a system using a single numerical value. 
 
 ## Expected Energy Not Served (EENS) [MWh]
 
