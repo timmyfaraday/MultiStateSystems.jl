@@ -142,11 +142,12 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     H = U \ A * unit(1/dt)
 
     set_p!(std, t, H, tol)
-    
+
     # set the output
     set_prop!(std, :cls, cls)
     set_prop!(std, :time, t)
 
     # set the solved status
     set_info!(std, :solved, true)
+    return H
 end

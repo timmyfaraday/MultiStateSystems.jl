@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.32
+# v0.19.46
 
 using Markdown
 using InteractiveUtils
@@ -545,7 +545,7 @@ Unitful = "~1.19.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.5"
 manifest_format = "2.0"
 project_hash = "78b74ccb9b44cd4207f296d24703a4c6da714ff2"
 
@@ -716,7 +716,7 @@ version = "3.47.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+1"
+version = "1.1.1+0"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -1472,7 +1472,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.23+2"
+version = "0.3.23+4"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -2248,7 +2248,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+1"
+version = "5.11.0+0"
 
 [[deps.libevdev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2408,7 +2408,7 @@ version = "1.4.1+1"
 # ╠═63f18789-cf2c-45f3-92ba-553592fe69e6
 # ╠═7f4f75e5-9497-4ac9-9318-3e272e02e1fe
 # ╠═b65ef768-843b-4b6a-8df1-4b9f861a4b07
-# ╟─fa8bdadb-6ba8-4fcd-82c3-7987cf12e4fc
+# ╠═fa8bdadb-6ba8-4fcd-82c3-7987cf12e4fc
 # ╠═24e9a358-8387-42a4-9e38-47c3452a20af
 # ╠═57f41984-7f99-4b82-93d1-397d8cf80534
 # ╠═c56064ac-35d9-44d3-ad0c-87e6ee5d6bc1
