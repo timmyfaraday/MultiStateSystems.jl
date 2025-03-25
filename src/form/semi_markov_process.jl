@@ -151,3 +151,19 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     set_info!(std, :solved, true)
     return H
 end
+
+function state_conv(dst::MultiStateSystems.AbstractDistribution, h::Vector, t::StepRangeLen, f::Int)
+    h_int = _INT.cubic_spline_interpolation(t, h)
+    time = 0.0 * unit(t[1]):step(t) / f:t[end]
+    h_array = [h_int(nt) for nt in time]
+    quant = 0.0 * unit(t[1]):step(t) / f:cquantile(dst, 1e-10)
+    ccdf_array = [ccdf(dst, nt) for nt in quant]
+    
+    # Perform convolution
+    conv_result = _DSP.conv(h_array*step(time), [0,ccdf_array...])
+    
+    # Truncate the convolution result to match the length of the time array
+    p = conv_result[1:length(h_array)][1:f:end]
+    
+    return p
+end

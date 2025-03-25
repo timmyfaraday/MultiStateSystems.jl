@@ -20,6 +20,7 @@ import SpecialFunctions
 import QuadGK
 import Interpolations
 import SparseArrays
+import DSP
 
 # using Pkgs
 using Unitful
@@ -35,6 +36,7 @@ const _SF  = SpecialFunctions
 const _QGK = QuadGK
 const _INT = Interpolations
 const _SA  = SparseArrays
+const _DSP = DSP
 
 # paths
 const BASE_DIR = dirname(@__DIR__)
@@ -67,6 +69,7 @@ export  STD, solvedSTD, add_state!, add_states!, add_transition!, add_transition
 export  UGF
 export  solve!
 export  solve_network!
+export  state_conv
 
 
 end
