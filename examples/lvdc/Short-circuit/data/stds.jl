@@ -18,11 +18,7 @@ include(joinpath(_MSS.BASE_DIR,"examples/lvdc/Short-circuit/functions/DC_Faults.
 # Grid characteristics:
 V_DC    = 750; # V
 I_max   = 200; # A
-<<<<<<< Updated upstream
-V_min   = V_DC*0.5; # V
-=======
 V_min   = V_DC*0.85; # V
->>>>>>> Stashed changes
 I²t     = 5000; #A²t
 L_p     = 0.0; # H
 C_b     = 5e-2;# F
@@ -50,12 +46,8 @@ L_c = Dict("C1" => 1u"m":1u"m":100u"m",
 L_tot = Dict("SSCB" => L_c,
              "MCCB" => L_c,
              "HCB"  => L_c,
-<<<<<<< Updated upstream
-             "Fuse" => L_c)
-=======
              "Fuse" => L_c,
              "Fuse_MCCB" => L_c)
->>>>>>> Stashed changes
 
 # Write function and add option to combine different types of protection devices.
 
@@ -65,35 +57,6 @@ n       = 100000
 
 # Calculate the probability of clearing a fault for each fault location and protection device
 P = Dict()
-<<<<<<< Updated upstream
-for (key1, L_c) in L_tot
-    P_i = Dict()
-    for (key, value) in L_c
-        if λ[key1][2] == "CB"
-            P_i[key] = fault_clear_prob(value, L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[key1], λ[key1][1])
-            println("Protection device is of CB type")
-        else
-            P_i[key] = fault_clear_prob_fuse(value, L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[key1][1])
-            println("Protection device is a fuse")
-        end
-    end
-    P[key1] = P_i
-end
-
-Pc = Dict()
-for (key1, L_c) in L_tot
-    Pc_i = Dict()
-    for (key, value) in L_c
-        if λ[key1][2] == "CB"
-            Pc_i[key] = fault_clear_prob(maximum(value), L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[key1], λ[key1][1])
-            println("Protection device is of CB type")
-        else
-            Pc_i[key] = fault_clear_prob_fuse(maximum(value), L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[key1][1])
-            println("Protection device is a fuse")
-        end
-    Pc[key1] = Pc_i
-    end
-=======
 for (device_type, feeder_lengths) in L_tot
     probabilities = Dict()
 
@@ -137,7 +100,6 @@ for (device_type, feeder_lengths) in L_tot
     end
 
     Pc[device_type] = probabilities
->>>>>>> Stashed changes
 end
 
 std = Dict()
