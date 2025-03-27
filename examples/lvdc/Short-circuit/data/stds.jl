@@ -21,7 +21,8 @@ I_max   = 200; # A
 V_min   = V_DC*0.5; # V
 I²t     = 5000; #A²t
 L_p     = 0.0; # H
-C_b     = 5e-3;# F
+C_b     = 5e-2;# F
+λᶜ = 0.0000743u"1/yr/m"; # Cable failure rate
 
 # Define the characteristics of the protection devices
 λ = Dict("SSCB" => [0.05, "CB"], 
@@ -47,6 +48,8 @@ L_tot = Dict("SSCB" => L_c,
              "HCB"  => L_c,
              "Fuse" => L_c)
 
+# Write function and add option to combine different types of protection devices.
+
 # Integration parameters
 t_max   = 0.1u"s"
 n       = 100000
@@ -57,10 +60,10 @@ for (key1, L_c) in L_tot
     P_i = Dict()
     for (key, value) in L_c
         if λ[key1][2] == "CB"
-            @time P_i[key] = fault_clear_prob(value, L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[key1], λ[key1][1])
+            P_i[key] = fault_clear_prob(value, L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[key1], λ[key1][1])
             println("Protection device is of CB type")
         else
-            @time P_i[key] = fault_clear_prob_fuse(value, L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[key1][1])
+            P_i[key] = fault_clear_prob_fuse(value, L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[key1][1])
             println("Protection device is a fuse")
         end
     end
@@ -82,36 +85,40 @@ for (key1, L_c) in L_tot
     end
 end
 
-# # Alternative P:
-# P = Dict("L1" => 0.0,
-#          "L2" => 0.20,
-#          "L3" => 0.40,
-#          "L4" => 0.60,
-#          "L5" => 0.80,
-#          "L6" => 1.0)
-
-# Pc = Dict("L1" => 0.0,
-#          "L2" => 0.999999,
-#          "L3" => 1.0,
-#          "L4" => 1.0,
-#          "L5" => 1.0,
-#          "L6" => 1.0)
-
-
-λᶜ = 0.0000743u"1/yr/m";
-
 std = Dict()
 h = Dict()
-tsim = 1.0u"yr";  #25
+tsim = 25.0u"yr";  #25
 dt = 0.5u"d";
 time = 0.0u"yr":dt:tsim .|>u"yr"
 cls = SemiMarkovProcess()
+
+function solve_CB(P, Pc, λᶜ,n)    
+    stdᶜᵇ = STD()
+    # add the states to the std
+    add_states!(stdᶜᵇ, name  = ["A/A", "A/U_1", "A/U_2","A/U_1", "A/U_2","A/U_1", "A/U_2"],
+        power = [(Inf)u"MW", 10.0u"MW", 5.0u"MW", 10.0u"MW", 5.0u"MW", 10.0u"MW", 5.0u"MW"],
+        init  = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    add_transitions!(stdᶜᵇ, states = [(1,2),(1,3),(2,1),(3,1),(1,4),(1,5),(4,1),(5,1),(1,6),(1,7),(6,1),(7,1)],
+        distr = [   Exponential(1/(λᶜ), P/n),
+                    Exponential(1/(λᶜ), (1-P)/n),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    Weibull(21.0u"yr", 3.51, P/n), # Cable
+                    Weibull(21.0u"yr", 3.51, (1-P)/n), # Cable
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    Weibull(15.0u"yr", 3.81, Pc/n), # Converter
+                    Weibull(15.0u"yr", 3.81, (1-Pc)/n), # Converter
+                    LogNormal(log(10.0)u"d", 0.2u"d"),
+                    LogNormal(log(10.0)u"d", 0.2u"d")])
+    return stdᶜᵇ
+end
 
 #Setting up the state transition diagrams 
 for (key, L_c) in L_tot
     std_i = Dict()
     for (key_a, value_a) in L_c
-        @time std_i[key_a] = solve_CB(P[key][key_a], Pc[key][key_a], λᶜ*maximum(value_a), 3)
+        std_i[key_a] = solve_CB(P[key][key_a], Pc[key][key_a], λᶜ*maximum(value_a), 3)
     end
     std[key] = std_i
 end
@@ -141,7 +148,7 @@ for (key, value) in h
     for(cb,h_col) in value
         prb_cb = Dict()
         for i in [3, 5, 7]
-            @time prb_cb[i] = state3_calc_2(LogNormal(log(2.0)u"hr", 0.25u"hr"), h_col[i], time, 10)[1:10:end]
+            @time prb_cb[i] = state_conv(LogNormal(log(2.0)u"hr", 0.25u"hr"), h_col[i], time, 10000)
         end
         prb_state3_i[cb] = prb_cb
     end
@@ -162,3 +169,4 @@ for (key, value) in std
     end
     std_s[key] = std_s_i
 end
+
