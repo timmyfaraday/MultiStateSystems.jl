@@ -18,7 +18,11 @@ include(joinpath(_MSS.BASE_DIR,"examples/lvdc/Short-circuit/functions/DC_Faults.
 # Grid characteristics:
 V_DC    = 750; # V
 I_max   = 200; # A
+<<<<<<< Updated upstream
 V_min   = V_DC*0.5; # V
+=======
+V_min   = V_DC*0.85; # V
+>>>>>>> Stashed changes
 I²t     = 5000; #A²t
 L_p     = 0.0; # H
 C_b     = 5e-2;# F
@@ -46,7 +50,12 @@ L_c = Dict("C1" => 1u"m":1u"m":100u"m",
 L_tot = Dict("SSCB" => L_c,
              "MCCB" => L_c,
              "HCB"  => L_c,
+<<<<<<< Updated upstream
              "Fuse" => L_c)
+=======
+             "Fuse" => L_c,
+             "Fuse_MCCB" => L_c)
+>>>>>>> Stashed changes
 
 # Write function and add option to combine different types of protection devices.
 
@@ -56,6 +65,7 @@ n       = 100000
 
 # Calculate the probability of clearing a fault for each fault location and protection device
 P = Dict()
+<<<<<<< Updated upstream
 for (key1, L_c) in L_tot
     P_i = Dict()
     for (key, value) in L_c
@@ -83,6 +93,51 @@ for (key1, L_c) in L_tot
         end
     Pc[key1] = Pc_i
     end
+=======
+for (device_type, feeder_lengths) in L_tot
+    probabilities = Dict()
+
+    if occursin("_", device_type)
+        device_a, device_b = split(device_type, "_")
+        for (feeder, lengths) in feeder_lengths
+            prob_a = λ[device_a][2] == "CB" ? fault_clear_prob(lengths, L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[device_a], λ[device_a][1]; return_mean = false) :
+                                              fault_clear_prob_fuse(lengths, L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[device_a][1]; return_mean = false)
+            prob_b = λ[device_b][2] == "CB" ? fault_clear_prob(lengths, L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[device_b], λ[device_b][1]; return_mean = false) :
+                                              fault_clear_prob_fuse(lengths, L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[device_b][1]; return_mean = false)
+            probabilities[feeder] = mean(max.(prob_a, prob_b))
+        end
+    else
+        for (feeder, lengths) in feeder_lengths
+            probabilities[feeder] = λ[device_type][2] == "CB" ? fault_clear_prob(lengths, L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[device_type], λ[device_type][1]) :
+                                                                fault_clear_prob_fuse(lengths, L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[device_type][1])
+        end
+    end
+
+    P[device_type] = probabilities
+end
+
+Pc = Dict()
+for (device_type, feeder_lengths) in L_tot
+    probabilities = Dict()
+
+    if occursin("_", device_type)
+        device_a, device_b = split(device_type, "_")
+        for (feeder, lengths) in feeder_lengths
+            prob_a = λ[device_a][2] == "CB" ? fault_clear_prob(maximum(lengths), L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[device_a], λ[device_a][1]; return_mean = false) :
+                                              fault_clear_prob_fuse(maximum(lengths), L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[device_a][1]; return_mean = false)
+            prob_b = λ[device_b][2] == "CB" ? fault_clear_prob(maximum(lengths), L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[device_b], λ[device_b][1]; return_mean = false) :
+                                              fault_clear_prob_fuse(maximum(lengths), L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[device_b][1]; return_mean = false)
+            probabilities[feeder] = mean(max.(prob_a, prob_b))
+        end
+    else
+        for (feeder, lengths) in feeder_lengths
+            probabilities[feeder] = λ[device_type][2] == "CB" ? fault_clear_prob(maximum(lengths), L_p, C_b, V_DC, I_max, V_min, n, t_max, μ[device_type], λ[device_type][1]) :
+                                                                fault_clear_prob_fuse(maximum(lengths), L_p, C_b, V_DC, I²t, V_min, n, t_max, λ[device_type][1])
+        end
+    end
+
+    Pc[device_type] = probabilities
+>>>>>>> Stashed changes
 end
 
 std = Dict()
