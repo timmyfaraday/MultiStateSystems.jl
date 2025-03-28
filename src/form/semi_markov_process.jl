@@ -149,7 +149,7 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
-    return H
+    return H # Set as property! h2[st] = [H[Ns * (x-1) + st] for x in 1:Nt]
 end
 
 function state_conv(dst::MultiStateSystems.AbstractDistribution, h::Vector, t::StepRangeLen, f::Int)

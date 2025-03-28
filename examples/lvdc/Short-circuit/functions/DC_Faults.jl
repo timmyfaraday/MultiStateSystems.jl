@@ -73,7 +73,7 @@ function sc_values(L_vector::Union{AbstractVector, Int}, L_p::Float64, C_b::Floa
                 exp_term = exp(-R / (2 * L_total) * t)
                 sinh_term = exp(ω * t) - exp(-ω * t)
                 if ω * t > 700
-                    sinh_term = 2 * exp(ω * t - 700) * exp(700)  # Avoid overflow
+                    sinh_term = 2 * exp(ω * t - 700) * exp(700)  # Avoid overflow -> Consider rescaling the time to minutes, hours whatever is needed.
                 end
                 V_DC / (2 * ω * L_total) * exp_term * sinh_term
             end
