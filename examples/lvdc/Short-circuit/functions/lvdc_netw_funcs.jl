@@ -34,14 +34,12 @@ end
 function calculate_bus_availability_with_keys(include_keys::Vector{String})
     stdᵇᵘˢ = Dict()
     for (key, L_c) in L_tot
-        if key in include_keys
             stdᵇᵘˢ[key] = solvedSTD(
                 prob = [1 .- sum([_MSS.get_sprop(std_s[key][i], :prob)[3] for i in include_keys]),
                         sum([_MSS.get_sprop(std_s[key][i], :prob)[3] for i in include_keys])],
                 time = collect(time),
                 power = [(Inf)u"MW", 0.0u"MW"]
             )
-        end
     end
 
     return stdᵇᵘˢ
