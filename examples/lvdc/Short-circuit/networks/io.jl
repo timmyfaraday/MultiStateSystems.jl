@@ -1,4 +1,6 @@
 using MultiStateSystems
+using Serialization
+using Unitful
 
 const _MSS = MultiStateSystems
 
@@ -10,11 +12,11 @@ function read_std_s_data(file_path::String)
 end
 
 # Example usage
-input_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/std_s_data.dat")
+input_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/source_data.dat")
 std_s_data = read_std_s_data(input_file)
 println("Data successfully loaded from $input_file")
 
-tsim = 1.0u"yr"  # Simulation time
+tsim = 25.0u"yr"  # Simulation time
 dt = 0.5u"d"     # Time step
 time = 0.0u"yr":dt:tsim .|> u"yr"  # Time vector in years
 

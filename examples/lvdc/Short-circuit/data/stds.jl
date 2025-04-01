@@ -10,6 +10,7 @@ using MultiStateSystems
 using Unitful
 using Plots
 using DataFrames
+using Serialization
 
 const _MSS = MultiStateSystems
 
@@ -104,7 +105,7 @@ end
 
 std = Dict()
 h = Dict()
-tsim = 1.0u"yr";  #25
+tsim = 25.0u"yr";  #25
 dt = 0.5u"d";
 time = 0.0u"yr":dt:tsim .|>u"yr"
 cls = SemiMarkovProcess()
@@ -187,20 +188,13 @@ for (key, value) in std
     std_s[key] = std_s_i
 end
 
-stdᵇᵘˢ = Dict()
-for (key, L_c) in L_tot
-    stdᵇᵘˢ[key] = solvedSTD(prob = [1 .- sum([_MSS.get_sprop(value, :prob)[3] for (i, value) in std_s[key]]), sum([_MSS.get_sprop(value, :prob)[3] for (i, value) in std_s[key]])], time = collect(time), power = [(Inf)u"MW", 0.0u"MW"])
-end
-
 stdᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/elements/acdc.jl"));
 stdᵈᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/elements/dcdc.jl"));
-stdᵇᵃᵗ          = include(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/elements/battery.jl"));
 
-_MSS.solve!(stdᵃᶜᵈᶜ, cls; tsim, dt)
-_MSS.solve!(stdᵈᶜᵈᶜ, cls; tsim, dt)
-_MSS.solve!(stdᵇᵃᵗ, cls; tsim, dt)
 
-using Serialization
+_MSS.solve!(stdᵃᶜᵈᶜ, cls; tsim, dt);
+_MSS.solve!(stdᵈᶜᵈᶜ, cls; tsim, dt);
+
 
 # Extract information from std_s and store it in a structured way
 output_data = Dict()
@@ -214,8 +208,19 @@ for (key, value) in std_s
     end
 end
 
+# Add the stds of the separate components to the output_data dictionary
+output_data["Source"] = Dict()
+
+output_data["Source"]["ACDC"] = Dict(
+    :prob => _MSS.get_sprop(stdᵃᶜᵈᶜ, :prob),
+    :power => _MSS.get_sprop(stdᵃᶜᵈᶜ, :power))
+
+output_data["Source"]["DCDC"] = Dict(
+    :prob => _MSS.get_sprop(stdᵈᶜᵈᶜ, :prob),
+    :power => _MSS.get_sprop(stdᵈᶜᵈᶜ, :power))
+
 # Save the structured data to a .dat file
-output_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/std_s_data.dat")
+output_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/source_data.dat")
 serialize(output_file, output_data)
 
 println("Data successfully saved to $output_file")

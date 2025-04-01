@@ -15,7 +15,7 @@ stdᵈᶜᵈᶜ = STD()
 
 # add the states to the std
 add_states!(stdᵈᶜᵈᶜ, name  = ["available", "unavailable_igbt1", "unavailable_igbt2"],
-                   power = [10.0u"MW", 0.0u"MW", 0.0u"MW"],
+                   power = [(Inf)u"MW", 0.0u"MW", 0.0u"MW"],
                    init  = [1.0, 0.0, 0.0])
 
 # add the transitions to the std
