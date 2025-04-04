@@ -12,13 +12,27 @@ function read_std_s_data(file_path::String)
 end
 
 # Example usage
-input_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/source_data.dat")
+input_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/std_s_data_data.dat")
 std_s_data = read_std_s_data(input_file)
 println("Data successfully loaded from $input_file")
 
 tsim = 25.0u"yr"  # Simulation time
 dt = 0.5u"d"     # Time step
 time = 0.0u"yr":dt:tsim .|> u"yr"  # Time vector in years
+
+# Define the feeder lengths
+L_c = Dict("C1" => 1u"m":1u"m":100u"m", 
+           "C2" => 1u"m":1u"m":200u"m",
+           "C3" => 1u"m":1u"m":150u"m",
+           "C4" => 1u"m":1u"m":50u"m",
+           "C5" => 1u"m":1u"m":100u"m")
+
+# Define the protection device used for each feeder
+L_tot = Dict("SSCB" => L_c,
+             "MCCB" => L_c,
+             "HCB"  => L_c,
+             "Fuse" => L_c,
+             "Fuse_MCCB" => L_c)
 
 std_s = Dict()
 for (key, value) in std_s_data

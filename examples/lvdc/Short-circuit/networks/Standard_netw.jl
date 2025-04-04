@@ -11,6 +11,8 @@ Run io.jl first, to load the solved state transition diagrams (STD) from the fil
 Then run this script to calculate the results.
 """
 
+include(joinpath(_MSS.BASE_DIR,"examples/lvdc/Short-circuit/functions/lvdc_netw_funcs.jl"))
+
 # Set up the state transition diagram for the AC-grid with a constant availability of four nines.
 ac_av = 0.9999*ones(length(time)); 
 stdᵃᶜ = solvedSTD(prob = [ac_av, 1 .- ac_av], time = collect(time), power = [50.0u"MW", 0.0u"MW"]);
@@ -33,20 +35,20 @@ ntw_ac = ntwᵃᶜ.usr[1][:ugf].prb[2] .+ ntwᵃᶜ.usr[1][:ugf].prb[3];
 
 # Determining the probability that the AC side network availability has been restored before
 # the battery has drained.
-T = 5u"hr"
+T = 10u"hr"
 bat_av = Float64[]
 append!(bat_av, ones(Int64(round(T/dt))))
-append!(bat_av,[battery_system_availability(i, T, ntw_ac, log(4)u"d", 0.3u"d") for i in 1:1:length(time)-Int64(round(T/dt))])
+append!(bat_av,[battery_system_availability(i, T, ntw_ac, log(10)u"d", 0.3u"d") for i in 1:1:length(time)-Int64(round(T/dt))])
 stdᵇᵃᵛ = solvedSTD(prob = [bat_av, 1 .- bat_av], time = collect(time), power = [50.0u"MW", 0.0u"MW"])
 
 # Determining the availability of the DC bus as a result of the untimely clearing of the circuit breakers
 
 std_bus = calculate_bus_availability()
-std_bus_C1 = calculate_bus_availability("C1")
-std_bus_C2 = calculate_bus_availability("C2")
-std_bus_C3 = calculate_bus_availability("C3")
-std_bus_C4 = calculate_bus_availability("C4")
-std_bus_C5 = calculate_bus_availability("C5")
+std_bus_C1 = calculate_bus_availability(["C1"])
+std_bus_C2 = calculate_bus_availability(["C2"])
+std_bus_C3 = calculate_bus_availability(["C3"])
+std_bus_C4 = calculate_bus_availability(["C4"])
+std_bus_C5 = calculate_bus_availability(["C5"])
     
 
 #Total system availability
@@ -71,7 +73,6 @@ for (key, L_c) in L_tot
                     std = [stdᵃᶜ, std_s["Source"]["ACDC"],stdᵃᶜ, std_s["Source"]["ACDC"], std_s["Source"]["Bat"], std_s["Source"]["DCDC"], stdᵇᵃᵛ, std_bus_C1[key], std_s[key]["C1"]])
     _MSS.solve!(C1_av[key])
 end
-C1 = C1_av["HCB"].usr[1][:ugf].prb[3]
 
 # C2
 C2_av = Dict() 
@@ -83,7 +84,6 @@ for (key, L_c) in L_tot
                     std = [stdᵃᶜ, std_s["Source"]["ACDC"],stdᵃᶜ, std_s["Source"]["ACDC"], std_s["Source"]["Bat"], std_s["Source"]["DCDC"], stdᵇᵃᵛ, std_bus_C2[key], std_s[key]["C2"]])
     _MSS.solve!(C2_av[key])
 end
-C2 = C2_av["HCB"].usr[1][:ugf].prb[3]
 
 # C3
 C3_av = Dict()
@@ -95,7 +95,6 @@ for (key, L_c) in L_tot
                     std = [stdᵃᶜ, std_s["Source"]["ACDC"],stdᵃᶜ, std_s["Source"]["ACDC"], std_s["Source"]["Bat"], std_s["Source"]["DCDC"], stdᵇᵃᵛ, std_bus_C3[key], std_s[key]["C3"]])
     _MSS.solve!(C3_av[key])
 end
-C3 = C3_av["HCB"].usr[1][:ugf].prb[3]
 
 # C4
 C4_av = Dict()
@@ -107,7 +106,6 @@ for (key, L_c) in L_tot
                     std = [stdᵃᶜ, std_s["Source"]["ACDC"],stdᵃᶜ, std_s["Source"]["ACDC"], std_s["Source"]["Bat"], std_s["Source"]["DCDC"], stdᵇᵃᵛ, std_bus_C4[key], std_s[key]["C4"]])
     _MSS.solve!(C4_av[key])
 end
-C4 = C4_av["HCB"].usr[1][:ugf].prb[3]
 
 # C5
 C5_av = Dict()
@@ -120,4 +118,26 @@ for (key, L_c) in L_tot
     _MSS.solve!(C5_av[key])
 end
 
-C5 = C5_av["HCB"].usr[1][:ugf].prb[3]
+using CSV
+using DataFrames
+
+# Export Total_bus_av results
+# Prepare Total_bus_av results for export
+total_bus_av_results = DataFrame(Time = collect(ustrip(time[1:50:end])))
+for (key, ntw) in Total_bus_av
+    total_bus_av_results[!, key] = 1 .- ntw.usr[1][:ugf].prb[2][1:50:end]
+end
+
+# Write Total_bus_av results to CSV
+CSV.write(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/results/Total_bus_av_results.csv"), total_bus_av_results)
+
+# Export CX_av results
+cx_av_results = DataFrame(Time = collect(ustrip(time[1:50:end])))
+for (component, av_dict) in [("C1", C1_av), ("C2", C2_av), ("C3", C3_av), ("C4", C4_av), ("C5", C5_av)]
+    for (key, _) in L_tot
+        cx_av_results[!, "$component-$key"] = 1 .- av_dict[key].usr[1][:ugf].prb[3][1:50:end]
+    end
+end
+CSV.write(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/results/CX_av_results.csv"), cx_av_results)
+
+println("Results successfully saved to CSV files.")

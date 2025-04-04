@@ -22,7 +22,7 @@ I_max   = 200; # A
 V_min   = V_DC*0.85; # V
 I²t     = 5000; #A²t
 L_p     = 0.0; # H
-C_b     = 5e-2;# F
+C_b     = 5.0e-2;# F
 λᶜ = 0.0000743u"1/yr/m"; # Cable failure rate
 
 # Define the characteristics of the protection devices
@@ -220,7 +220,7 @@ output_data["Source"]["DCDC"] = Dict(
     :power => _MSS.get_sprop(stdᵈᶜᵈᶜ, :power))
 
 # Save the structured data to a .dat file
-output_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/source_data.dat")
+output_file = joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/data/std_s_data.dat")
 serialize(output_file, output_data)
 
 println("Data successfully saved to $output_file")
