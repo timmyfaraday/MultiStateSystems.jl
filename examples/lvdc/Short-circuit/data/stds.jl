@@ -22,8 +22,9 @@ I_max   = 200; # A
 V_min   = V_DC*0.85; # V
 I²t     = 5000; #A²t
 L_p     = 0.0; # H
-C_b     = 5.0e-2;# F
+C_b     = 5.0e-2;# F ->  single bus capacitance
 λᶜ = 0.0000743u"1/yr/m"; # Cable failure rate
+P_zone = [0.99, 0.999, 0.9999]; # Probability of clearing a fault in the first zone
 
 # Define the characteristics of the protection devices
 λ = Dict("SSCB" => [0.05, "CB"], 
@@ -36,19 +37,28 @@ C_b     = 5.0e-2;# F
          "MCCB" => 5.1e-3,
          "Fuse" => 0)
 
-# Define the feeder lengths
+# Define the outgoing feeder lengths
 L_c = Dict("C1" => 1u"m":1u"m":100u"m", 
            "C2" => 1u"m":1u"m":200u"m",
            "C3" => 1u"m":1u"m":150u"m",
            "C4" => 1u"m":1u"m":50u"m",
-           "C5" => 1u"m":1u"m":100u"m")
+           "C5" => 1u"m":1u"m":100u"m",)
+
+L_s = Dict("S1" => 1u"m":1u"m":20u"m", 
+           "S2" => 1u"m":1u"m":20u"m")
+
+L_b = Dict("Connection cable" => 1u"m":1u"m":200u"m")
 
 # Define the protection device used for each feeder
-L_tot = Dict("SSCB" => L_c,
+L_load = Dict("SSCB" => L_c,
              "MCCB" => L_c,
              "HCB"  => L_c,
              "Fuse" => L_c,
-             "Fuse_MCCB" => L_c)
+             "Fuse_MCCB" => L_c,)
+
+L_source = Dict("SSCB" => L_s)
+
+L_bridge = Dict("SSCB" => L_b)
 
 # Write function and add option to combine different types of protection devices.
 
@@ -132,6 +142,56 @@ function solve_CB(P, Pc, λᶜ,n)
     return stdᶜᵇ
 end
 
+function solve_CB_zone(P, Pc,P_zone, λᶜ,n)    
+    stdᶜᵇ = STD()
+    # add the states to the std
+    add_states!(stdᶜᵇ, name  = ["A/A", "A/U_1", "A/U_2","A/U_3","A/U_1", "A/U_2","A/U_2","A/U_1", "A/U_2","A/U_2"],
+        power = [(Inf)u"MW", 10.0u"MW", 5.0u"MW", 10.0u"MW", 5.0u"MW", 10.0u"MW", 5.0u"MW", 10.0u"MW", 5.0u"MW", 10.0u"MW"],
+        init  = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    add_transitions!(stdᶜᵇ, states = [(1,2),(1,3),(1,4),(2,1),(3,1),(4,1),(1,5),(1,6),(1,7),(5,1),(6,1),(7,1),(1,8),(1,9),(1,10),(8,1),(9,1),(10,1)],
+        distr = [   Exponential(1/(λᶜ), (P*P_zone)/n),
+                    Exponential(1/(λᶜ), (1-P)*P_zone/n),
+                    Exponential(1/(λᶜ), 1-P_zone/n),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    Weibull(21.0u"yr", 3.51, P*P_zone/n), # Cable
+                    Weibull(21.0u"yr", 3.51, (1-P)*P_zone/n), # Cable
+                    Weibull(21.0u"yr", 3.51, 1-P_zone/n),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    LogNormal(log(14.0)u"d", 0.1u"d"),
+                    Weibull(15.0u"yr", 3.81, Pc*P_zone/n), # Converter
+                    Weibull(15.0u"yr", 3.81, (1-Pc)*P_zone/n), # Converter
+                    Weibull(15.0u"yr", 3.81, (1-P_zone)/n),
+                    LogNormal(log(10.0)u"d", 0.2u"d"),
+                    LogNormal(log(10.0)u"d", 0.2u"d"),
+                    LogNormal(log(10.0)u"d", 0.2u"d")])
+    return stdᶜᵇ
+end
+
+function solve_CB_zone_Markov(P, Pc, P_zone, λᶜ,n)    
+std_feeder = STD()
+add_states!(std_feeder, name  = ["A", "U1", "U2","U3", "V2","V3"],
+                        power = [(Inf)u"MW", 0.0u"MW", (Inf)u"MW", (Inf)u"MW", 0.0u"MW", 0.0u"MW"],
+                        init  = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+add_transitions!(std_feeder, states = [(1,2),(1,3),(1,4),(2,1),(3,5),(4,6),(5,1),(6,1)],
+                        distr = [Exponential(1/(λᶜ), P/n),
+                        Exponential(1/(λᶜ), (1-P)/n),
+                        Exponential(1 / (exp(log(12.0) + 0.5^2 / 2) * u"hr")),
+                        Exponential(1 / (exp(log(14.0) + 0.03^2 / 2) * u"d")),
+                        Exponential(1 / (exp(log(14.0) + 0.03^2 / 2) * u"d")),
+                        Weibull(3.0u"yr", 3.51, P/n), # Cable
+                        Weibull(3.0u"yr", 3.51, (1-P)/n), # Cable
+                        Exponential(1 / (exp(log(12.0) + 0.5^2 / 2) * u"hr")),
+                        Exponential(1 / (exp(log(14.0) + 0.03^2 / 2) * u"d")),
+                        Exponential(1 / (exp(log(14.0) + 0.03^2 / 2) * u"d")),
+                        Weibull(2.5u"yr", 3.81, Pc/n), # Converter
+                        Weibull(2.5u"yr", 3.81, (1-Pc)/n), # Converter
+                        Exponential(1 / (exp(log(12.0) + 0.5^2 / 2) * u"hr")),
+                        Exponential(1 / (exp(log(2.0) + 0.03^2 / 2) * u"d")),
+                        Exponential(1 / (exp(log(2.0) + 0.03^2 / 2) * u"d"))])
+
 #Setting up the state transition diagrams 
 for (key, L_c) in L_tot
     std_i = Dict()
@@ -141,7 +201,7 @@ for (key, L_c) in L_tot
     std[key] = std_i
 end
 
-# Solving the state transition diagrams and extracting the transition rates.
+# Solving the state transition diagrams and extracting the transition rates. This piece of code is redundant as the h is already assigned to the transitions and added to the properties of the std under get_sprop(std, :h)
 for (key, std_i) in std
     h_i = Dict()
     @time for (cb, std_sol) in std_i
@@ -189,7 +249,7 @@ for (key, value) in std
 end
 
 stdᵃᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/elements/acdc.jl"));
-stdᵈᶜᵈᶜ         = include(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/elements/dcdc.jl"));
+std_test_sm         = include(joinpath(_MSS.BASE_DIR, "examples/lvdc/Short-circuit/elements/dcdc.jl"));
 
 
 _MSS.solve!(stdᵃᶜᵈᶜ, cls; tsim, dt);

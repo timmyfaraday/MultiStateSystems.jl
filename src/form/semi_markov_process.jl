@@ -106,7 +106,7 @@ function _set_p!(std::AbstractSTD, st::Int, init::Real, tol::Real, DST::Vector,
         _fill_p!(init, dst, t, h, p) 
     end
 
-    set_prop!(std, st, :h, h)
+    set_prop!(std, st, :h, h) 
     set_prop!(std, st, :prob, p)
 end
 function _fill_p!(init::Real, dst::AbstractDistribution, t::StepRangeLen, 
@@ -149,7 +149,6 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
 
     # set the solved status
     set_info!(std, :solved, true)
-    return H # Set as property! h2[st] = [H[Ns * (x-1) + st] for x in 1:Nt]
 end
 
 function state_conv(dst::MultiStateSystems.AbstractDistribution, h::Vector, t::StepRangeLen, f::Int)
