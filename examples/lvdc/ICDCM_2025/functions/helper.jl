@@ -31,24 +31,35 @@ function fill_reduced_std(std_sol)
     state_4_prob = zeros(length(time))
     state_5_prob = zeros(length(time))
     state_6_prob = zeros(length(time))
+    state_1_h = zeros(length(time)) * unit(std_sol.sprops[1][:h][1])
+    state_2_h = zeros(length(time)) * unit(std_sol.sprops[1][:h][1])
+    state_3_h = zeros(length(time)) * unit(std_sol.sprops[1][:h][1])
+    state_4_h = zeros(length(time)) * unit(std_sol.sprops[1][:h][1])
+    state_5_h = zeros(length(time)) * unit(std_sol.sprops[1][:h][1])
+    state_6_h = zeros(length(time)) * unit(std_sol.sprops[1][:h][1])
     for n in 1:length(std_sol.sprops)
         if occursin("A", std_sol.sprops[n][:name])
             state_1_prob .+= std_sol.sprops[n][:prob]
+            state_1_h .+= std_sol.sprops[n][:h]    
         elseif occursin("V1", std_sol.sprops[n][:name])
             state_2_prob .+= vcat(0, std_sol.sprops[n][:prob][2:end])
+            state_2_h .+= std_sol.sprops[n][:h]
         elseif occursin("U2", std_sol.sprops[n][:name])
             corrective_state_prob_1 = state_conv(LogNormal(log(2.0)u"hr", 0.25u"hr"), std_sol.sprops[n][:h], time, 10000)
             state_3_prob .+= corrective_state_prob_1
+            state_3_h .+= std_sol.sprops[n][:h]
             state_4_prob .+= vcat(0, std_sol.sprops[n][:prob][2:end]).-corrective_state_prob_1
-
+            state_4_h .+= std_sol.sprops[n][:h]
         elseif occursin("U3", std_sol.sprops[n][:name])
-            corrective_state_prob_2 = state_conv(LogNormal(log(2.0)u"hr", 0.25u"hr"), std_sol.sprops[n][:h], time, 10000)
+            corrective_state_prob_2 = state_conv(LogNormal(log(20.0)u"hr", 0.05u"hr"), std_sol.sprops[n][:h], time, 10000)
             state_5_prob .+= corrective_state_prob_2
+            state_5_h .+= std_sol.sprops[n][:h]           
             state_6_prob .+= vcat(0, std_sol.sprops[n][:prob][2:end]).-corrective_state_prob_2
+            state_6_h .+= vcat(0 * unit(std_sol.sprops[1][:h][1]), std_sol.sprops[n][:h][1:end-1])
         end
     end
 
-    return solvedSTD(prob = [state_1_prob, state_2_prob, state_3_prob, state_4_prob, state_5_prob, state_6_prob], time = collect(time), power = [(Inf)u"MW", 0.0u"MW", (Inf)u"MW", (Inf)u"MW", 0.0u"MW", 0.0u"MW"], name  = ["A", "U1", "U2","U3", "V2","V3"])
+    return solvedSTD(prob = [state_1_prob, state_2_prob, state_3_prob, state_4_prob, state_5_prob, state_6_prob], time = collect(time), power = [(Inf)u"MW", 0.0u"MW", (Inf)u"MW", 0.0u"MW", (Inf)u"MW", 0.0u"MW"], name  = ["A", "V1", "U2","V2", "U3","V3"], h = [state_1_h, state_2_h, state_3_h, state_4_h, state_5_h, state_6_h])
 end
 
 function process_nested_dict(input_dict, func)

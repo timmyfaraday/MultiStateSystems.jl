@@ -184,12 +184,13 @@ function fill_std(L_tot, P, λᶜ; type, Pc = nothing, P_zone = 1)
 end
 
 function solve_std_dict!(std, cls, tsim, dt)
-    for std_val in values(std)
+    for (key, std_val) in std
         if isa(std_val, AbstractDict)
             solve_std_dict!(std_val, cls, tsim, dt)
         else
             # Do something with the value
             _MSS.solve!(std_val, cls; tsim, dt)
+            # println("Solved STD for $key.")
         end
     end
 end
