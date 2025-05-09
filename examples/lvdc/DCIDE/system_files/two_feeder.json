@@ -2593,7 +2593,7 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": null,
+                "powerFactor": 1,
                 "configuration": null,
                 "earthingConfigurations": [],
                 "voltagePerPole": {
@@ -2721,7 +2721,7 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": null,
+                "powerFactor": 1,
                 "configuration": null,
                 "earthingConfigurations": [],
                 "voltagePerPole": {
@@ -2813,7 +2813,7 @@
           },
           "polaritySensitive": false,
           "openingTime": "conventional",
-          "breakerType": null
+          "breakerType": "SSCB"
         }
       },
       "manufacturer": null,
@@ -2950,7 +2950,7 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": null,
+                "powerFactor": 1,
                 "configuration": null,
                 "earthingConfigurations": [],
                 "voltagePerPole": {
@@ -3078,7 +3078,7 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": null,
+                "powerFactor": 1,
                 "configuration": null,
                 "earthingConfigurations": [],
                 "voltagePerPole": {
@@ -3170,7 +3170,7 @@
           },
           "polaritySensitive": false,
           "openingTime": "conventional",
-          "breakerType": null
+          "breakerType": "MCCB"
         }
       },
       "manufacturer": null,
@@ -3341,7 +3341,8 @@
                 "unit": "F"
               },
               "isolated": true,
-              "parallelableCapacity": 1
+              "parallelableCapacity": 1,
+              "id": "67442a23bdee5ac85431d872"
             },
             {
               "features": [],
@@ -3417,7 +3418,8 @@
                 "unit": "F"
               },
               "isolated": true,
-              "parallelableCapacity": 1
+              "parallelableCapacity": 1,
+              "id": "67442a23bdee5ac85431d873"
             }
           ],
           "standards": [],
@@ -3565,7 +3567,8 @@
               },
               "isolated": null,
               "parallelableCapacity": 1,
-              "purpose": null
+              "purpose": null,
+              "id": "67442a23bdee5ac85431d789"
             },
             {
               "features": [],
@@ -3622,7 +3625,8 @@
               },
               "isolated": null,
               "parallelableCapacity": 1,
-              "purpose": null
+              "purpose": null,
+              "id": "67442a23bdee5ac85431d78a"
             }
           ],
           "standards": [],
@@ -4080,7 +4084,8 @@
                 "earthingConfigurations": [
                   "unearthed"
                 ]
-              }
+              },
+              "id": "67442a23bdee5ac85431db4a"
             }
           ],
           "energyCapacity": {
@@ -4091,7 +4096,8 @@
             "value": null,
             "unit": "C"
           },
-          "standards": []
+          "standards": [],
+          "parallelableCapacity": 1
         }
       },
       "manufacturer": null,
@@ -4335,7 +4341,7 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": null,
+                "powerFactor": 1,
                 "configuration": null,
                 "earthingConfigurations": [],
                 "voltagePerPole": {
@@ -4463,7 +4469,7 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": null,
+                "powerFactor": 1,
                 "configuration": null,
                 "earthingConfigurations": [],
                 "voltagePerPole": {
@@ -4555,7 +4561,7 @@
           },
           "polaritySensitive": false,
           "openingTime": "conventional",
-          "breakerType": null
+          "breakerType": "MCCB"
         }
       },
       "manufacturer": null,
@@ -4696,7 +4702,8 @@
               },
               "isolated": null,
               "parallelableCapacity": 1,
-              "purpose": null
+              "purpose": null,
+              "id": "67442a23bdee5ac85431dce0"
             },
             {
               "features": [],
@@ -4753,7 +4760,8 @@
               },
               "isolated": null,
               "parallelableCapacity": 1,
-              "purpose": null
+              "purpose": null,
+              "id": "67442a23bdee5ac85431dce1"
             }
           ],
           "standards": [],
@@ -5025,8 +5033,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-ERlbOhzN",
@@ -5072,7 +5107,7 @@
       },
       "wireSize": null,
       "length": {
-        "value": null,
+        "value": 20,
         "unit": "m"
       },
       "resistance": {
@@ -5089,8 +5124,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-YmnLIVcQ",
@@ -5153,8 +5215,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-yH4w5qzu",
@@ -5217,8 +5306,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-jchvSRu2",
@@ -5264,7 +5380,7 @@
       },
       "wireSize": null,
       "length": {
-        "value": null,
+        "value": 20,
         "unit": "m"
       },
       "resistance": {
@@ -5281,8 +5397,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-SipQXlit",
@@ -5345,8 +5488,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-Bq9qyiqb",
@@ -5409,8 +5579,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-aWum7SX5",
@@ -5473,8 +5670,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-DTyelF33",
@@ -5520,7 +5744,7 @@
       },
       "wireSize": null,
       "length": {
-        "value": null,
+        "value": 100,
         "unit": "m"
       },
       "resistance": {
@@ -5537,8 +5761,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-rtLPGbaR",
@@ -5584,7 +5835,7 @@
       },
       "wireSize": null,
       "length": {
-        "value": null,
+        "value": 100,
         "unit": "m"
       },
       "resistance": {
@@ -5601,8 +5852,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-ERzlB98C",
@@ -5665,8 +5943,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-TW2bJgd3",
@@ -5729,8 +6034,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-ylbr2NQU",
@@ -5793,8 +6125,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-cow1CNzZ",
@@ -5857,8 +6216,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-iPB2POTm",
@@ -5904,7 +6290,7 @@
       },
       "wireSize": null,
       "length": {
-        "value": null,
+        "value": 20,
         "unit": "m"
       },
       "resistance": {
@@ -5921,8 +6307,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-bhH7WXTo",
@@ -5985,8 +6398,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     },
     {
       "id": "connection-FOv8Giar",
@@ -6049,8 +6489,35 @@
         "value": null,
         "unit": "K"
       },
-      "numberOfConductors": 1,
-      "powerFactor": 1
+      "powerFactor": 1,
+      "multiple": {
+        "parallel": 1
+      },
+      "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
     }
   ],
   "groups": [],

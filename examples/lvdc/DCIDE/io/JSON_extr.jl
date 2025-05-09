@@ -134,12 +134,41 @@ function extract_connections(json_data::Dict{String, Any}, component_details::Di
     return connections
 end
 
+"""
+    count_component_connections(connections::Dict{String, Vector{Tuple{String, String}}})::Dict{String, Int}
+
+Counts the number of connections for each unique component in the connections dictionary.
+
+# Arguments
+- `connections::Dict{String, Vector{Tuple{String, String}}}`: A dictionary where keys are connection identifiers and values are vectors of tuples representing connections between components.
+
+# Returns
+- `Dict{String, Int}`: A dictionary where keys are component IDs and values are the number of times each component is connected to other components.
+"""
+function count_component_connections(connections::Dict{String, Vector{Tuple{String, String}}})::Dict{String, Int}
+    connection_counts = Dict{String, Int}()
+
+    for connection_list in values(connections)
+        for (from_component, to_component) in connection_list
+            connection_counts[from_component] = get(connection_counts, from_component, 0) + 1
+            connection_counts[to_component] = get(connection_counts, to_component, 0) + 1
+        end
+    end
+
+    return connection_counts
+end
+
+# Example usage
+component_connection_counts = count_component_connections(connections)
+println("Component Connection Counts:")
+println(component_connection_counts)
 
 component_ids_and_types = extract_component_ids_and_types(json_data)
 
 component_details = extract_component_details(json_data)
 
 connections = extract_connections(json_data, component_details)
+
 
 
 # Print the extracted information
@@ -151,3 +180,72 @@ println(component_details)
 
 println("Connections:")
 println(connections)
+
+## Create networks from the connections and component details
+
+# Find sources in the JSON file
+function find_sources(connections::Dict{String, Vector{Tuple{String, String}}}, component_details::Dict{String, Dict{String, Any}})::Vector{String}
+    sources = String[]
+    connection_counts = count_component_connections(connections)
+
+    for (component_id, count) in connection_counts
+        if count == 1 && component_details[component_id]["type"] in ["battery", "utility"]
+            push!(sources, component_id)
+        end
+    end
+
+    return sources
+end
+
+# Find and print sources
+sources = find_sources(connections, component_details)
+
+# Function to order components starting from the sources and attribute a number to each component
+function order_components(
+    sources::Vector{String}, 
+    connections::Dict{String, Vector{Tuple{String, String}}}, 
+    component_ids_and_types::Dict{String, String}
+)::Dict{Int, String}
+    ordered_components = Dict{Int, String}()
+    visited = Set{String}()
+    component_number = 1
+
+    function dfs(component::String)
+        if component in visited
+            return
+        end
+        push!(visited, component)
+        ordered_components[component_number] = component
+        println("Component $component_number: ID = $component, Type = $(component_ids_and_types[component])")
+        component_number += 1
+        for connection_list in values(connections)
+            for (from_component, to_component) in connection_list
+                if from_component == component && !(to_component in visited)
+                    dfs(to_component)
+                elseif to_component == component && !(from_component in visited)
+                    dfs(from_component)
+                end
+            end
+        end
+    end
+
+    for source in sources
+        dfs(source)
+    end
+
+    return ordered_components
+end
+
+# Order components starting from the sources and attribute numbers
+ordered_components_with_numbers = order_components(sources, connections, component_ids_and_types)
+
+# Print the ordered components with numbers
+println("Ordered Components with Numbers:")
+println(ordered_components_with_numbers)
+
+# Order components starting from the sources
+ordered_components = order_components_from_sources(sources, connections)
+
+# Print the ordered components
+println("Ordered Components:")
+println(ordered_components)
