@@ -92,46 +92,6 @@ function fill_reduced_std(std_sol::Any)
     )
 end
 
-# function process_nested_dict(input_dict, func)
-#     # Recursive function to process the nested dictionary
-#     function process_recursive(dict)
-#         result = Dict()
-#         for (key, value) in dict
-#             if isa(value, AbstractDict)
-#                 # If the value is a dictionary, recurse
-#                 result[key] = process_recursive(value)
-#             else
-#                 # Apply the function to the lowest level value
-#                 result[key] = func(value)
-#             end
-#         end
-#         return result
-#     end
-
-#     # Call the recursive function on the input dictionary
-#     return process_recursive(input_dict)
-# end
-
-# using SMTPClient
-
-# function send_email_notification()
-#     opt = SMTPClient.SendOptions(
-#             isSSL = true,
-#             username = "emmersglenn@gmail.com",
-#             passwd = "kysn tqhv ubyv cikr")   
-        
-#     body = IOBuffer(
-#     "From: You <emmersglenn@gmail.com>\r\n" *
-#     "To: glenn.emmers@kuleuven.be\r\n" *
-#     "Subject: Julia Finish\r\n" *
-#     "\r\n" *
-#     "Your code is done\r\n")
-#     url = "smtps://smtp.gmail.com:465"
-#     rcpt = ["<glenn.emmers@kuleuven.be>"]
-#     from = "<emmersglenn@gmail.com>"
-#     return SMTPClient.send(url, rcpt, from, body, opt)
-# end
-
 """
     solve_network_dict!(netw_1::AbstractDict)
 
@@ -156,7 +116,7 @@ function solve_network_dict!(netw_1)
         if isa(value, AbstractDict)
             solve_network_dict!(value)
         else
-            solve!(value)
+            _MSS.solve!(value)
         end
     end
 end

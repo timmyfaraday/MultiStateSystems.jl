@@ -24,7 +24,8 @@ I_max   = 200; # A
 V_min   = V_DC*0.85; # V
 I²t     = 5000; #A²t
 L_p     = 0.0; # H
-C_b     = 5e-2;# F ->  single bus capacitance
+# C_b     = 5e-2;# F ->  single bus capacitance
+C_b     = 2.5e-2;# F ->  double bus capacitance
 λᶜ = 0.0000743u"1/yr/m"; # Cable failure rate
 P_zone = [0.999, 1.0]; # Ensure all values are Float64
 
@@ -34,12 +35,10 @@ n       = 100000
 
 # Define the characteristics of the protection devices
 λ = Dict("SSCB" => [0.05, "CB"], 
-         "HCB"  => [0.05, "CB"],
          "MCCB" => [0.05, "CB"],
          "Fuse" => [0.05, "Fuse"])
          
 μ = Dict("SSCB" => 11e-6, 
-         "HCB"  => 1.1e-3,
          "MCCB" => 5.1e-3,
          "Fuse" => 0.0)
 
@@ -110,12 +109,3 @@ for P_z in P_zone
     end
 
 end
-
-send_email_notification()
-
-# jldsave(joinpath(_MSS.BASE_DIR, "examples/lvdc/ICDCM_2025/results/std_loads_1bus_Markov.jld"); dict=std_loads, overwrite = true)
-# jldsave(joinpath(_MSS.BASE_DIR, "examples/lvdc/ICDCM_2025/results/std_sources_1bus_Markov.jld"); dict=std_sources, overwrite = true)
-# jldsave(joinpath(_MSS.BASE_DIR, "examples/lvdc/ICDCM_2025/results/std_bridge_1bus_Markov.jld"); dict=std_bridge, overwrite = true)
-
-jldsave(joinpath(_MSS.BASE_DIR, "examples/lvdc/ICDCM_2025/results/single_bus_SemiMarkov.jld"); loads=std_loads, sources = std_sources, bridge = std_bridge) #Don't for get to change the Capacitance value to half when running the file for 2 bus system.
-
