@@ -34,14 +34,14 @@ add_cmp_expr!(cpath::Vector{Expr}, ntw::AbstractNetwork, c_key::UIE) =
 init_eval_dep_cmp(ntw::AbstractNetwork, kwargs::Iterators.Pairs, Nc::Int) =
     if haskey(kwargs, :eval_dep)
         set_info!(ntw, :eval_dep, kwargs[:eval_dep])
-        return length(ntw.cmp) .+ 1:Nc
+        return length(ntw.cmp) .+ (1:Nc)
     else
         return nothing
     end
 ""
 function init_eval_dep_cmp(ntw::AbstractNetwork, Nc::Int)
     set_info!(ntw, :eval_dep, true)
-    return length(ntw.cmp) .+ 1:Nc
+    return length(ntw.cmp) .+ (1:Nc)
 end
 
 ## component (directional)
@@ -123,6 +123,7 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
 
             add_component!(ntw; node=node[ni], prop_dict...)
     end end
+
     if haskey(kwargs,:edge)
         edge, Ne = kwargs[:edge], length(kwargs[:edge])
 
@@ -148,6 +149,7 @@ function add_bidirectional_component!(ntw::AbstractNetwork; kwargs...)
         prop_dict = reduce(kwargs, 1, excl=[:edge])
         prop_dict[:eval_dep] = true
         set_eval_dep!(prop_dict, ne, eval_dep_ids)
+
         add_component!(ntw; edge=edge, prop_dict...)
     end
 

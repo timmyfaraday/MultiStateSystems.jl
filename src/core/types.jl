@@ -29,7 +29,7 @@ abstract type AbstractSemiMarkovProcess <: AbstractStochasticProcess end
 
 # union types
 UIE = Union{Int,Graphs.AbstractEdge}
-Single = Union{Bool,Number,String,Symbol,AbstractSTD,Tuple,AbstractDistribution}
+Single = Union{Bool,Number,String,Symbol,AbstractSTD,Tuple,AbstractDistribution,AbstractUGF}
 
 # dict types
 LibDict = Dict{UIE,Vector{Int}}

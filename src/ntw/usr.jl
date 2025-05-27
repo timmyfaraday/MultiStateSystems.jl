@@ -24,7 +24,7 @@ usr_nodes(ntw::AbstractNetwork) = keys(ntw.ulib)
 init_eval_dep_usr(ntw::AbstractNetwork, kwargs::Iterators.Pairs, Nu::Int) =
     if haskey(kwargs, :eval_dep)
         set_info!(ntw, :eval_dep, kwargs[:eval_dep])
-        return length(ntw.usr) .+ 1:Nu
+        return length(ntw.usr) .+ (1:Nu)
     else
         return nothing
     end

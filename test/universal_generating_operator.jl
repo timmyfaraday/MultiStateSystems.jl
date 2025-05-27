@@ -152,7 +152,7 @@
         add_source!(ntwˢ, node = 1)
         add_user!(ntwˢ, node = 3)
         add_components!(ntwˢ, edge = [(1,2),(2,3)], 
-                              ugf = [ugfᵉ¹,ugfᵉ²],
+                              ugf  = [ugfᵉ¹,ugfᵉ²],
                               eval_dep = true)
         solve!(ntwˢ)
         val_ntw = ntwˢ.usr[1][:ugf].val

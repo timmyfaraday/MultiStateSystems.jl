@@ -39,7 +39,7 @@ init_source_dep(ntw::AbstractNetwork, kwargs::Iterators.Pairs) =
 init_eval_dep_src(ntw::AbstractNetwork, kwargs::Iterators.Pairs, Ns::Int) =
     if haskey(kwargs, :eval_dep)
         set_info!(ntw, :eval_dep, kwargs[:eval_dep])
-        return length(ntw.src) .+ 1:Ns
+        return length(ntw.src) .+ (1:Ns)
     else
         return nothing
     end
