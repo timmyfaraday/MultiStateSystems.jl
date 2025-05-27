@@ -201,7 +201,6 @@ function bridge_reduction!(npaths::Vector{<:Vector}, cpaths::Vector{<:Vector})
     deleteat!(cpaths, sort(idx))
 end
 
-
 function solve_network!(ntw::AbstractNetwork)
     set_msr!(ntw)
     set_ugf!(ntw)

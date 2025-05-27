@@ -1,13 +1,20 @@
 ################################################################################
-#  Copyright 2020, Tom Van Acker                                               #
-################################################################################
 # MultiStateSystems.jl                                                         #
-# A Julia package to solve multi-state system models.                          #
-# See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
+# A Julia package to solve multi-state system models, often found in           #
+# reliability engineering.                                                     #
+# See https://github.com/timmyfaraday/MultiStateSystems.jl                     #
+################################################################################
+# Authors: Tom Van Acker                                                       #
+################################################################################
+# Changelog:                                                                   #
+# v0.3.0 - init                                                                #
 ################################################################################
 
-## Universal Generating Function
-# structs
+# types ########################################################################
+## abstract type 
+abstract type AbstractUGF end
+
+# structs ######################################################################
 """
     UGF
 
@@ -28,6 +35,7 @@ optional argument `rdc=false`.
 julia> ugfᵍᵉⁿ = UGF(:power, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7])
 julia> isequal(ugfᵍᵉⁿ.val, [0.0u"MW",2.0u"MW"])
 true
+
 julia> ugfᵍᵉⁿ = UGF(:power, [0.0u"MW",0.0u"MW",2.0u"MW"], [0.1,0.2,0.7], rdc=false)
 julia> isequal(ugfᵍᵉⁿ.val, [0.0u"MW",0.0u"MW",2.0u"MW"])
 true
@@ -43,7 +51,9 @@ struct UGF <: AbstractUGF
         rdc ? new(msr,reduce(val,prb)...) : new(msr,val,prb)
 end
 
-# constructors
+# constructors #################################################################
+## unit probability
+""
 function UGF(msr::Symbol)
     prb = [1.0]
     val = [get_max(msr)]
@@ -51,6 +61,7 @@ function UGF(msr::Symbol)
     return UGF(msr, val, prb)
 end
 
+## std-based 
 """
     UGF(msr::Symbol, std::MultiStateSystems.AbstractSTD)
 
@@ -71,11 +82,14 @@ true
 """
 UGF(msr::Symbol, std::AbstractSTD) = 
     UGF(msr,get_sprop(std,msr),get_sprop(std,:prob))
+
+## empty 
 ################################################################################
 # WARNING:  The empty constructor needs to be last in order to overwrite the   #
 #           empty constructor created by other contructors, see: discourse -   #
 #           keyword argument contructor breaks incomplete constructor.         #                                               #
 ################################################################################
+""
 function UGF()
     msr = :msr
     prb = Vector()
@@ -84,20 +98,31 @@ function UGF()
     return UGF(msr,val,prb)
 end
 
-# functions
-function cmp_ugf(msr::Symbol,cmp::PropDict)
-    if haskey(cmp,:std) return UGF(msr,cmp[:std]) end
-    if haskey(cmp,:ntw) ntw, id = cmp[:ntw]; return ntw.usr[id][:ugf] end
-    return UGF(msr)
-end
-function src_ugf(msr::Symbol,src::PropDict)
-    if haskey(src,:dep) return UGF(msr,[(1.0)get_unit(msr)],[1.0]) end
-    if haskey(src,:std) return UGF(msr,src[:std]) end
-    if haskey(src,:ntw) ntw, id = src[:ntw]; return ntw.usr[id][:ugf] end
-    return UGF(msr)
-end
+# functions ####################################################################
+## setter
+""
 function set_ugf!(ntw::AbstractNetwork)
     msr = ntw.props[:msr]
     for cmp in cmp(ntw) if !haskey(cmp,:ugf) cmp[:ugf] = cmp_ugf(msr,cmp) end end
     for src in src(ntw) if !haskey(src,:ugf) src[:ugf] = src_ugf(msr,src) end end
 end
+
+## cmp
+""
+function cmp_ugf(msr::Symbol, cmp::PropDict)
+    if haskey(cmp,:std) return UGF(msr,cmp[:std]) end
+    if haskey(cmp,:ntw) ntw, id = cmp[:ntw]; return ntw.usr[id][:ugf] end
+    
+    return UGF(msr)
+end
+
+## src 
+""
+function src_ugf(msr::Symbol,src::PropDict)
+    if haskey(src,:dep) return UGF(msr,[(1.0)get_unit(msr)],[1.0]) end
+    if haskey(src,:std) return UGF(msr,src[:std]) end
+    if haskey(src,:ntw) ntw, id = src[:ntw]; return ntw.usr[id][:ugf] end
+    
+    return UGF(msr)
+end
+

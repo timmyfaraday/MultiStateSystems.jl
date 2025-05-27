@@ -170,6 +170,7 @@ states(std::AbstractSTD) = Graphs.vertices(std.graph)
 add_vertex!(std::AbstractSTD) = Graphs.add_vertex!(std.graph)
 has_vertex(std::AbstractSTD, x...) = Graphs.has_vertex(std.graph, x...)
 
+props(std::AbstractSTD, s::Int) = get(std.sprops, s, PropDict())
 get_sprop(std::AbstractSTD, prop::Symbol) =
     [get_prop(std, ns, prop) for ns in states(std)]
 get_prop(std::AbstractSTD, ns::Int, prop::Symbol) = props(std, ns)[prop]
@@ -181,6 +182,12 @@ set_prop!(std::AbstractSTD, states::Base.OneTo{Int}, prop::Symbol, value::Any) =
 set_props!(std::AbstractSTD, ns::Int, prop_dict::Dict) =
     haskey(std.sprops,ns) ? merge!(std.sprops[ns],prop_dict) :
                             std.sprops[ns] = prop_dict ;
+
+ccdf(std::AbstractSTD, ns::Int, φ::Quantity, t::Quantity) =
+        1.0 - sum(cdf(get_prop(std, Graphs.Edge(ns,nx), :distr), φ, t)
+                for nx in Graphs.outneighbors(std.graph, ns); init = 0.0)
+
+
 
 """
     add_state!(std::MultiStateSystems.AbstractSTD; kwargs...)
@@ -241,6 +248,7 @@ transitions(std::AbstractSTD) = Graphs.edges(std.graph)
 has_edge(std::AbstractSTD, x...) = Graphs.has_edge(std.graph, x...)
 add_edge!(std::AbstractSTD, x...) = Graphs.add_edge!(std.graph, x...)
 
+props(std::AbstractSTD, t::Graphs.Edge) = get(std.tprops, t, PropDict())
 get_tprop(std::AbstractSTD, prop::Symbol) =
     Dict(nt => get_prop(std,nt,prop) for nt in transitions(std))
 get_prop(std::AbstractSTD, nt::Graphs.Edge, prop::Symbol) = props(std,nt)[prop]

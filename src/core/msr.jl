@@ -1,20 +1,24 @@
 ################################################################################
-# Copyright, 2020, Tom Van Acker                                               #
-################################################################################
 # MultiStateSystems.jl                                                         #
-# A Julia package to solve multi-state system models.                          #
-# See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
+# A Julia package to solve multi-state system models, often found in           #
+# reliability engineering.                                                     #
+# See https://github.com/timmyfaraday/MultiStateSystems.jl                     #
+################################################################################
+# Authors: Tom Van Acker                                                       #
+################################################################################
+# Changelog:                                                                   #
+# v0.3.0 - init                                                                #
 ################################################################################
 
-# Measure (abbr: msr)
-# sets
+# constants ####################################################################
 const MsrSet   = Set{Symbol}([:flow,:power])
 const UnitDict = Dict{Symbol,_UF.FreeUnits}(:flow   => u"m^3/hr",
                                             :power  => u"MW")
 const MaxVal   = Dict{Symbol,_UF.Quantity}( :flow   => (Inf)u"m^3/hr",
                                             :power  => (Inf)u"MW")
 
-# functions
+# functions ####################################################################
+## general
 get_max(msr::Symbol) = MaxVal[msr]
 get_unit(msr::Symbol) = UnitDict[msr]
 check_unit(msr::Symbol,unit::_UF.FreeUnits) =
@@ -25,6 +29,7 @@ get_msr(ugf::AbstractUGF) = [ugf.msr]
 get_msr(kwargs::Iterators.Pairs) = collect(intersect(MsrSet,keys(kwargs)))[1]
 get_msr(std::AbstractSTD) = haskey(std.props,:msr) ? [std.props[:msr]] : [] ;
 get_msr(ntw::AbstractNetwork) = haskey(ntw.props,:msr) ? [ntw.props[:msr]] : [] ;
+""
 function set_msr!(ntw::AbstractNetwork)
     msr = []
     for ne in elements(ntw)

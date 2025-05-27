@@ -14,9 +14,9 @@ the wind speed. To enforce this, the argument `dep` must be passed as true.
 
   WT₁         WT₂           n₃
    |----///----|----///----|
-   n₁    c₁     n₂    c₂     |
+   n₁    c₁     n₂    c₂   |
                            |--⋅ PCC
-  WT₄         WT₃           |
+  WT₄         WT₃          |
    |----///----|----///----|
    n₅    c₄     n₄    c₃
 Fig. 1: Tree-like wind farm with four wind turbines.
