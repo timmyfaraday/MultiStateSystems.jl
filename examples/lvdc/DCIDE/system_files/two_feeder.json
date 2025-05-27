@@ -7,7 +7,7 @@
       "designator": "GRID-1",
       "position": {
         "x": 37,
-        "y": 36
+        "y": 37
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -142,7 +142,7 @@
       "designator": "U-2",
       "position": {
         "x": 37,
-        "y": 37
+        "y": 38
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -393,16 +393,16 @@
       }
     },
     {
-      "id": "component-i9U55a86",
-      "indicator": 2,
-      "designator": "Q-2",
+      "id": "component-CB4X3F76",
+      "indicator": 1,
+      "designator": "A-1",
       "position": {
         "x": 37,
-        "y": 38
+        "y": 39
       },
-      "colSpan": 1,
+      "colSpan": 3,
       "rowSpan": 1,
-      "componentType": "breaker",
+      "componentType": "panel",
       "componentId": "",
       "multiple": {
         "type": "parallel",
@@ -441,9 +441,9 @@
               "AC": {
                 "enabled": true,
                 "voltage": {
-                  "min": 640,
-                  "nom": 700,
-                  "max": 760,
+                  "min": null,
+                  "nom": null,
+                  "max": null,
                   "unit": "V"
                 },
                 "current": {
@@ -464,28 +464,7 @@
                 },
                 "powerFactor": null,
                 "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
+                "earthingConfigurations": []
               },
               "DC": {
                 "enabled": true,
@@ -506,44 +485,7 @@
                   "unit": "W"
                 },
                 "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
+                "earthingConfigurations": []
               }
             },
             {
@@ -592,30 +534,51 @@
                 },
                 "powerFactor": null,
                 "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
+                "earthingConfigurations": []
               },
               "DC": {
+                "enabled": true,
+                "voltage": {
+                  "min": 640,
+                  "nom": 700,
+                  "max": 760,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "W"
+                },
+                "configuration": null,
+                "earthingConfigurations": []
+              }
+            },
+            {
+              "features": [],
+              "powerFlowDirection": "bidirectional",
+              "terminal": {
+                "temperature": {
+                  "min": null,
+                  "max": null,
+                  "unit": "K"
+                },
+                "type": null,
+                "torque": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "N m"
+                }
+              },
+              "wireSize": {
+                "min": null,
+                "max": null
+              },
+              "AC": {
                 "enabled": true,
                 "voltage": {
                   "min": null,
@@ -633,56 +596,249 @@
                   "max": null,
                   "unit": "W"
                 },
+                "frequency": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "Hz"
+                },
+                "powerFactor": null,
                 "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
+                "earthingConfigurations": []
+              },
+              "DC": {
+                "enabled": true,
+                "voltage": {
+                  "min": 300,
+                  "nom": 1000,
+                  "max": 1425,
                   "unit": "V"
                 },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
+                "current": {
+                  "nom": 74,
+                  "max": 74,
                   "unit": "A"
                 },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
+                "power": {
+                  "nom": 60000,
+                  "max": 80000,
+                  "unit": "W"
                 },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
+                "configuration": null,
+                "earthingConfigurations": []
+              }
+            },
+            {
+              "features": [],
+              "powerFlowDirection": "bidirectional",
+              "terminal": {
+                "temperature": {
+                  "min": null,
+                  "max": null,
+                  "unit": "K"
                 },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
+                "type": null,
+                "torque": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "N m"
                 }
               },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
+              "wireSize": {
                 "min": null,
-                "max": null,
-                "unit": "H"
+                "max": null
               },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
+              "AC": {
+                "enabled": true,
+                "voltage": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "W"
+                },
+                "frequency": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "Hz"
+                },
+                "powerFactor": null,
+                "configuration": null,
+                "earthingConfigurations": []
               },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
+              "DC": {
+                "enabled": true,
+                "voltage": {
+                  "min": 570,
+                  "nom": 720,
+                  "max": 800,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": 60032.8,
+                  "unit": "W"
+                },
+                "configuration": null,
+                "earthingConfigurations": []
+              }
+            },
+            {
+              "features": [],
+              "powerFlowDirection": "bidirectional",
+              "terminal": {
+                "temperature": {
+                  "min": null,
+                  "max": null,
+                  "unit": "K"
+                },
+                "type": null,
+                "torque": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "N m"
+                }
+              },
+              "wireSize": {
+                "min": null,
+                "max": null
+              },
+              "AC": {
+                "enabled": true,
+                "voltage": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "W"
+                },
+                "frequency": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "Hz"
+                },
+                "powerFactor": null,
+                "configuration": null,
+                "earthingConfigurations": []
+              },
+              "DC": {
+                "enabled": true,
+                "voltage": {
+                  "min": 570,
+                  "nom": 720,
+                  "max": 800,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": 60032.8,
+                  "unit": "W"
+                },
+                "configuration": null,
+                "earthingConfigurations": []
+              }
+            },
+            {
+              "features": [],
+              "powerFlowDirection": "bidirectional",
+              "terminal": {
+                "temperature": {
+                  "min": null,
+                  "max": null,
+                  "unit": "K"
+                },
+                "type": null,
+                "torque": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "N m"
+                }
+              },
+              "wireSize": {
+                "min": null,
+                "max": null
+              },
+              "AC": {
+                "enabled": true,
+                "voltage": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "W"
+                },
+                "frequency": {
+                  "min": null,
+                  "nom": null,
+                  "max": null,
+                  "unit": "Hz"
+                },
+                "powerFactor": null,
+                "configuration": null,
+                "earthingConfigurations": []
+              },
+              "DC": {
+                "enabled": true,
+                "voltage": {
+                  "min": 640,
+                  "nom": 700,
+                  "max": 760,
+                  "unit": "V"
+                },
+                "current": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "A"
+                },
+                "power": {
+                  "nom": null,
+                  "max": null,
+                  "unit": "W"
+                },
+                "configuration": null,
+                "earthingConfigurations": []
               }
             }
-          ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
-          },
-          "polaritySensitive": false,
-          "openingTime": "ultra-fast",
-          "breakerType": "SSCB"
+          ]
         }
       },
       "manufacturer": null,
@@ -693,6 +849,118 @@
             "label": "",
             "voltageType": "DC",
             "powerFlowDirection": "bidirectional",
+            "controlMethod": null,
+            "voltage": {
+              "value": null,
+              "unit": "V"
+            },
+            "current": {
+              "value": null,
+              "unit": "A"
+            },
+            "power": {
+              "value": null,
+              "unit": "W"
+            },
+            "droopResistance": {
+              "value": null,
+              "unit": "ohm"
+            },
+            "droopCurrent": {
+              "value": null,
+              "unit": "A"
+            },
+            "voltageSeries": null,
+            "powerSeries": null
+          },
+          {
+            "label": "",
+            "voltageType": "DC",
+            "powerFlowDirection": "bidirectional",
+            "controlMethod": null,
+            "voltage": {
+              "value": null,
+              "unit": "V"
+            },
+            "current": {
+              "value": null,
+              "unit": "A"
+            },
+            "power": {
+              "value": null,
+              "unit": "W"
+            },
+            "droopResistance": {
+              "value": null,
+              "unit": "ohm"
+            },
+            "droopCurrent": {
+              "value": null,
+              "unit": "A"
+            },
+            "voltageSeries": null,
+            "powerSeries": null
+          },
+          {
+            "label": "",
+            "voltageType": "DC",
+            "powerFlowDirection": "input",
+            "controlMethod": null,
+            "voltage": {
+              "value": null,
+              "unit": "V"
+            },
+            "current": {
+              "value": null,
+              "unit": "A"
+            },
+            "power": {
+              "value": null,
+              "unit": "W"
+            },
+            "droopResistance": {
+              "value": null,
+              "unit": "ohm"
+            },
+            "droopCurrent": {
+              "value": null,
+              "unit": "A"
+            },
+            "voltageSeries": null,
+            "powerSeries": null
+          },
+          {
+            "label": "",
+            "voltageType": "DC",
+            "powerFlowDirection": "output",
+            "controlMethod": null,
+            "voltage": {
+              "value": null,
+              "unit": "V"
+            },
+            "current": {
+              "value": null,
+              "unit": "A"
+            },
+            "power": {
+              "value": null,
+              "unit": "W"
+            },
+            "droopResistance": {
+              "value": null,
+              "unit": "ohm"
+            },
+            "droopCurrent": {
+              "value": null,
+              "unit": "A"
+            },
+            "voltageSeries": null,
+            "powerSeries": null
+          },
+          {
+            "label": "",
+            "voltageType": "DC",
+            "powerFlowDirection": "output",
             "controlMethod": null,
             "voltage": {
               "value": null,
@@ -755,7 +1023,7 @@
       "designator": "GRID-2",
       "position": {
         "x": 39,
-        "y": 36
+        "y": 37
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -863,637 +1131,12 @@
       }
     },
     {
-      "id": "component-CB4X3F76",
-      "indicator": 1,
-      "designator": "A-1",
-      "position": {
-        "x": 37,
-        "y": 39
-      },
-      "colSpan": 3,
-      "rowSpan": 1,
-      "componentType": "panel",
-      "componentId": "",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": []
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": []
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": []
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": []
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": []
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": []
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": []
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": []
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": []
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": []
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": []
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 640,
-                  "nom": 700,
-                  "max": 760,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": []
-              }
-            }
-          ]
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "output",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "output",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
       "id": "component-xMYzTEYc",
       "indicator": 1,
       "designator": "U-1",
       "position": {
         "x": 39,
-        "y": 37
+        "y": 38
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -1851,1047 +1494,17 @@
       }
     },
     {
-      "id": "component-sZZHhtne",
-      "indicator": 1,
-      "designator": "Q-1",
-      "position": {
-        "x": 39,
-        "y": 38
-      },
-      "colSpan": 1,
-      "rowSpan": 1,
-      "componentType": "breaker",
-      "componentId": "",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 640,
-                  "nom": 700,
-                  "max": 760,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 640,
-                  "nom": 700,
-                  "max": 760,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
-            }
-          ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
-          },
-          "polaritySensitive": false,
-          "openingTime": "ultra-fast",
-          "breakerType": "SSCB"
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
-      "id": "component-cS6COJbA",
-      "indicator": 2,
-      "designator": "F-2",
-      "position": {
-        "x": 37,
-        "y": 40
-      },
-      "colSpan": 1,
-      "rowSpan": 1,
-      "componentType": "fuse",
-      "componentId": "",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "numberOfPoles": 2
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "numberOfPoles": 2
-            }
-          ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
-          },
-          "meltingI2t": {
-            "value": null,
-            "unit": "A²•s"
-          },
-          "arcingI2t": {
-            "value": null,
-            "unit": "A²•s"
-          },
-          "totalClearingI2t": {
-            "value": null,
-            "unit": "A²•s"
-          }
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "output",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "input",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
-      "id": "component-EOF1cY5i",
-      "indicator": 3,
-      "designator": "Q-3",
-      "position": {
-        "x": 38,
-        "y": 40
-      },
-      "colSpan": 1,
-      "rowSpan": 1,
-      "componentType": "breaker",
-      "componentId": "",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": 1,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": 1,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
-            }
-          ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
-          },
-          "polaritySensitive": false,
-          "openingTime": "conventional",
-          "breakerType": "SSCB"
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
-      "id": "component-w9nFsJXc",
+      "id": "component-iO2KSvLg",
       "indicator": 5,
-      "designator": "Q-5",
+      "designator": "U-5",
       "position": {
         "x": 37,
-        "y": 41
+        "y": 40
       },
       "colSpan": 1,
       "rowSpan": 1,
-      "componentType": "breaker",
-      "componentId": "",
+      "componentType": "converter",
+      "componentId": "66ddbff2c4af47b13ec4e324",
       "multiple": {
         "type": "parallel",
         "amount": 1
@@ -2908,7 +1521,7 @@
           "ports": [
             {
               "features": [],
-              "powerFlowDirection": "bidirectional",
+              "powerFlowDirection": null,
               "terminal": {
                 "temperature": {
                   "min": null,
@@ -2926,61 +1539,12 @@
                 "min": null,
                 "max": null
               },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": 1,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
               "DC": {
                 "enabled": true,
                 "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
+                  "min": 570,
+                  "nom": 720,
+                  "max": 800,
                   "unit": "V"
                 },
                 "current": {
@@ -2990,53 +1554,25 @@
                 },
                 "power": {
                   "nom": null,
-                  "max": null,
+                  "max": 60032.8,
                   "unit": "W"
                 },
                 "configuration": null,
                 "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
+                "controlMethods": []
               },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
+              "capacitance": {
                 "value": null,
-                "unit": "A"
+                "unit": "F"
               },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
+              "isolated": null,
+              "parallelableCapacity": 1,
+              "purpose": null,
+              "id": "67442a23bdee5ac85431d789"
             },
             {
               "features": [],
-              "powerFlowDirection": "bidirectional",
+              "powerFlowDirection": null,
               "terminal": {
                 "temperature": {
                   "min": null,
@@ -3058,7 +1594,7 @@
                 "enabled": true,
                 "voltage": {
                   "min": null,
-                  "nom": null,
+                  "nom": 480,
                   "max": null,
                   "unit": "V"
                 },
@@ -3078,99 +1614,26 @@
                   "max": null,
                   "unit": "Hz"
                 },
-                "powerFactor": 1,
+                "powerFactor": null,
                 "configuration": null,
                 "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
+                "controlMethods": []
               },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
+              "capacitance": {
                 "value": null,
-                "unit": "A"
+                "unit": "F"
               },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
+              "isolated": null,
+              "parallelableCapacity": 1,
+              "purpose": null,
+              "id": "67442a23bdee5ac85431d78a"
             }
           ],
           "standards": [],
           "isolationVoltage": {
             "value": null,
             "unit": "V"
-          },
-          "polaritySensitive": false,
-          "openingTime": "conventional",
-          "breakerType": "MCCB"
+          }
         }
       },
       "manufacturer": null,
@@ -3180,7 +1643,7 @@
           {
             "label": "",
             "voltageType": "DC",
-            "powerFlowDirection": "output",
+            "powerFlowDirection": "input",
             "controlMethod": null,
             "voltage": {
               "value": null,
@@ -3207,8 +1670,8 @@
           },
           {
             "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "input",
+            "voltageType": "AC",
+            "powerFlowDirection": "output",
             "controlMethod": null,
             "voltage": {
               "value": null,
@@ -3243,7 +1706,7 @@
       "designator": "U-3",
       "position": {
         "x": 38,
-        "y": 41
+        "y": 40
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -3494,655 +1957,12 @@
       }
     },
     {
-      "id": "component-iO2KSvLg",
-      "indicator": 5,
-      "designator": "U-5",
-      "position": {
-        "x": 37,
-        "y": 42
-      },
-      "colSpan": 1,
-      "rowSpan": 1,
-      "componentType": "converter",
-      "componentId": "66ddbff2c4af47b13ec4e324",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": null,
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 570,
-                  "nom": 720,
-                  "max": 800,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": 60032.8,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "controlMethods": []
-              },
-              "capacitance": {
-                "value": null,
-                "unit": "F"
-              },
-              "isolated": null,
-              "parallelableCapacity": 1,
-              "purpose": null,
-              "id": "67442a23bdee5ac85431d789"
-            },
-            {
-              "features": [],
-              "powerFlowDirection": null,
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": 480,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "controlMethods": []
-              },
-              "capacitance": {
-                "value": null,
-                "unit": "F"
-              },
-              "isolated": null,
-              "parallelableCapacity": 1,
-              "purpose": null,
-              "id": "67442a23bdee5ac85431d78a"
-            }
-          ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
-          }
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "input",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "AC",
-            "powerFlowDirection": "output",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
-      "id": "component-PjtpflZF",
-      "indicator": 1,
-      "designator": "F-1",
-      "position": {
-        "x": 39,
-        "y": 40
-      },
-      "colSpan": 1,
-      "rowSpan": 1,
-      "componentType": "fuse",
-      "componentId": "",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 640,
-                  "nom": 700,
-                  "max": 760,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 640,
-                  "nom": 700,
-                  "max": 760,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "numberOfPoles": 2
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": null,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                }
-              },
-              "numberOfPoles": 2
-            }
-          ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
-          },
-          "meltingI2t": {
-            "value": null,
-            "unit": "A²•s"
-          },
-          "arcingI2t": {
-            "value": null,
-            "unit": "A²•s"
-          },
-          "totalClearingI2t": {
-            "value": null,
-            "unit": "A²•s"
-          }
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "output",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "input",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
-      "id": "component-Gj10qDkr",
-      "indicator": 1,
-      "designator": "BAT-1",
-      "position": {
-        "x": 38,
-        "y": 42
-      },
-      "colSpan": 1,
-      "rowSpan": 1,
-      "componentType": "battery",
-      "componentId": "66560291552af3e07edb916d",
-      "multiple": {
-        "type": "parallel",
-        "amount": 1
-      },
-      "label": "",
-      "labelPlacement": {
-        "edge": null,
-        "offset": 0,
-        "auto": true
-      },
-      "notes": "",
-      "specifications": {
-        "electrical": {
-          "ports": [
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": 360,
-                  "nom": 384,
-                  "max": 584,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": 52,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": 12500,
-                  "unit": "W"
-                },
-                "configuration": "unipolar",
-                "earthingConfigurations": [
-                  "unearthed"
-                ]
-              },
-              "id": "67442a23bdee5ac85431db4a"
-            }
-          ],
-          "energyCapacity": {
-            "value": 72000000,
-            "unit": "J"
-          },
-          "chargeCapacity": {
-            "value": null,
-            "unit": "C"
-          },
-          "standards": [],
-          "parallelableCapacity": 1
-        }
-      },
-      "manufacturer": null,
-      "partNumber": null,
-      "configuration": {
-        "ports": [
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "bidirectional",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          }
-        ],
-        "stateOfCharge": null
-      }
-    },
-    {
       "id": "component-YYAhoQkV",
       "indicator": 2,
       "designator": "M-2",
       "position": {
         "x": 37,
-        "y": 43
+        "y": 41
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -4272,17 +2092,17 @@
       }
     },
     {
-      "id": "component-gZgpQSbD",
-      "indicator": 4,
-      "designator": "Q-4",
+      "id": "component-Gj10qDkr",
+      "indicator": 1,
+      "designator": "BAT-1",
       "position": {
-        "x": 39,
+        "x": 38,
         "y": 41
       },
       "colSpan": 1,
       "rowSpan": 1,
-      "componentType": "breaker",
-      "componentId": "",
+      "componentType": "battery",
+      "componentId": "66560291552af3e07edb916d",
       "multiple": {
         "type": "parallel",
         "amount": 1
@@ -4317,251 +2137,42 @@
                 "min": null,
                 "max": null
               },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": 1,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
               "DC": {
                 "enabled": true,
                 "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
+                  "min": 360,
+                  "nom": 384,
+                  "max": 584,
                   "unit": "V"
                 },
                 "current": {
                   "nom": null,
-                  "max": null,
+                  "max": 52,
                   "unit": "A"
                 },
                 "power": {
                   "nom": null,
-                  "max": null,
+                  "max": 12500,
                   "unit": "W"
                 },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
+                "configuration": "unipolar",
+                "earthingConfigurations": [
+                  "unearthed"
+                ]
               },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
-            },
-            {
-              "features": [],
-              "powerFlowDirection": "bidirectional",
-              "terminal": {
-                "temperature": {
-                  "min": null,
-                  "max": null,
-                  "unit": "K"
-                },
-                "type": null,
-                "torque": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "N m"
-                }
-              },
-              "wireSize": {
-                "min": null,
-                "max": null
-              },
-              "AC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "frequency": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "Hz"
-                },
-                "powerFactor": 1,
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "DC": {
-                "enabled": true,
-                "voltage": {
-                  "min": null,
-                  "nom": null,
-                  "max": null,
-                  "unit": "V"
-                },
-                "current": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "A"
-                },
-                "power": {
-                  "nom": null,
-                  "max": null,
-                  "unit": "W"
-                },
-                "configuration": null,
-                "earthingConfigurations": [],
-                "voltagePerPole": {
-                  "value": null,
-                  "unit": "V"
-                },
-                "instantaneousShortCircuitCurrentUL": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "serviceShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "ultimateShortCircuitBreakingCapacityIEC": {
-                  "value": null,
-                  "unit": "A"
-                },
-                "poles": "2P",
-                "totalVoltage": {
-                  "value": null,
-                  "unit": "V"
-                }
-              },
-              "tripCurve": [
-                "C"
-              ],
-              "inductance": {
-                "min": null,
-                "max": null,
-                "unit": "H"
-              },
-              "inrushCurrent": {
-                "value": null,
-                "unit": "A"
-              },
-              "residualCurrentDeviceTripLevel": {
-                "value": null,
-                "unit": "A"
-              }
+              "id": "67442a23bdee5ac85431db4a"
             }
           ],
-          "standards": [],
-          "isolationVoltage": {
-            "value": null,
-            "unit": "V"
+          "energyCapacity": {
+            "value": 72000000,
+            "unit": "J"
           },
-          "polaritySensitive": false,
-          "openingTime": "conventional",
-          "breakerType": "MCCB"
+          "chargeCapacity": {
+            "value": null,
+            "unit": "C"
+          },
+          "standards": [],
+          "parallelableCapacity": 1
         }
       },
       "manufacturer": null,
@@ -4571,35 +2182,7 @@
           {
             "label": "",
             "voltageType": "DC",
-            "powerFlowDirection": "output",
-            "controlMethod": null,
-            "voltage": {
-              "value": null,
-              "unit": "V"
-            },
-            "current": {
-              "value": null,
-              "unit": "A"
-            },
-            "power": {
-              "value": null,
-              "unit": "W"
-            },
-            "droopResistance": {
-              "value": null,
-              "unit": "ohm"
-            },
-            "droopCurrent": {
-              "value": null,
-              "unit": "A"
-            },
-            "voltageSeries": null,
-            "powerSeries": null
-          },
-          {
-            "label": "",
-            "voltageType": "DC",
-            "powerFlowDirection": "input",
+            "powerFlowDirection": "bidirectional",
             "controlMethod": null,
             "voltage": {
               "value": null,
@@ -4634,7 +2217,7 @@
       "designator": "U-4",
       "position": {
         "x": 39,
-        "y": 42
+        "y": 40
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -4841,7 +2424,7 @@
       "designator": "M-1",
       "position": {
         "x": 39,
-        "y": 43
+        "y": 41
       },
       "colSpan": 1,
       "rowSpan": 1,
@@ -4973,279 +2556,6 @@
   ],
   "connections": [
     {
-      "id": "connection-G4h3359n",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-sZZHhtne",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-CB4X3F76",
-        "edge": "top",
-        "offset": 2,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-ERlbOhzN",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-xYJruHi7",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 0
-      },
-      "to": {
-        "componentInstanceId": "component-i9U55a86",
-        "edge": "top",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": 20,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-YmnLIVcQ",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-i9U55a86",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-CB4X3F76",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
       "id": "connection-yH4w5qzu",
       "label": "",
       "notes": "",
@@ -5260,188 +2570,6 @@
         "edge": "top",
         "offset": 0,
         "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-jchvSRu2",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-nI2QeeMk",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-EOF1cY5i",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": 20,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-SipQXlit",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-EOF1cY5i",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-CB4X3F76",
-        "edge": "bottom",
-        "offset": 1,
-        "port": 2
       },
       "voltage": {
         "min": null,
@@ -5701,643 +2829,6 @@
       }
     },
     {
-      "id": "connection-DTyelF33",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-Y188jyYg",
-        "edge": "top",
-        "offset": 0,
-        "port": 0
-      },
-      "to": {
-        "componentInstanceId": "component-gZgpQSbD",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": 100,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-rtLPGbaR",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-iO2KSvLg",
-        "edge": "top",
-        "offset": 0,
-        "port": 0
-      },
-      "to": {
-        "componentInstanceId": "component-w9nFsJXc",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": 100,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-ERzlB98C",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-gZgpQSbD",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-PjtpflZF",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-TW2bJgd3",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-PjtpflZF",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-CB4X3F76",
-        "edge": "bottom",
-        "offset": 2,
-        "port": 4
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-ylbr2NQU",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-w9nFsJXc",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-cS6COJbA",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-cow1CNzZ",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-cS6COJbA",
-        "edge": "top",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-CB4X3F76",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 3
-      },
-      "voltage": {
-        "min": null,
-        "nom": null,
-        "max": null,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": null,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
-      "id": "connection-iPB2POTm",
-      "label": "",
-      "notes": "",
-      "from": {
-        "componentInstanceId": "component-xMYzTEYc",
-        "edge": "bottom",
-        "offset": 0,
-        "port": 1
-      },
-      "to": {
-        "componentInstanceId": "component-sZZHhtne",
-        "edge": "top",
-        "offset": 0,
-        "port": 0
-      },
-      "voltage": {
-        "min": null,
-        "nom": 700,
-        "max": 760,
-        "unit": "V"
-      },
-      "current": {
-        "nom": null,
-        "max": null,
-        "unit": "A"
-      },
-      "lines": {
-        "AC": {
-          "L1": true,
-          "L2": true,
-          "L3": true,
-          "N": true,
-          "PE": false
-        },
-        "DC": {
-          "L+": true,
-          "M": false,
-          "L-": true,
-          "PE": false
-        }
-      },
-      "wireSize": null,
-      "length": {
-        "value": 20,
-        "unit": "m"
-      },
-      "resistance": {
-        "value": null,
-        "unit": "ohm"
-      },
-      "material": "copper",
-      "conductorTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "installationMethod": "Free Air",
-      "ambientTemperature": {
-        "value": null,
-        "unit": "K"
-      },
-      "powerFactor": 1,
-      "multiple": {
-        "parallel": 1
-      },
-      "cores": "single",
-      "requirements": {
-        "voltage": {
-          "value": null,
-          "unit": "V"
-        },
-        "current": {
-          "L+": {
-            "value": null,
-            "unit": "A"
-          },
-          "M": {
-            "value": null,
-            "unit": "A"
-          },
-          "L-": {
-            "value": null,
-            "unit": "A"
-          },
-          "PE": {
-            "value": null,
-            "unit": "A"
-          }
-        }
-      }
-    },
-    {
       "id": "connection-bhH7WXTo",
       "label": "",
       "notes": "",
@@ -6494,6 +2985,461 @@
         "parallel": 1
       },
       "cores": "single",
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
+    },
+    {
+      "id": "connection-uabxn8ci",
+      "label": "",
+      "notes": "",
+      "from": {
+        "componentInstanceId": "component-xYJruHi7",
+        "edge": "bottom",
+        "offset": 0,
+        "port": 0
+      },
+      "to": {
+        "componentInstanceId": "component-CB4X3F76",
+        "edge": "top",
+        "offset": 0,
+        "port": 1
+      },
+      "voltage": {
+        "min": 640,
+        "nom": 700,
+        "max": 760,
+        "unit": "V"
+      },
+      "current": {
+        "nom": null,
+        "max": null,
+        "unit": "A"
+      },
+      "lines": {
+        "AC": {
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "N": true,
+          "PE": false
+        },
+        "DC": {
+          "L+": true,
+          "M": false,
+          "L-": true,
+          "PE": false
+        }
+      },
+      "multiple": {
+        "parallel": 1
+      },
+      "wireSize": null,
+      "length": {
+        "value": null,
+        "unit": "m"
+      },
+      "resistance": {
+        "value": null,
+        "unit": "ohm"
+      },
+      "material": "copper",
+      "conductorTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "installationMethod": "Free Air",
+      "ambientTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "cores": "single",
+      "powerFactor": 1,
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
+    },
+    {
+      "id": "connection-IkBmnJ6o",
+      "label": "",
+      "notes": "",
+      "from": {
+        "componentInstanceId": "component-xMYzTEYc",
+        "edge": "bottom",
+        "offset": 0,
+        "port": 1
+      },
+      "to": {
+        "componentInstanceId": "component-CB4X3F76",
+        "edge": "top",
+        "offset": 2,
+        "port": 0
+      },
+      "voltage": {
+        "min": 640,
+        "nom": 700,
+        "max": 760,
+        "unit": "V"
+      },
+      "current": {
+        "nom": null,
+        "max": null,
+        "unit": "A"
+      },
+      "lines": {
+        "AC": {
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "N": true,
+          "PE": false
+        },
+        "DC": {
+          "L+": true,
+          "M": false,
+          "L-": true,
+          "PE": false
+        }
+      },
+      "multiple": {
+        "parallel": 1
+      },
+      "wireSize": null,
+      "length": {
+        "value": null,
+        "unit": "m"
+      },
+      "resistance": {
+        "value": null,
+        "unit": "ohm"
+      },
+      "material": "copper",
+      "conductorTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "installationMethod": "Free Air",
+      "ambientTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "cores": "single",
+      "powerFactor": 1,
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
+    },
+    {
+      "id": "connection-CVsxGDgH",
+      "label": "",
+      "notes": "",
+      "from": {
+        "componentInstanceId": "component-iO2KSvLg",
+        "edge": "top",
+        "offset": 0,
+        "port": 0
+      },
+      "to": {
+        "componentInstanceId": "component-CB4X3F76",
+        "edge": "bottom",
+        "offset": 0,
+        "port": 3
+      },
+      "voltage": {
+        "min": 570,
+        "nom": 720,
+        "max": 800,
+        "unit": "V"
+      },
+      "current": {
+        "nom": null,
+        "max": null,
+        "unit": "A"
+      },
+      "lines": {
+        "AC": {
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "N": true,
+          "PE": false
+        },
+        "DC": {
+          "L+": true,
+          "M": false,
+          "L-": true,
+          "PE": false
+        }
+      },
+      "multiple": {
+        "parallel": 1
+      },
+      "wireSize": null,
+      "length": {
+        "value": null,
+        "unit": "m"
+      },
+      "resistance": {
+        "value": null,
+        "unit": "ohm"
+      },
+      "material": "copper",
+      "conductorTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "installationMethod": "Free Air",
+      "ambientTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "cores": "single",
+      "powerFactor": 1,
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
+    },
+    {
+      "id": "connection-pm0kqQiL",
+      "label": "",
+      "notes": "",
+      "from": {
+        "componentInstanceId": "component-nI2QeeMk",
+        "edge": "top",
+        "offset": 0,
+        "port": 1
+      },
+      "to": {
+        "componentInstanceId": "component-CB4X3F76",
+        "edge": "bottom",
+        "offset": 1,
+        "port": 2
+      },
+      "voltage": {
+        "min": 300,
+        "nom": 1000,
+        "max": 1425,
+        "unit": "V"
+      },
+      "current": {
+        "nom": 74,
+        "max": 74,
+        "unit": "A"
+      },
+      "lines": {
+        "AC": {
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "N": true,
+          "PE": false
+        },
+        "DC": {
+          "L+": true,
+          "M": false,
+          "L-": true,
+          "PE": false
+        }
+      },
+      "multiple": {
+        "parallel": 1
+      },
+      "wireSize": null,
+      "length": {
+        "value": null,
+        "unit": "m"
+      },
+      "resistance": {
+        "value": null,
+        "unit": "ohm"
+      },
+      "material": "copper",
+      "conductorTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "installationMethod": "Free Air",
+      "ambientTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "cores": "single",
+      "powerFactor": 1,
+      "requirements": {
+        "voltage": {
+          "value": null,
+          "unit": "V"
+        },
+        "current": {
+          "L+": {
+            "value": null,
+            "unit": "A"
+          },
+          "M": {
+            "value": null,
+            "unit": "A"
+          },
+          "L-": {
+            "value": null,
+            "unit": "A"
+          },
+          "PE": {
+            "value": null,
+            "unit": "A"
+          }
+        }
+      }
+    },
+    {
+      "id": "connection-ICcAgKAC",
+      "label": "",
+      "notes": "",
+      "from": {
+        "componentInstanceId": "component-Y188jyYg",
+        "edge": "top",
+        "offset": 0,
+        "port": 0
+      },
+      "to": {
+        "componentInstanceId": "component-CB4X3F76",
+        "edge": "bottom",
+        "offset": 2,
+        "port": 4
+      },
+      "voltage": {
+        "min": 570,
+        "nom": 720,
+        "max": 800,
+        "unit": "V"
+      },
+      "current": {
+        "nom": null,
+        "max": null,
+        "unit": "A"
+      },
+      "lines": {
+        "AC": {
+          "L1": true,
+          "L2": true,
+          "L3": true,
+          "N": true,
+          "PE": false
+        },
+        "DC": {
+          "L+": true,
+          "M": false,
+          "L-": true,
+          "PE": false
+        }
+      },
+      "multiple": {
+        "parallel": 1
+      },
+      "wireSize": null,
+      "length": {
+        "value": null,
+        "unit": "m"
+      },
+      "resistance": {
+        "value": null,
+        "unit": "ohm"
+      },
+      "material": "copper",
+      "conductorTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "installationMethod": "Free Air",
+      "ambientTemperature": {
+        "value": null,
+        "unit": "K"
+      },
+      "cores": "single",
+      "powerFactor": 1,
       "requirements": {
         "voltage": {
           "value": null,

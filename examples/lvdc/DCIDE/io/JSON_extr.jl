@@ -3,11 +3,7 @@ using MultiStateSystems
 using Unitful
 
 const _MSS = MultiStateSystems
-# Load the JSON data from the file
-json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/system_files/single_line.json")
-json_data = JSON.parsefile(json_file)
 
-# Extract component IDs and types
 """
     extract_component_ids_and_types(json_data::Dict{String, Any})::Dict{String, String}
 
@@ -188,29 +184,6 @@ function count_component_connections(connections::Dict{Int64, Vector{Tuple{Strin
     return connection_counts
 end
 
-# Example usage
-component_ids_and_types = extract_component_ids_and_types(json_data)
-
-component_details = extract_component_details(json_data)
-
-connections = extract_connections(json_data, component_details)
-
-comp_connections = component_connections(connections)
-
-component_connection_counts = count_component_connections(connections)
-println("Component Connection Counts:")
-println(component_connection_counts)
-
-# Print the extracted information
-println("Component IDs and Types:")
-println(component_ids_and_types)
-
-println("Component Details (IDs, Types, and Voltage Types):")
-println(component_details)
-
-println("Connections:")
-println(connections)
-
 ## Create networks from the connections and component details
 
 # Find sources and loads in the JSON file
@@ -232,10 +205,6 @@ function find_sources_and_loads(connections::Dict{Int64, Vector{Tuple{String, St
     return sources, loads
 end
 
-# Find and print sources and loads
-sources, loads = find_sources_and_loads(connections, component_details)
-println("Sources: ", sources)
-println("Loads: ", loads)
 
 """
     find_component_connections(connections::Dict{Int64, Vector{Tuple{String, String}}}, sources::Vector{String}, loads::Vector{String}, component_details::Dict{String, Dict{String, Any}}) -> Dict{Int64, Vector{Tuple{String, String}}}
@@ -270,10 +239,6 @@ function find_component_connections(connections::Dict{Int64, Vector{Tuple{String
     return unattached
 end
 
-# Example usage:
-unattached_connections = find_component_connections(connections, sources, loads, component_details)
-println("Unattached Connections:")
-println(unattached_connections)
 
 """
     find_panels(component_details::Dict{String, Dict{String, Any}})::Vector{String}
@@ -289,11 +254,6 @@ Returns a vector of component IDs where the component type is "panel".
 function find_panels(component_details::Dict{String, Dict{String, Any}})::Union{Vector{String}, Nothing}
     return [id for (id, details) in component_details if details["type"] == "panel"]
 end
-
-
-# Example usage:
-panels = find_panels(component_details)
-println("Panels: ", panels)
 
 """
     collect_availability_data(id::Union{String, Int}, param::Symbol, must_have::Bool)
@@ -402,8 +362,6 @@ function node_dictionary(sources, loads, panels, unattached_connections, compone
     return node_dict    
 end
 
-nodes = node_dictionary(sources, loads, panels, unattached_connections, comp_connections, json_data)
-
 function edge_dictionary(nodes, component_connection_counts)
     edge_dict = Dict{String, Dict{String, Any}}()
     node_keys = ("sources", "panels", "connections", "loads")
@@ -435,8 +393,6 @@ function edge_dictionary(nodes, component_connection_counts)
     end
     return edge_dict
 end
-
-edges = edge_dictionary(nodes, component_connection_counts)
 
 # Solve the different state transition diagrams of the components found in nodes and edges, by collecting the data
 """
@@ -496,54 +452,43 @@ function solve!(nodes::Dict{String, Any}, edges::Dict{String, Dict{String, Any}}
     end
 end
 
-solve!(nodes, edges, SteadyStateProcess())
+# # Order components starting from sources and assign numbers
+# function order_components(sources::Vector{String}, connections::Dict{Int64, Vector{Tuple{String, String}}}, component_ids_and_types::Dict{String, String})::Dict{Int, String}
+#     ordered, visited, num = Dict{Int, String}(), Set{String}(), 1
 
-"""
-    build_state_transition_diagrams(nodes::Dict{String, Any}, edges::Dict{String, Dict{String, Any}})
+#     function dfs(comp::String, stop_at_panel::Bool)
+#         if comp in visited
+#             return
+#         end
+#         push!(visited, comp)
+#         ordered[num] = comp
+#         num += 1
+#         if stop_at_panel && component_ids_and_types[comp] == "panel"
+#             return
+#         end
+#         for conn in values(connections)
+#             for (from, to) in conn
+#                 if comp in (from, to) && !(to == comp ? from : to in visited)
+#                     dfs(to == comp ? from : to, stop_at_panel)
+#                 end
+#             end
+#         end
+#     end
 
-"""
-    build_state_transition_diagrams(nodes::Dict{String, Any}, edges::Dict{String, Dict{String, Any}})
-
-# Example usage:
-component_diagrams, edge_diagrams = build_state_transition_diagrams(nodes, edges)
-
-# Order components starting from sources and assign numbers
-function order_components(sources::Vector{String}, connections::Dict{Int64, Vector{Tuple{String, String}}}, component_ids_and_types::Dict{String, String})::Dict{Int, String}
-    ordered, visited, num = Dict{Int, String}(), Set{String}(), 1
-
-    function dfs(comp::String, stop_at_panel::Bool)
-        if comp in visited
-            return
-        end
-        push!(visited, comp)
-        ordered[num] = comp
-        num += 1
-        if stop_at_panel && component_ids_and_types[comp] == "panel"
-            return
-        end
-        for conn in values(connections)
-            for (from, to) in conn
-                if comp in (from, to) && !(to == comp ? from : to in visited)
-                    dfs(to == comp ? from : to, stop_at_panel)
-                end
-            end
-        end
-    end
-
-    foreach(src -> dfs(src, true), sources)
-    foreach(comp -> dfs(comp[1], false), filter(x -> x[2] == "panel" && !(x[1] in visited), component_ids_and_types))
-    foreach(comp -> dfs(comp[1], false), filter(x -> !(x[1] in visited), component_ids_and_types))
-    return ordered
-end
+#     foreach(src -> dfs(src, true), sources)
+#     foreach(comp -> dfs(comp[1], false), filter(x -> x[2] == "panel" && !(x[1] in visited), component_ids_and_types))
+#     foreach(comp -> dfs(comp[1], false), filter(x -> !(x[1] in visited), component_ids_and_types))
+#     return ordered
+# end
 
 
 
-# Order components starting from the sources and attribute numbers
-ordered_components_with_numbers = order_components(sources, connections, component_ids_and_types)
+# # Order components starting from the sources and attribute numbers
+# ordered_components_with_numbers = order_components(sources, connections, component_ids_and_types)
 
-# Print the ordered components with numbers
-println("Ordered Components with Numbers:")
-println(ordered_components_with_numbers)
+# # Print the ordered components with numbers
+# println("Ordered Components with Numbers:")
+# println(ordered_components_with_numbers)
 
 function find_component(connections::Dict{Int64, Vector{Tuple{String, String}}}, component::String)
     matching_keys = Int64[]
@@ -566,11 +511,3 @@ function find_component(connections::Dict{Int64, Vector{Tuple{String, String}}},
     end
 end
 
-find_component(connections, "component-YxpeR4Uc")
-
-## Create network, starting with sources and then adding components and users
-netw = Network()
-for src in sources
-    add_source!(netw, node = , std = std[src])
-end
-add_sources!()
