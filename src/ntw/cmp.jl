@@ -30,6 +30,20 @@ add_cmp_expr!(cpath::Vector{Expr}, ntw::AbstractNetwork, c_key::UIE) =
     haskey(ntw.clib, c_key) ? push!(cpath, cmp_expr(cmp_id(ntw, c_key),
                                                     cmp_ix(ntw, c_key))) : ~ ;
 
+## dependence 
+init_eval_dep_cmp(ntw::AbstractNetwork, kwargs::Iterators.Pairs, Nc::Int) =
+    if haskey(kwargs, :eval_dep)
+        set_info!(ntw, :eval_dep, kwargs[:eval_dep])
+        return length(ntw.cmp) .+ 1:Nc
+    else
+        return nothing
+    end
+""
+function init_eval_dep_cmp(ntw::AbstractNetwork, Nc::Int)
+    set_info!(ntw, :eval_dep, true)
+    return length(ntw.cmp) .+ 1:Nc
+end
+
 ## component (directional)
 """
     add_component!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
@@ -41,9 +55,9 @@ Adds a single component to the network `ntw` and fills their corresponding
 ```julia-repl
 julia> ntwᵖʷʳ = ntw()
 julia> add_component!(ntwᵖʷʳ, edge = (1,2),
-                               name = "cable 1",
-                               std  = STD(power = [0u"MW",1500u"MW"],
-                                          prob  = [0.2,0.8]))
+                              name = "cable 1",
+                              std  = STD(power = [0u"MW",1500u"MW"],
+                                         prob  = [0.2,0.8]))
 ```
 """
 function add_component!(ntw::AbstractNetwork; kwargs...)
@@ -69,7 +83,7 @@ function add_component!(ntw::AbstractNetwork; kwargs...)
 
         push!(ntw.cmp, Dict(:edge => edge, :info => info, reduce(kwargs, 1, excl=[:edge])...))
         
-        update_lib!(:edge,ntw.cmp,ntw.clib)
+        update_lib!(:edge, ntw.cmp, ntw.clib)
     end
 
     return true
@@ -107,7 +121,7 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
             prop_dict = reduce(kwargs, ni, excl=[:node])
             set_eval_dep!(prop_dict, ni, eval_dep_ids)
 
-            add_component!(ntw, node[ni], prop_dict...)
+            add_component!(ntw; node=node[ni], prop_dict...)
     end end
     if haskey(kwargs,:edge)
         edge, Ne = kwargs[:edge], length(kwargs[:edge])
@@ -118,7 +132,7 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
             prop_dict = reduce(kwargs, ni, excl=[:edge])
             set_eval_dep!(prop_dict, ni, eval_dep_ids)
 
-            add_component!(ntw, edge[ni], prop_dict...) 
+            add_component!(ntw; edge=edge[ni], prop_dict...) 
     end end
     return true
 end
@@ -134,7 +148,7 @@ function add_bidirectional_component!(ntw::AbstractNetwork; kwargs...)
         prop_dict = reduce(kwargs, 1, excl=[:edge])
         prop_dict[:eval_dep] = true
         set_eval_dep!(prop_dict, ne, eval_dep_ids)
-        add_component!(ntw, edge, prop_dict...)
+        add_component!(ntw; edge=edge, prop_dict...)
     end
 
     return true
@@ -151,7 +165,7 @@ function add_bidirectional_components!(ntw::AbstractNetwork; kwargs...)
         prop_dict = reduce(kwargs, ne, excl=[:edge])
         set_eval_dep!(prop_dict, ne, eval_dep_ids)
 
-        add_bidirectional_component!(ntw, edge[ne], prop_dict...) 
+        add_bidirectional_component!(ntw; edge=edge[ne], prop_dict...) 
     end
 
     return true

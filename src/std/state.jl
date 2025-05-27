@@ -81,7 +81,7 @@ function add_states!(std::AbstractSTD; kwargs...)
     test(kwargs) || return false
 
     has_msr(kwargs) ? set_prop!(std, :msr, get_msr(kwargs)) : ~ ;               
-    for ni in indices_of(kwargs) add_state!(std,reduce(kwargs, ni)...) end
+    for ni in indices_of(kwargs) add_state!(std; reduce(kwargs, ni)...) end
     
     return true
 end

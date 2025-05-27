@@ -11,13 +11,13 @@
     @testset "AC/DC converter capacitance" begin
         # Example from: A semi-Markovian approach to evaluate the availability
         # of LVDC systems with integrated battery storage
-        stdᶜᵃᵖ = include(joinpath(_MSS.BASE_DIR,"test/elements/CAP_ac.jl"))
+        std = include(joinpath(_MSS.BASE_DIR,"test/elements/CAP_ac.jl"))
         
-        solve!(stdᶜᵃᵖ, MarkovProcess(), tsim = 1.0u"yr")
-        prb_m = [np[end] for np in _MSS.get_sprop(stdᶜᵃᵖ, :prob)]
+        solve!(std, MarkovProcess(), tsim = 1.0u"yr")
+        prb_m = [np[end] for np in _MSS.get_sprop(std, :prob)]
         
-        solve!(stdᶜᵃᵖ, SemiMarkovProcess(), tsim = 1.0u"yr")  
-        prb_s = [np[end] for np in _MSS.get_sprop(stdᶜᵃᵖ, :prob)]
+        solve!(std, SemiMarkovProcess(), tsim = 1.0u"yr")  
+        prb_s = [np[end] for np in _MSS.get_sprop(std, :prob)]
         
         @test isapprox(sum(prb_s), 1.0, rtol=1e-5)
         @test all(isapprox.(prb_m, prb_s, rtol=1e-5))

@@ -12,6 +12,17 @@
 
 # functions ####################################################################
 ## arrays
+has_subvector(vec::Vector, sub::Vector) = 
+  any([sub == vec[i:(i+length(sub)-1)] for i=1:(length(vec)-length(sub)+1)])
+""
+function reduce(Val::Vector, Prb::Vector)
+    idx = sortperm(Val)
+    sPrb, sVal = Prb[idx], Val[idx]
+    val = unique(sVal)
+    prb = [sum(sPrb[sorted_range(sVal,nv)]) for nv in val]
+
+    return val, prb
+end
 ""
 function reduce(Val::Array, Prb::Vector)
     idx = sortperm(collect(eachrow(Val)))
@@ -22,6 +33,13 @@ function reduce(Val::Array, Prb::Vector)
 
     return val, prb
 end
+
+## dependence
+set_eval_dep!(prop_dict::PropDict, ni::Int, eval_dep_ids) =
+    if haskey(prop_dict, :eval_dep)
+        prop_dict[:eval_dep_ids] = eval_dep_ids
+        prop_dict[:eval_dep_id] = ni == 1 ? false : true ;
+    end
 
 ## dst
 eval(ω::Number,t::Number) = ω
@@ -61,19 +79,6 @@ _LA.:\(A::Matrix{<:Number}, b::Vector{<:Number}) = (ustrip.(A) \ ustrip(b)) * (e
 
 ## range
 sorted_range(sVal,nv) = searchsortedfirst(sVal,nv):searchsortedlast(sVal,nv)
-
-## vector
-has_subvector(vec::Vector, sub::Vector) = 
-  any([sub == vec[i:(i+length(sub)-1)] for i=1:(length(vec)-length(sub)+1)])
-""
-function reduce(Val::Vector,Prb::Vector)
-    idx = sortperm(Val)
-    sPrb, sVal = Prb[idx], Val[idx]
-    val = unique(sVal)
-    prb = [sum(sPrb[sorted_range(sVal,nv)]) for nv in val]
-
-    return val, prb
-end
 
 ## units
 elunit(A::Matrix{U}) where U = _UF.unit(U)

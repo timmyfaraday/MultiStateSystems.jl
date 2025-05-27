@@ -92,8 +92,8 @@ function add_transitions!(std::AbstractSTD; kwargs...)
 
     for ni in indices_of(kwargs)
         crd = haskey(kwargs,:states) ? kwargs[:states][ni] : (ni[1],ni[2]) ;
-        
-        add_transition!(std, crd, reduce(kwargs, ni, excl=[:states])...) 
+
+        add_transition!(std; states=crd, reduce(kwargs, ni, excl=[:states])...) 
     end
     
     return true

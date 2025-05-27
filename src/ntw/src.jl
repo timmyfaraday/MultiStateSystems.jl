@@ -31,6 +31,19 @@ add_src_expr!(cpath::Vector{Expr}, ntw::AbstractNetwork, node::Int, mul::Int) =
     haskey(ntw.slib, node) ? push!(cpath, src_expr( src_id(ntw, node, mul),
                                                     src_ix(ntw, node, mul))) : ~ ;
 
+## dependence
+init_source_dep(ntw::AbstractNetwork, kwargs::Iterators.Pairs) =
+    if haskey(kwargs, :dep)
+        set_info!(ntw, :dependent_sources, kwargs[:dep])
+    end
+init_eval_dep_src(ntw::AbstractNetwork, kwargs::Iterators.Pairs, Ns::Int) =
+    if haskey(kwargs, :eval_dep)
+        set_info!(ntw, :eval_dep, kwargs[:eval_dep])
+        return length(ntw.src) .+ 1:Ns
+    else
+        return nothing
+    end
+
 ## source
 """
     add_source!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
@@ -92,7 +105,7 @@ function add_sources!(ntw::AbstractNetwork; kwargs...)
         prop_dict = reduce(kwargs, ni, excl=[:node])
         set_eval_dep!(prop_dict, ni, eval_dep_ids)
 
-        add_source!(ntw, node[ni], prop_dict...)
+        add_source!(ntw; node=node[ni], prop_dict...)
     end
     
     return true

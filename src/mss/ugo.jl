@@ -17,7 +17,7 @@ probability_function(pr::Vector) =
 
 ## structure function
 ""
-function set_structure_function!(ntw::Network)
+function set_structure_function!(ntw::AbstractNetwork)
     for u_node in usr_nodes(ntw)
         expr = user_structure_function(ntw, u_node)
         for nu in ntw.ulib[u_node] ntw.usr[nu][:str] = :($expr) end
@@ -30,8 +30,76 @@ function user_structure_function(ntw::AbstractNetwork, u_node::Int)
     while length(npaths[1]) ≠ 0
         has_duplicate_paths(npaths) ? parallel_reduction!(npaths, cpaths) : ~ ;
         has_unique_sequence(npaths) ? series_reduction!(npaths, cpaths) : ~ ;
+        while has_bridge_sequence(npaths) bridge_reduction!(npaths, cpaths) end
     end
     return cpaths[1][1]
+end
+
+### bridge reduction
+delta(arga,argb) = :(-($arga,$argb))
+swapped_paths(npaths) = [(ni,nj) for ni in 1:length(npaths) for nj in ni:length(npaths)
+                                 if is_swapped_path(npaths[ni],npaths[nj])]
+has_bridge_sequence(npaths::Vector{<:Vector}) = !isempty(bridge_sequence(npaths))
+""
+function bridge(paths) 
+    left_path = ser(setdiff(paths[1],paths[4]))
+    right_path = ser(setdiff(paths[4],paths[1]))
+
+    left_bottom = setdiff(paths[1],paths[2])[1]
+    right_bottom = setdiff(paths[4],paths[3])[1]
+
+    temp = setdiff(paths[1],paths[4],[left_bottom])
+    left_top = length(temp) == 1 ? temp[1] : ser(temp) ;
+    temp = setdiff(paths[4],paths[1],[right_bottom])
+    right_top = length(temp) == 1 ? temp[1] : ser(temp) ;
+    
+    bridge_comp = setdiff(paths[2],union(paths[1],paths[4]))[1]
+
+    delta_left = delta(left_top,left_bottom)
+    delta_right = delta(right_top,right_bottom)
+
+    bridge_path = ser([:(abs($delta_left)), :(abs($delta_right)), bridge_comp])
+    cond = :(1 * (_UF.ustrip($delta_left) * _UF.ustrip($delta_right) < 0))
+
+    idx_pre = findfirst(x -> x == temp[1], paths[4])
+    idx_end = findlast(x -> x == right_bottom, paths[4])
+
+    return vcat(paths[4][1:idx_pre-1],
+                par([left_path, right_path, :(*($bridge_path,$cond))]),
+                par([left_bottom,right_bottom]),
+                paths[4][idx_end+1:end])
+end
+""
+function is_swapped_path(xpath::Vector, ypath::Vector)
+    length(xpath) == length(ypath) || return false 
+    idx = findall(x -> !iszero(x), xpath .- ypath)
+    return  sum(xpath .- ypath) == 0 && 
+            sum(.!iszero.(xpath .- ypath)) == 2 && 
+            diff(idx)[1] in [1,-1] &&
+            sort(xpath[idx]) == sort(ypath[idx])
+end
+""
+function bridge_sequence(npaths::Vector{<:Vector})
+    !isempty(swapped_paths(npaths)) || return []
+    (ni,nj) = swapped_paths(npaths)[1]
+    long_left_path, long_right_path = npaths[ni], npaths[nj]
+    id = findfirst(x -> !iszero(x), npaths[ni] .- npaths[nj])
+    short_left_path = long_right_path[1:end .!= id]
+    short_right_path = long_left_path[1:end .!= id]
+    short_left_path[1:end .!= id] == short_right_path[1:end .!= id] || return []
+    selected_paths = [short_left_path, long_left_path, long_right_path, short_right_path]
+    idx = [findfirst(x -> x == 1,broadcast(==,Ref(path),npaths)) for path in selected_paths]
+    return idx, short_left_path[1:end .!= id]
+end
+""
+function bridge_reduction!(npaths::Vector{<:Vector}, cpaths::Vector{<:Vector})
+    idx, npath = bridge_sequence(npaths)
+    # clean-up nodal paths
+    push!(npaths, npath)
+    deleteat!(npaths, sort(idx))
+    # clean-up component paths
+    push!(cpaths, bridge(cpaths[idx]))
+    deleteat!(cpaths, sort(idx))
 end
 
 ### parallel reduction
@@ -184,7 +252,7 @@ function solve!(ntw::AbstractNetwork)
             n_ugf = usr[:ugf]
             n_prb, n_val = [pr[end] for pr in n_ugf.prb], n_ugf.val
             usr[:mat] = s_prb * n_prb'
-            val, prb = reduce(kron(n_val,ustrip.(s_val)), kron(n_prb,s_prb))
+            val, prb = reduce(kron(n_val, ustrip.(s_val)), kron(n_prb, s_prb))
 
             msr = Expr(:kw, get_msr(ntw)[1], n_val)
             usr[:std] = eval(:(solvedSTD(prob = $(n_prb), $msr)))

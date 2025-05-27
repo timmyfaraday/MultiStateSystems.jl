@@ -74,8 +74,8 @@ export  BASE_DIR
 export  Exponential, 𝑬, LogNormal, 𝑳, Weibull, 𝑾
 export  UGF
 export  Network, 
-        add_bidirectional_component!, add_bidirectional_components!
-        add_component!, add_components!
+        add_bidirectional_component!, add_bidirectional_components!,
+        add_component!, add_components!,
         add_source!, add_sources!, 
         add_user!, add_users!
 export  STD, solvedSTD, 

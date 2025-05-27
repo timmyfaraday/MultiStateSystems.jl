@@ -20,6 +20,15 @@ usr_ids(ntw::AbstractNetwork) = 1:nu(ntw)
 usr_ids(ntw::AbstractNetwork,u_node::Int) = ntw.ulib[u_node]
 usr_nodes(ntw::AbstractNetwork) = keys(ntw.ulib)
 
+## dependence
+init_eval_dep_usr(ntw::AbstractNetwork, kwargs::Iterators.Pairs, Nu::Int) =
+    if haskey(kwargs, :eval_dep)
+        set_info!(ntw, :eval_dep, kwargs[:eval_dep])
+        return length(ntw.usr) .+ 1:Nu
+    else
+        return nothing
+    end
+
 ## indices
 """
     EENS(usr::MultiStateSystems.PropDict)
@@ -98,7 +107,7 @@ function add_users!(ntw::AbstractNetwork; kwargs...)
         prop_dict = reduce(kwargs, ni, excl=[:node])
         set_eval_dep!(prop_dict, ni, eval_dep_ids)
         
-        add_user!(ntw, node[ni], prop_dict...)
+        add_user!(ntw; node=node[ni], prop_dict...)
     end
     return true
 end
