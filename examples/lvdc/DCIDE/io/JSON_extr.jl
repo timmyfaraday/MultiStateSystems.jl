@@ -1,9 +1,10 @@
 using JSON
 using MultiStateSystems
+using Unitful
 
 const _MSS = MultiStateSystems
 # Load the JSON data from the file
-json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/system_files/two_feeder.json")
+json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/system_files/single_line.json")
 json_data = JSON.parsefile(json_file)
 
 # Extract component IDs and types
@@ -105,9 +106,9 @@ Extracts and organizes connection data from a JSON-like structure into a diction
 - Non-panel connections are assigned unique keys based on a counter.
 - The function ensures that all connections are organized into a structured format for further processing.
 """
-function extract_connections(json_data::Dict{String, Any}, component_details::Dict{String, Dict{String, Any}})::Dict{String, Vector{Tuple{String, String}}}
-    connections = Dict{String, Vector{Tuple{String, String}}}()
-    panel_connections = Dict{String, String}()
+function extract_connections(json_data::Dict{String, Any}, component_details::Dict{String, Dict{String, Any}})::Dict{Int64, Vector{Tuple{String, String}}}
+    connections = Dict{Int64, Vector{Tuple{String, String}}}()
+    panel_connections = Dict()
     connection_counter = 1
 
     for connection in json_data["connections"]
@@ -118,20 +119,49 @@ function extract_connections(json_data::Dict{String, Any}, component_details::Di
             panel_id = component_details[from_component]["type"] == "panel" ? from_component : to_component
 
             if !haskey(panel_connections, panel_id)
-                panel_connections[panel_id] = string(connection_counter)
+                panel_connections[panel_id] = connection_counter
                 connections[panel_connections[panel_id]] = Vector{Tuple{String, String}}()
                 connection_counter += 1
             end
 
             push!(connections[panel_connections[panel_id]], (from_component, to_component))
         else
-            connection_key = string(connection_counter)
+            connection_key = connection_counter
             connections[connection_key] = [(from_component, to_component)]
             connection_counter += 1
         end
     end
 
     return connections
+end
+
+"""
+    component_connections(connections::Dict{Int64, Vector{Tuple{String, String}}})::Dict{String, Vector{String}}
+
+Returns a dictionary mapping each component ID to a vector of component IDs it is directly connected to.
+
+# Arguments
+- `connections::Dict{Int64, Vector{Tuple{String, String}}}`: Dictionary of connection keys to vectors of (from, to) tuples.
+
+# Returns
+- `Dict{String, Vector{String}}`: Dictionary where each key is a component ID and the value is a vector of connected component IDs.
+"""
+function component_connections(connections::Dict{Int64, Vector{Tuple{String, String}}})::Dict{String, Vector{String}}
+    conn_dict = Dict{String, Set{String}}()
+    for connlist in values(connections)
+        for (from, to) in connlist
+            if !haskey(conn_dict, from)
+                conn_dict[from] = Set{String}()
+            end
+            if !haskey(conn_dict, to)
+                conn_dict[to] = Set{String}()
+            end
+            push!(conn_dict[from], to)
+            push!(conn_dict[to], from)
+        end
+    end
+    # Convert sets to vectors for output
+    return Dict(k => collect(v) for (k, v) in conn_dict)
 end
 
 """
@@ -145,7 +175,7 @@ Counts the number of connections for each unique component in the connections di
 # Returns
 - `Dict{String, Int}`: A dictionary where keys are component IDs and values are the number of times each component is connected to other components.
 """
-function count_component_connections(connections::Dict{String, Vector{Tuple{String, String}}})::Dict{String, Int}
+function count_component_connections(connections::Dict{Int64, Vector{Tuple{String, String}}})::Dict{String, Int}
     connection_counts = Dict{String, Int}()
 
     for connection_list in values(connections)
@@ -159,17 +189,17 @@ function count_component_connections(connections::Dict{String, Vector{Tuple{Stri
 end
 
 # Example usage
-component_connection_counts = count_component_connections(connections)
-println("Component Connection Counts:")
-println(component_connection_counts)
-
 component_ids_and_types = extract_component_ids_and_types(json_data)
 
 component_details = extract_component_details(json_data)
 
 connections = extract_connections(json_data, component_details)
 
+comp_connections = component_connections(connections)
 
+component_connection_counts = count_component_connections(connections)
+println("Component Connection Counts:")
+println(component_connection_counts)
 
 # Print the extracted information
 println("Component IDs and Types:")
@@ -183,58 +213,330 @@ println(connections)
 
 ## Create networks from the connections and component details
 
-# Find sources in the JSON file
-function find_sources(connections::Dict{String, Vector{Tuple{String, String}}}, component_details::Dict{String, Dict{String, Any}})::Vector{String}
+# Find sources and loads in the JSON file
+function find_sources_and_loads(connections::Dict{Int64, Vector{Tuple{String, String}}}, component_details::Dict{String, Dict{String, Any}})
     sources = String[]
+    loads = String[]
     connection_counts = count_component_connections(connections)
 
     for (component_id, count) in connection_counts
-        if count == 1 && component_details[component_id]["type"] in ["battery", "utility"]
-            push!(sources, component_id)
+        if count == 1
+            if component_details[component_id]["type"] in ["battery", "utility"]
+                push!(sources, component_id)
+            else
+                push!(loads, component_id)
+            end
         end
     end
 
-    return sources
+    return sources, loads
 end
 
-# Find and print sources
-sources = find_sources(connections, component_details)
+# Find and print sources and loads
+sources, loads = find_sources_and_loads(connections, component_details)
+println("Sources: ", sources)
+println("Loads: ", loads)
 
-# Function to order components starting from the sources and attribute a number to each component
-function order_components(
-    sources::Vector{String}, 
-    connections::Dict{String, Vector{Tuple{String, String}}}, 
-    component_ids_and_types::Dict{String, String}
-)::Dict{Int, String}
-    ordered_components = Dict{Int, String}()
-    visited = Set{String}()
-    component_number = 1
+"""
+    find_component_connections(connections::Dict{Int64, Vector{Tuple{String, String}}}, sources::Vector{String}, loads::Vector{String}, component_details::Dict{String, Dict{String, Any}}) -> Dict{Int64, Vector{Tuple{String, String}}}
 
-    function dfs(component::String)
-        if component in visited
+Finds all connections that are not connected to any source, load, or panel.
+
+# Arguments
+- `connections`: Dictionary of connection keys to vectors of (from, to) tuples.
+- `sources`: Vector of source component IDs.
+- `loads`: Vector of load component IDs.
+- `component_details`: Dictionary of component details keyed by component ID.
+
+# Returns
+- `Dict{Int64, Vector{Tuple{String, String}}}`: Dictionary of connection keys and their tuples that are not attached to any source, load, or panel.
+"""
+function find_component_connections(connections::Dict{Int64, Vector{Tuple{String, String}}}, sources::Vector{String}, loads::Vector{String}, component_details::Dict{String, Dict{String, Any}})
+    unattached = Dict{Int64, Vector{Tuple{String, String}}}()
+    important_ids = Set(sources) ∪ Set(loads)
+    for (cid, connlist) in connections
+        keep = true
+        for (from, to) in connlist
+            if from in important_ids || to in important_ids ||
+               component_details[from]["type"] == "panel" || component_details[to]["type"] == "panel"
+                keep = false
+                break
+            end
+        end
+        if keep
+            unattached[cid] = connlist
+        end
+    end
+    return unattached
+end
+
+# Example usage:
+unattached_connections = find_component_connections(connections, sources, loads, component_details)
+println("Unattached Connections:")
+println(unattached_connections)
+
+"""
+    find_panels(component_details::Dict{String, Dict{String, Any}})::Vector{String}
+
+Returns a vector of component IDs where the component type is "panel".
+
+# Arguments
+- `component_details::Dict{String, Dict{String, Any}}`: Dictionary of component details keyed by component ID.
+
+# Returns
+- `Vector{String}`: Vector of component IDs that are panels.
+"""
+function find_panels(component_details::Dict{String, Dict{String, Any}})::Union{Vector{String}, Nothing}
+    return [id for (id, details) in component_details if details["type"] == "panel"]
+end
+
+
+# Example usage:
+panels = find_panels(component_details)
+println("Panels: ", panels)
+
+"""
+    collect_availability_data(id::Union{String, Int}, param::Symbol, must_have::Bool)
+
+Collects the availability data (λ or μ) for a given component or connection.
+
+# Arguments
+- `id::Union{String, Int}`: The component or connection identifier.
+- `param::Symbol`: Either `:λ` or `:μ` indicating which parameter to collect.
+- `must_have::Bool`: If true, a value must be returned (fallback to another source if not found); if false, return `nothing` if not found.
+
+# Returns
+- The value of the requested parameter, or `nothing` if not found and `must_have` is false.
+"""
+function collect_availability_data(id, param::Symbol, must_have::Bool, json_data::Dict{String, Any} = json_data)
+    # Try to find data in the JSON file
+    # For components
+    if isa(id, String)
+        for comp in json_data["componentInstances"]
+            if comp["id"] == id && haskey(comp, "availability")
+                avail = comp["availability"]
+                if param == :λ && haskey(avail, "lambda")
+                    return avail["lambda"]
+                elseif param == :μ && haskey(avail, "mu")
+                    return avail["mu"]
+                end
+            end
+        end
+    # For connections (by Int key)
+    elseif isa(id, Int)
+        # If your JSON has connection availability, implement here
+        # Example (if available):
+        # for conn in json_data["connections"]
+        #     if conn["id"] == id && haskey(conn, "availability")
+        #         avail = conn["availability"]
+        #         if param == :λ && haskey(avail, "lambda")
+        #             return avail["lambda"]
+        #         elseif param == :μ && haskey(avail, "mu")
+        #             return avail["mu"]
+        #         end
+        #     end
+        # end
+        # Otherwise, skip for now
+    end
+
+    if must_have
+        if param == :λ
+            return 0.01u"yr"
+        elseif param == :μ
+            return 0.2u"hr"
+        else
+            error("Unknown parameter $(param) for availability data fallback.")
+        end
+    else
+        return nothing
+    end
+end
+
+function node_dictionary(sources, loads, panels, unattached_connections, component_connections, json_data)
+    node_dict = Dict{String, Any}()
+    node_count = 1
+    node_dict["sources"] = Dict{String, Any}()
+    for src in sources
+        node_dict["sources"][src] = Dict(
+            "node" => node_count,
+            "type" => "source",
+            "λ" => collect_availability_data(src, :λ, true, json_data),
+            "μ" => collect_availability_data(src, :μ, true, json_data),
+            "connected" => component_connections[src]
+        )
+        node_count += 1
+    end
+    node_dict["panels"] = Dict{String, Any}()
+    for pnls in panels
+        node_dict["panels"][pnls] = Dict(
+            "node" => node_count,
+            "type" => "panel",
+            "λ" => collect_availability_data(pnls, :λ, false, json_data),
+            "μ" => collect_availability_data(pnls, :μ, false, json_data),
+            "connected" => component_connections[pnls]
+        )
+        node_count += 1
+    end
+    node_dict["connections"] = Dict{Any, Any}()
+    for (key,conn) in unattached_connections
+        node_dict["connections"][conn] = Dict(
+            "node" => node_count,
+            "type" => "unattached",
+            "λ" => collect_availability_data(conn, :λ, false, json_data),
+            "μ" => collect_availability_data(conn, :μ, false, json_data),
+            "connected" => [c for c in conn[1]]
+        )
+        node_count += 1
+    end
+    node_dict["loads"] = Dict{String, Any}()
+    for lds in loads
+        node_dict["loads"][lds] = Dict(
+            "node" => node_count,
+            "type" => "load",
+            "λ" => collect_availability_data(lds, :λ, false, json_data),
+            "μ" => collect_availability_data(lds, :μ, false, json_data),
+            "connected" => component_connections[lds]
+        )
+        node_count += 1
+    end
+    return node_dict    
+end
+
+nodes = node_dictionary(sources, loads, panels, unattached_connections, comp_connections, json_data)
+
+function edge_dictionary(nodes, component_connection_counts)
+    edge_dict = Dict{String, Dict{String, Any}}()
+    node_keys = ("sources", "panels", "connections", "loads")
+
+    for (component, connection_amount) in component_connection_counts
+        if connection_amount == 2
+            node_indices = Int[]
+            for key in node_keys
+                for node_info in values(nodes[key])
+                    if component in node_info["connected"]
+                        push!(node_indices, node_info["node"])
+                        if length(node_indices) == 2
+                            break
+                        end
+                    end
+                end
+                if length(node_indices) == 2
+                    break
+                end
+            end
+            if length(node_indices) == 2
+                edge_dict[component] = Dict(
+                    "edge" => (minimum([node_indices[1] node_indices[2]]), maximum([node_indices[1] node_indices[2]])),
+                    "λ" => collect_availability_data(component, :λ, true),
+                    "μ" => collect_availability_data(component, :μ, true)
+                )
+            end
+        end
+    end
+    return edge_dict
+end
+
+edges = edge_dictionary(nodes, component_connection_counts)
+
+# Solve the different state transition diagrams of the components found in nodes and edges, by collecting the data
+"""
+    has_lambda_or_mu(dict::Dict{String, Any})::Bool
+
+Checks if the given dictionary contains a key "λ" or "μ" with a non-nothing value.
+
+# Arguments
+- `dict::Dict{String, Any}`: The dictionary to check.
+
+# Returns
+- `Bool`: `true` if "λ" or "μ" is present and not `nothing`, otherwise `false`.
+"""
+function has_lambda_or_mu(dict::Dict{String, Any})::Bool
+    return (haskey(dict, "λ") && dict["λ"] !== nothing) && (haskey(dict, "μ") && dict["μ"] !== nothing)
+end
+
+function solve!(nodes::Dict{String, Any}, edges::Dict{String, Dict{String, Any}}, cls)
+    # This function would contain the logic to solve the state transition diagrams
+    # and add to the dictionary of the nodes or edges based on the nodes and edges provided.
+
+    for type in keys(nodes)
+        for component in keys(nodes[type])
+            if has_lambda_or_mu(nodes[type][component])
+                std = STD()
+                # add the states to the std
+                add_states!(std, name  = ["available", "unavailable"],
+                                power = [(Inf)u"MW", 0.0u"MW"],
+                                init  = [1.0, 0.0])
+
+                # add the transitions to the std
+                add_transitions!(std,   states = [(1,2), (2,1)],
+                                        distr = [Exponential(nodes[type][component]["λ"]),
+                                                 Exponential(nodes[type][component]["μ"])])
+
+                _MSS.solve!(std, cls)
+                nodes[type][component]["std"] = std                
+            end
+        end
+    end
+    for component in keys(edges)
+        if has_lambda_or_mu(edges[component])
+            std = STD()
+                # add the states to the std
+                add_states!(std, name  = ["available", "unavailable"],
+                                power = [(Inf)u"MW", 0.0u"MW"],
+                                init  = [1.0, 0.0])
+
+                # add the transitions to the std
+                add_transitions!(std,   states = [(1,2), (2,1)],
+                                        distr = [Exponential(edges[component]["λ"]),
+                                                 Exponential(edges[component]["μ"])])
+
+                _MSS.solve!(std, cls)
+                edges[component]["std"] = std   
+        end
+    end
+end
+
+solve!(nodes, edges, SteadyStateProcess())
+
+"""
+    build_state_transition_diagrams(nodes::Dict{String, Any}, edges::Dict{String, Dict{String, Any}})
+
+"""
+    build_state_transition_diagrams(nodes::Dict{String, Any}, edges::Dict{String, Dict{String, Any}})
+
+# Example usage:
+component_diagrams, edge_diagrams = build_state_transition_diagrams(nodes, edges)
+
+# Order components starting from sources and assign numbers
+function order_components(sources::Vector{String}, connections::Dict{Int64, Vector{Tuple{String, String}}}, component_ids_and_types::Dict{String, String})::Dict{Int, String}
+    ordered, visited, num = Dict{Int, String}(), Set{String}(), 1
+
+    function dfs(comp::String, stop_at_panel::Bool)
+        if comp in visited
             return
         end
-        push!(visited, component)
-        ordered_components[component_number] = component
-        println("Component $component_number: ID = $component, Type = $(component_ids_and_types[component])")
-        component_number += 1
-        for connection_list in values(connections)
-            for (from_component, to_component) in connection_list
-                if from_component == component && !(to_component in visited)
-                    dfs(to_component)
-                elseif to_component == component && !(from_component in visited)
-                    dfs(from_component)
+        push!(visited, comp)
+        ordered[num] = comp
+        num += 1
+        if stop_at_panel && component_ids_and_types[comp] == "panel"
+            return
+        end
+        for conn in values(connections)
+            for (from, to) in conn
+                if comp in (from, to) && !(to == comp ? from : to in visited)
+                    dfs(to == comp ? from : to, stop_at_panel)
                 end
             end
         end
     end
 
-    for source in sources
-        dfs(source)
-    end
-
-    return ordered_components
+    foreach(src -> dfs(src, true), sources)
+    foreach(comp -> dfs(comp[1], false), filter(x -> x[2] == "panel" && !(x[1] in visited), component_ids_and_types))
+    foreach(comp -> dfs(comp[1], false), filter(x -> !(x[1] in visited), component_ids_and_types))
+    return ordered
 end
+
+
 
 # Order components starting from the sources and attribute numbers
 ordered_components_with_numbers = order_components(sources, connections, component_ids_and_types)
@@ -243,9 +545,32 @@ ordered_components_with_numbers = order_components(sources, connections, compone
 println("Ordered Components with Numbers:")
 println(ordered_components_with_numbers)
 
-# Order components starting from the sources
-ordered_components = order_components_from_sources(sources, connections)
+function find_component(connections::Dict{Int64, Vector{Tuple{String, String}}}, component::String)
+    matching_keys = Int64[]
 
-# Print the ordered components
-println("Ordered Components:")
-println(ordered_components)
+    for (key, connection_list) in connections
+        for (from_component, to_component) in connection_list
+            if from_component == component || to_component == component
+                push!(matching_keys, key)
+                break
+            end
+        end
+    end
+
+    if length(matching_keys) == 1
+        return matching_keys[1]
+    elseif length(matching_keys) == 2
+        return (matching_keys[1], matching_keys[2])
+    else
+        return nothing
+    end
+end
+
+find_component(connections, "component-YxpeR4Uc")
+
+## Create network, starting with sources and then adding components and users
+netw = Network()
+for src in sources
+    add_source!(netw, node = , std = std[src])
+end
+add_sources!()
