@@ -22,7 +22,7 @@ const _MSS = MultiStateSystems
 
 ### Load the functions to read the JSON file and extract the data
 include(joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/io/JSON_extr.jl"))
-json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/system_files/parallel_feeder.json")
+json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/system_files/test.json")
 json_data = JSON.parsefile(json_file)
 
 ### Extract the data from the JSON file and save it in the right dictionary
@@ -61,3 +61,5 @@ add_components!(netw, edge = [comp["edge"] for (key, comp) in edges],
                       std = [comp["std"] for (key, comp) in edges])
 
 _MSS.solve!(netw)
+
+netw.usr[3][:ugf].prb[2]
