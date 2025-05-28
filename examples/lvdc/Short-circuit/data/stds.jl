@@ -191,6 +191,8 @@ add_transitions!(std_feeder, states = [(1,2),(1,3),(1,4),(2,1),(3,5),(4,6),(5,1)
                         Exponential(1 / (exp(log(12.0) + 0.5^2 / 2) * u"hr")),
                         Exponential(1 / (exp(log(2.0) + 0.03^2 / 2) * u"d")),
                         Exponential(1 / (exp(log(2.0) + 0.03^2 / 2) * u"d"))])
+    return std_feeder
+end
 
 #Setting up the state transition diagrams 
 for (key, L_c) in L_tot
