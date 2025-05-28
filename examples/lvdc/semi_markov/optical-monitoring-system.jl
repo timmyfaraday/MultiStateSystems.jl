@@ -46,4 +46,4 @@ add_transitions!(std, states = [(1,1),(1,2),(2,1),(2,3),(3,1),(3,4)],
                                 Exponential(20.0u"hr", 0.62), 
                                 LogNormal(4.0u"hr", 0.4u"hr", 0.38)])
                       
-solve!(std, cls, tsim = 8760.0u"hr", dt = 4u"hr", tol = 1e-8)
+solve!(std, cls, tsim = 8760.0u"hr", dt = 4.0u"hr", tol = 1e-8)

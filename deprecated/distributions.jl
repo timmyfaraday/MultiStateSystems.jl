@@ -61,7 +61,7 @@ scale(dst::AbstractExponential)  = dst.θ
 weight(dst::AbstractExponential) = dst.ω
 params(dst::AbstractExponential) = (dst.θ, dst.ω)
 
-rate(dst::AbstractExponential) = 1.0 / dst.θ
+rate(dst::AbstractExponential) = dst.ω / dst.θ
 
 minimum(dst::AbstractExponential) = zero(dst.θ)
 maximum(dst::AbstractExponential) = (Inf)unit(dst.θ)

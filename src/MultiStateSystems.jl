@@ -24,6 +24,7 @@ import OrdinaryDiffEq
 import QuadGK
 import SparseArrays
 import SpecialFunctions
+import DSP
 
 # using Pkgs
 using Unitful
@@ -39,6 +40,7 @@ const _SF  = SpecialFunctions
 const _QGK = QuadGK
 const _INT = Interpolations
 const _SA  = SparseArrays
+const _DSP = DSP
 
 # paths
 const BASE_DIR = dirname(@__DIR__)
@@ -83,5 +85,9 @@ export  STD, solvedSTD,
         add_transition!, add_transitions!
 export  SteadyStateProcess, MarkovProcess, SemiMarkovProcess
 export  solve!
+export  solve_network!
+## These changes were made in the LVDC_short_circuit branch
+export  state_conv
+
 
 end
