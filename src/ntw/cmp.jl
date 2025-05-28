@@ -67,6 +67,7 @@ function add_component!(ntw::AbstractNetwork; kwargs...)
         add_vertex!(ntw, kwargs[:node])
 
         info = ComponentInfo()
+        set_eval_info!(info; kwargs...)
 
         push!(ntw.cmp, PropDict(:info => info, kwargs...))
 
@@ -80,6 +81,7 @@ function add_component!(ntw::AbstractNetwork; kwargs...)
         edge = _MG.MultipleEdge(edge[1], edge[2], mul_edge(ntw,edge))
 
         info = ComponentInfo()
+        set_eval_info!(info; kwargs...)
 
         push!(ntw.cmp, Dict(:edge => edge, :info => info, reduce(kwargs, 1, excl=[:edge])...))
         

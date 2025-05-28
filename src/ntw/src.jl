@@ -66,8 +66,9 @@ function add_source!(ntw::AbstractNetwork; kwargs...)
 
     add_vertex!(ntw, kwargs[:node])
 
-    info = UserInfo()
+    info = SourceInfo()
     init_source_dep(ntw, kwargs)
+    set_eval_info!(info; kwargs...)
     
     push!(ntw.src, Dict(:info => info, kwargs...))
     

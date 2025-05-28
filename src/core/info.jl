@@ -95,11 +95,11 @@ get_info(std::AbstractSTD, nt::Graphs.Edge, info::Symbol) =
     getproperty(std.tprops[nt][:info],info)
 
 ## dependence
-set_eval_info!(info::AbstractInfo, prop_dict::PropDict) =
-    if haskey(prop_dict, :eval_dep)
+set_eval_info!(info::AbstractInfo; kwargs...) =
+    if haskey(kwargs, :eval_dep)
         for i_key in [:eval_dep,:eval_dep_id]
-            set_info!(info, i_key, prop_dict[i_key])
-            delete!(prop_dict, i_key)
+            set_info!(info, i_key, kwargs[i_key])
+            # delete!(prop_dict, i_key)
         end
     end
 

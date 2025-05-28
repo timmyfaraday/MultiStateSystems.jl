@@ -76,6 +76,7 @@ function add_user!(ntw::AbstractNetwork; kwargs...)
     add_vertex!(ntw, kwargs[:node])
 
     info = UserInfo()
+    set_eval_info!(info; kwargs...)
 
     push!(ntw.usr, PropDict(:info => info, kwargs...))
     update_lib!(:node, ntw.usr, ntw.ulib)

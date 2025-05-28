@@ -193,7 +193,7 @@ function solve_network!(ntw::AbstractNetwork)
     Prb = probability_function(pr)
 
     skip = Int[]
-    for (nu,usr) in enumerate(ntw.usr) if !in(nu,skip)
+    for (nu,usr) in enumerate(ntw.usr) if !in(nu, skip)
         if get_info(usr,:eval_dep)
             Val = zeros(Number, length(Prb), length(usr[:eval_dep_ids]))
             
