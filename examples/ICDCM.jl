@@ -55,6 +55,9 @@ add_source!(ntw_test_2, node = 1, std = stdˢ)
 add_source!(ntw_test_2, node = 2, std = stdˢ)
 add_components!(ntw_test_2, edge = [(1,3), (2,4), (3,4),(4,3), (3,5), (4,6)],
                         std = [std_feeder, std_feeder, stdˢ, stdˢ, std_feeder, std_feeder])
+add_components!(ntw_test_2, edge = [(1,3), (2,4), (3,5), (4,6)],
+                        std = [std_feeder, std_feeder, std_feeder, std_feeder])
+add_bidirectional_component!(ntw_test_2, edge = (3,4), std =  stdˢ)
 
 Uᵦ₁ = sum(_MSS.get_sprop(nf, :prob)[ns] for nf in Zone_1 for ns in 3:4)
 stdᵇ¹ = solvedSTD(prob = [1 .- Uᵦ₁, Uᵦ₁], power = [(Inf)u"MW", 0.0u"MW"], time = collect(t))
