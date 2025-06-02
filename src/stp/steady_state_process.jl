@@ -1,9 +1,13 @@
 ################################################################################
-# Copyright, 2020, Tom Van Acker                                               #
-################################################################################
 # MultiStateSystems.jl                                                         #
-# A Julia package to solve multi-state system models.                          #
-# See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
+# A Julia package to solve multi-state system models, often found in           #
+# reliability engineering.                                                     #
+# See https://github.com/timmyfaraday/MultiStateSystems.jl                     #
+################################################################################
+# Authors: Tom Van Acker                                                       #
+################################################################################
+# Changelog:                                                                   #
+# v0.3.0 - init                                                                #
 ################################################################################
 
 # types ########################################################################
