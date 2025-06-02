@@ -1,10 +1,11 @@
 name = "MultiStateSystems"
 uuid = "63dd226a-9d27-42a2-9f4c-7f7a071798e0"
 authors = ["Tom Van Acker", "Glenn Emmers"]
-version = "0.2.2"
+version = "0.3.0"
 
 [deps]
 AdditionalUnits = "02d9b4f0-7821-44c6-acbd-01a1ab91b72e"
+DSP = "717857b8-e6f2-59f4-9121-6e50c889abd2"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -18,15 +19,17 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 AdditionalUnits = "0.1.4"
-Graphs = "1.9.0"
-Interpolations = "0.15"
-Measurements = "2.11.0"
+Graphs = "1.12.0"
+Interpolations = "0.15.1"
+Measurements = "2.12.0"
+DSP = "0.8.2"
 Multigraphs = "0.3.0"
-OrdinaryDiffEq = "6.58.2"
-QuadGK = "2.9.4"
-SpecialFunctions = "2.3.1"
-Unitful = "1.19.0"
-julia = "1.8"
+OrdinaryDiffEq = "6.93.0"
+QuadGK = "2.11.2"
+SpecialFunctions = "2.5.0"
+Unitful = "1.22.0"
+SparseArrays = "1.10.0"
+julia = "1.11"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

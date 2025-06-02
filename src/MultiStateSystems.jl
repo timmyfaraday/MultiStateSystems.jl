@@ -1,9 +1,13 @@
 ################################################################################
-#  Copyright 2020, Tom Van Acker                                               #
-################################################################################
 # MultiStateSystems.jl                                                         #
-# A Julia package to solve multi-state system models.                          #
-# See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
+# A Julia package to solve multi-state system models, often found in           #
+# reliability engineering.                                                     #
+# See https://github.com/timmyfaraday/MultiStateSystems.jl                     #
+################################################################################
+# Authors: Tom Van Acker                                                       #
+################################################################################
+# Changelog:                                                                   #
+# v0.3.0 - init                                                                #
 ################################################################################
 
 module MultiStateSystems
@@ -11,15 +15,16 @@ module MultiStateSystems
 # import pkgs
 import Base: maximum
 
+import DSP
 import Graphs
+import Interpolations
 import LinearAlgebra
+import Measurements
 import Multigraphs
 import OrdinaryDiffEq
-import Measurements
-import SpecialFunctions
 import QuadGK
-import Interpolations
 import SparseArrays
+import SpecialFunctions
 
 # using Pkgs
 using Unitful
@@ -35,38 +40,53 @@ const _SF  = SpecialFunctions
 const _QGK = QuadGK
 const _INT = Interpolations
 const _SA  = SparseArrays
+const _DSP = DSP
 
 # paths
 const BASE_DIR = dirname(@__DIR__)
 
 # include
 include("core/types.jl")
+include("core/info.jl")
+include("core/msr.jl")
+include("core/util.jl")
 
-include("form/markov_process.jl")
-include("form/semi_markov_process.jl")
-include("form/steady_state_process.jl")
+include("dst/exponential.jl")
+include("dst/lognormal.jl")
+include("dst/weibull.jl")
 
-include("io/distributions.jl")
-include("io/indices.jl")
-include("io/measure.jl")
-include("io/network.jl")
-include("io/state_transition_diagram.jl")
-include("io/universal_generating_function.jl")
-include("io/utils.jl")
+include("io/dcide.jl")
 
-include("prob/universal_generating_operator.jl")
+include("mss/ugf.jl")
+include("mss/ugo.jl")
+
+include("ntw/cmp.jl")
+include("ntw/ntw.jl")
+include("ntw/src.jl")
+include("ntw/usr.jl")
+
+include("std/state.jl")
+include("std/std.jl")
+include("std/trans.jl")
+
+include("stp/markov_process.jl")
+include("stp/semi_markov_process.jl")
+include("stp/steady_state_process.jl")
 
 # export
 export  BASE_DIR
-export  SteadyStateProcess, MarkovProcess, SemiMarkovProcess
 export  Exponential, 𝑬, LogNormal, 𝑳, Weibull, 𝑾
-export  Network, add_source!, add_sources!, add_user!, add_users!,
-        add_component!, add_bidirectional_component!, add_components!, 
-        add_bidirectional_components!
-export  STD, solvedSTD, add_state!, add_states!, add_transition!, add_transitions!
 export  UGF
-export  solve!
-export  solve_network!
-
+export  Network, 
+        add_bidirectional_component!, add_bidirectional_components!,
+        add_component!, add_components!,
+        add_source!, add_sources!, 
+        add_user!, add_users!
+export  STD, solvedSTD, 
+        add_state!, add_states!, 
+        add_transition!, add_transitions!
+export  SteadyStateProcess, MarkovProcess, SemiMarkovProcess,
+        state_conv
+export  solve! 
 
 end

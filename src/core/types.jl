@@ -7,23 +7,29 @@
 ################################################################################
 
 # abstract types
-abstract type AbstractUGF end
-
+## info
 abstract type AbstractInfo end
 
+## dst
 abstract type AbstractDistribution{X,Y,Z} end
 
-abstract type AbstractSTD{T} <: Graphs.AbstractGraph{T} end
+## ugf
+abstract type AbstractUGF end
 
+## ntw
 abstract type AbstractNetwork{T} <: Graphs.AbstractGraph{T} end
 
+## std
+abstract type AbstractSTD{T} <: Graphs.AbstractGraph{T} end
+
+## stp
 abstract type AbstractStochasticProcess end
 abstract type AbstractMarkovProcess <: AbstractStochasticProcess end
 abstract type AbstractSemiMarkovProcess <: AbstractStochasticProcess end
 
 # union types
 UIE = Union{Int,Graphs.AbstractEdge}
-Single = Union{Bool,Number,String,Symbol,AbstractSTD,Tuple}
+Single = Union{Bool,Number,String,Symbol,AbstractSTD,Tuple,AbstractDistribution,AbstractUGF}
 
 # dict types
 LibDict = Dict{UIE,Vector{Int}}
