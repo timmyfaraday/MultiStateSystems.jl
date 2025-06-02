@@ -15,6 +15,7 @@ module MultiStateSystems
 # import pkgs
 import Base: maximum
 
+import DSP
 import Graphs
 import Interpolations
 import LinearAlgebra
@@ -24,7 +25,6 @@ import OrdinaryDiffEq
 import QuadGK
 import SparseArrays
 import SpecialFunctions
-import DSP
 
 # using Pkgs
 using Unitful
@@ -55,6 +55,8 @@ include("dst/exponential.jl")
 include("dst/lognormal.jl")
 include("dst/weibull.jl")
 
+include("io/dcide.jl")
+
 include("mss/ugf.jl")
 include("mss/ugo.jl")
 
@@ -83,11 +85,8 @@ export  Network,
 export  STD, solvedSTD, 
         add_state!, add_states!, 
         add_transition!, add_transitions!
-export  SteadyStateProcess, MarkovProcess, SemiMarkovProcess
-export  solve!
-export  solve_network!
-## These changes were made in the LVDC_short_circuit branch
-export  state_conv
-
+export  SteadyStateProcess, MarkovProcess, SemiMarkovProcess,
+        state_conv
+export  solve! 
 
 end
