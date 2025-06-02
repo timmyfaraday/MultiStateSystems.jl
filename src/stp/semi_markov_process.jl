@@ -6,13 +6,17 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-# abstract types
+# types ########################################################################
+## abstract types
 mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 
-# properties
+# constants ####################################################################
+## properties
 const semi_markov_process_props = [:renewal, :dynamic]
 
-# stochastic process
+# functions ####################################################################
+## stochastic process
+""
 function get_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
     # A indicates that state j can be reached if the process was initially in 
     # state i and remains there until time t. The unit of A is [unit(1/t)]
@@ -32,6 +36,7 @@ function get_A(std::AbstractSTD, t::StepRangeLen, tol::Real)
 
     return A
 end
+""
 function _fill_A!(to::Int, init::Real, Ns::Int, tol::Real, 
                   dst::AbstractDistribution, t::StepRangeLen, A::Vector)
     dt      = step(t)
@@ -44,6 +49,7 @@ function _fill_A!(to::Int, init::Real, Ns::Int, tol::Real,
         isnan(A[id]) ? A[id] = zero(1/dt) : ~ ;
     end end
 end
+""
 function get_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
     # U indicates that state j can be reached if the process enters state i at 
     # sojourn time φ and remains there until calendar time t. The unit of U is [-]
@@ -61,6 +67,7 @@ function get_U(std::AbstractSTD, t::StepRangeLen, tol::Real)
 
     return _SA.sparse(I, J, V)
 end
+""
 function _fill_U!(fr::Int, to::Int, Ns::Int, tol::Real, dst::AbstractDistribution,
                   t::StepRangeLen, I::Vector, J::Vector, V::Vector)
     dt      = step(t)
@@ -78,6 +85,7 @@ function _fill_U!(fr::Int, to::Int, Ns::Int, tol::Real, dst::AbstractDistributio
         end end
     end
 end
+""
 function set_p!(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
     # p indicates the probability of being in a state i at calendar time t. The 
     # unit of p is [-].
@@ -93,6 +101,7 @@ function set_p!(std::AbstractSTD, t::StepRangeLen, H::Vector, tol::Real)
         _set_p!(std, st, init, tol, DST, t, h)
     end
 end
+""
 function _set_p!(std::AbstractSTD, st::Int, init::Real, tol::Real, DST::Vector, 
                  t::StepRangeLen, h::Vector)
     # p = init ⋅ ccdf(st) + ∫ h dt - ∑ᵢ ∫ h ⋅ cdf(dstᵢ) dt
@@ -109,6 +118,7 @@ function _set_p!(std::AbstractSTD, st::Int, init::Real, tol::Real, DST::Vector,
     set_prop!(std, st, :h, h) 
     set_prop!(std, st, :prob, p)
 end
+""
 function _fill_p!(init::Real, dst::AbstractDistribution, t::StepRangeLen, 
                   h::Vector, p::Vector)
     dt = step(t)
@@ -130,6 +140,7 @@ function _fill_p!(init::Real, dst::AbstractDistribution, t::StepRangeLen,
         end
     end
 end
+""
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
                 tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
     # get the input
@@ -150,7 +161,7 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # set the solved status
     set_info!(std, :solved, true)
 end
-
+""
 function state_conv(dst::MultiStateSystems.AbstractDistribution, h::Vector, t::StepRangeLen, f::Int)
     h_int = _INT.cubic_spline_interpolation(t, h)
     time = 0.0 * unit(t[1]):step(t) / f:t[end]

@@ -6,13 +6,17 @@
 # See http://github.com/timmyfaraday/MultiStateSystems.jl                      #
 ################################################################################
 
-# abstract types
+# types ########################################################################
+## abstract types
 mutable struct SteadyStateProcess <: AbstractMarkovProcess end 
 
-# properties
+# constants ####################################################################
+## properties
 const steady_state_process_props = [:renewal, :markovian, :steady_state]
 
-# parameters 
+# functions ####################################################################
+## parameters 
+""
 function set_markov_chain_matrix!(std::AbstractSTD, cls::SteadyStateProcess)
     P = zeros(_MSM.Measurement, ns(std), ns(std))
     for nt in transitions(std)
@@ -27,12 +31,14 @@ function set_markov_chain_matrix!(std::AbstractSTD, cls::SteadyStateProcess)
                               _MSM.value.(P),
                               P))
 end
+""
 function set_parameters!(std::AbstractSTD, cls::SteadyStateProcess)
     set_rates!(std, cls)
     set_markov_chain_matrix!(std, cls)
 end
 
-# stochastic process
+## stochastic process
+""
 function solve!(std::AbstractSTD, cls::SteadyStateProcess;
                 tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
     # set the input
