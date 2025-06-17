@@ -62,4 +62,44 @@
         @test isapprox(sum(prb_sa), 1.0, rtol=1e-4)
         @test isapprox(prb_sa[1]+prb_sa[2], PA1[end]+PA2[end], rtol = 1e-5)
     end
+
+    @testset "State through convolution" begin
+        # Example to see whether a state can be obtained through convolution
+        stdᶜᵛ, stdˢᵐ = include(joinpath(_MSS.BASE_DIR,"test/elements/circuitbreaker_feeder.jl"))
+        solve!(stdᶜᵛ, SemiMarkovProcess(), tsim = 0.5u"yr", dt = 0.5u"d")
+        solve!(stdˢᵐ, SemiMarkovProcess(), tsim = 0.5u"yr", dt = 0.5u"hr")
+
+        t = stdᶜᵛ.props[:time]
+        num_states = 4
+        state_probs = [zeros(length(t)) for _ in 1:num_states]
+
+        for n in 1:length(stdᶜᵛ.sprops)
+            state_name = stdᶜᵛ.sprops[n][:name]
+            prob = stdᶜᵛ.sprops[n][:prob]
+            h = stdᶜᵛ.sprops[n][:h]
+            if occursin("A", state_name)
+                state_probs[1] .+= prob
+            elseif occursin("U", state_name)
+                state_probs[2] .+= vcat(0, prob[2:end])
+            elseif occursin("V", state_name)
+                corrective_prob = _MSS.state_conv(_MSS.LogNormal(log(2.0)u"hr", 0.25u"hr"), h, stdᶜᵛ.props[:time], 100000)
+                state_probs[3] .+= corrective_prob
+                state_probs[4] .+= vcat(0, prob[2:end]) .- corrective_prob
+                
+            end
+        end
+
+        stdᶜᵛ² = _MSS.solvedSTD(
+            prob = [state_probs[n] for n in 1:num_states],
+            time = collect(stdᶜᵛ.props[:time]),
+            power = [(Inf)u"MW", 10.0u"MW", 0.0u"MW", 10.0u"MW"],
+            name = ["A", "U1", "V", "U2"]
+        )
+        
+        prb_cv = [np[end] for np in _MSS.get_sprop(stdᶜᵛ², :prob)]
+        prb_sm = [np[end] for np in _MSS.get_sprop(stdˢᵐ, :prob)]
+        @test isapprox(sum(prb_cv), 1.0, rtol=1e-7)
+        @test isapprox(sum(prb_sm), 1.0, rtol=1e-7)
+        @test all(isapprox(prb_cv, prb_sm, rtol=1e-7))
+    end
 end

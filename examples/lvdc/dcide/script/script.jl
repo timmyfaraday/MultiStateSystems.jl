@@ -10,8 +10,10 @@
 using JSON
 using MultiStateSystems
 
+const _MSS = MultiStateSystems
+
 # path to and read-in json
-json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/DCIDE/system_files/test.json")
+json_file = joinpath(_MSS.BASE_DIR,"examples/lvdc/dcide/data/test.json")
 json_data = JSON.parsefile(json_file)
 
 # solve the problem
