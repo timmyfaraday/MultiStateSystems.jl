@@ -207,7 +207,7 @@ end
 function solve!(cmp, src)
     # Check if the stds are already solved
     for std in Iterators.flatten((cmp.std, src.std))
-        if haskey(std.props, :time)
+        if get_info(std, :solved)
             # If the std is already solved, skip it
             continue       
         else
