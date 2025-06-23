@@ -61,8 +61,8 @@
                                     "unit": "A"
                                 },
                                 "power": {
-                                    "nom": 80000,
-                                    "max": 80000,
+                                    "nom": null,
+                                    "max": null,
                                     "unit": "W"
                                 },
                                 "frequency": {
@@ -71,7 +71,7 @@
                                     "max": null,
                                     "unit": "Hz"
                                 },
-                                "powerFactor": 1,
+                                "powerFactor": null,
                                 "configuration": null,
                                 "earthingConfigurations": []
                             },
@@ -537,7 +537,7 @@
                                     "max": null,
                                     "unit": "Hz"
                                 },
-                                "powerFactor": 1,
+                                "powerFactor": null,
                                 "configuration": null,
                                 "earthingConfigurations": [],
                                 "controlMethods": []
@@ -556,7 +556,7 @@
                                     "unit": "A"
                                 },
                                 "power": {
-                                    "nom": 40000,
+                                    "nom": null,
                                     "max": null,
                                     "unit": "W"
                                 },
@@ -606,7 +606,7 @@
                                     "unit": "A"
                                 },
                                 "power": {
-                                    "nom": 40000,
+                                    "nom": null,
                                     "max": null,
                                     "unit": "W"
                                 },
@@ -616,7 +616,7 @@
                                     "max": null,
                                     "unit": "Hz"
                                 },
-                                "powerFactor": 1,
+                                "powerFactor": null,
                                 "configuration": null,
                                 "earthingConfigurations": [],
                                 "controlMethods": []
@@ -1310,7 +1310,7 @@
                                     "unit": "A"
                                 },
                                 "power": {
-                                    "nom": 40000,
+                                    "nom": null,
                                     "max": null,
                                     "unit": "W"
                                 },
@@ -1320,7 +1320,7 @@
                                     "max": null,
                                     "unit": "Hz"
                                 },
-                                "powerFactor": 1,
+                                "powerFactor": null,
                                 "configuration": null,
                                 "earthingConfigurations": [],
                                 "controlMethods": []
@@ -1399,7 +1399,7 @@
                                     "max": null,
                                     "unit": "Hz"
                                 },
-                                "powerFactor": 1,
+                                "powerFactor": null,
                                 "configuration": null,
                                 "earthingConfigurations": [],
                                 "controlMethods": []
@@ -1418,7 +1418,7 @@
                                     "unit": "A"
                                 },
                                 "power": {
-                                    "nom": 40000,
+                                    "nom": null,
                                     "max": null,
                                     "unit": "W"
                                 },
@@ -1789,6 +1789,7 @@
                 "electrical": {
                     "ports": [
                         {
+                            "id": "67442a23bdee5ac85431d872",
                             "features": [
                                 "residual-current-detection"
                             ],
@@ -1866,10 +1867,10 @@
                                 "unit": "F"
                             },
                             "isolated": true,
-                            "parallelableCapacity": 1,
-                            "id": "67442a23bdee5ac85431d872"
+                            "parallelableCapacity": 1
                         },
                         {
+                            "id": "67442a23bdee5ac85431d873",
                             "features": [],
                             "powerFlowDirection": "output",
                             "terminal": {
@@ -1943,8 +1944,7 @@
                                 "unit": "F"
                             },
                             "isolated": true,
-                            "parallelableCapacity": 1,
-                            "id": "67442a23bdee5ac85431d873"
+                            "parallelableCapacity": 1
                         }
                     ],
                     "standards": [],
@@ -2436,6 +2436,7 @@
                 "electrical": {
                     "ports": [
                         {
+                            "id": "67442a23bdee5ac85431db4a",
                             "features": [],
                             "powerFlowDirection": "bidirectional",
                             "terminal": {
@@ -2477,8 +2478,7 @@
                                 "earthingConfigurations": [
                                     "unearthed"
                                 ]
-                            },
-                            "id": "67442a23bdee5ac85431db4a"
+                            }
                         }
                     ],
                     "energyCapacity": {
@@ -3807,21 +3807,21 @@
             "hasPE": false
         },
         {
-            "id": "connection-hVhGbHBs",
+            "id": "connection-CN1NDhtp",
             "cableId": null,
             "label": "",
             "notes": "",
             "from": {
-                "componentInstanceId": "component-teZ4ZvsY",
-                "edge": "bottom",
-                "offset": 0,
-                "port": 1
-            },
-            "to": {
                 "componentInstanceId": "component-DRnm2Ce1",
                 "edge": "top",
                 "offset": 0,
                 "port": 0
+            },
+            "to": {
+                "componentInstanceId": "component-teZ4ZvsY",
+                "edge": "bottom",
+                "offset": 0,
+                "port": 1
             },
             "voltage": {
                 "min": null,
