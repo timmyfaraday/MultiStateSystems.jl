@@ -208,12 +208,10 @@ function solve!(cmp, src)
     # Check if the stds are already solved
     for std in Iterators.flatten((cmp.std, src.std))
         if haskey(std.props, :time)
-        # elseif typeof(std.tprops[Graphs.Edge(1, 2)][:distr]) == typeof(Exponential(0.0u"yr")) && typeof(std.tprops[Graphs.Edge(2, 1)][:distr]) == typeof(Exponential(0.0u"yr"))
-        #     solve!(std, SteadyStateProcess());
-        #     println("Steady state process solved for $std")
+            # If the std is already solved, skip it
+            continue       
         else
             solve!(std, SteadyStateProcess());
-            # println("Semi-Markov process solved for $std")
         end
     end
 end
