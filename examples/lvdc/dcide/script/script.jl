@@ -148,3 +148,4 @@ json_data["componentInstances"][8]["ugf"].prb # Shows the probability of the pot
 # Front-end rectifier U-2:
 _MSS.get_sprop(json_data["componentInstances"][3]["std"], :name) # Shows the names of the states the converter can be in.
 _MSS.get_sprop(json_data["componentInstances"][3]["std"], :power) # Shows the power output of the converter in each state.
+_MSS.get_sprop(json_data["componentInstances"][3]["std"], :prob) # Shows the probability of each state.
