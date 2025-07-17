@@ -20,9 +20,18 @@ In order to test whether the package works, run:
 ] test MultiStateSystems
 ```
 
+## Documentation Structure
+
+This documentation is organized as follows:
+- **Getting Started**: Quick introduction and basic examples
+- **DSL Manual**: Domain-specific language components (STDs, distributions, networks)
+- **Models Manual**: Advanced modeling features (dependence, stochastic processes)
+- **Output**: Reliability indices and result interpretation
+- **API Reference**: Complete function reference with examples
+
 ## Acknowledgements
 
-The primary developer is Tom Van Acker ([@timmyfaraday](https://github.com/timmyfaraday)), BASF, 
+The primary developer is Tom Van Acker ([@timmyfaraday](https://github.com/timmyfaraday)), Elia, 
 with support from the following contributors:
 - Glenn Emmers ([@glenn-sergej](https://github.com/Glenn-sergej)), KU Leuven, semi-Markov implementation, LVDC examples
 - Gayan Abeynayake ([@gayan86](https://github.com/gayan86)), Ørsted, Anholt wind farm example

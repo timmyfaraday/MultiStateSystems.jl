@@ -12,6 +12,28 @@
 
 # types ########################################################################
 ## abstract types
+"""
+    SemiMarkovProcess <: AbstractSemiMarkovProcess
+
+A semi-Markov stochastic process type for solving state-transition diagrams
+with general (non-exponential) transition time distributions. Unlike Markov 
+processes, semi-Markov processes have memory - the probability of leaving a 
+state depends on the time already spent in that state.
+
+Use this process type when transitions follow distributions other than 
+exponential (e.g., Weibull, LogNormal) or when the memoryless property 
+does not hold.
+
+# Example
+```julia-repl
+julia> std = STD()
+julia> add_states!(std, power = [0u"MW", 100u"MW"], init = [0.0, 1.0])
+julia> add_transitions!(std, distr = [Weibull(1000u"hr", 2.0), 
+                                     LogNormal(log(100u"hr"), 0.5)], 
+                            states = [(2,1), (1,2)])
+julia> solve!(std, SemiMarkovProcess(), tsim=8760u"hr")
+```
+"""
 mutable struct SemiMarkovProcess <: AbstractSemiMarkovProcess end
 
 # constants ####################################################################
@@ -144,7 +166,35 @@ function _fill_p!(init::Real, dst::AbstractDistribution, t::StepRangeLen,
         end
     end
 end
-""
+"""
+    solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
+
+Solve a state-transition diagram `std` using the semi-Markov process `cls`.
+This method handles non-exponential distributions by solving integral equations
+using matrix methods and convolution techniques.
+
+# Arguments
+- `std::AbstractSTD`: The state-transition diagram to solve
+- `cls::AbstractSemiMarkovProcess`: The semi-Markov process instance
+- `tsim::Number`: Total simulation time, defaults to 1 year
+- `dt::Number`: Time step for computation and output, defaults to 4 hours
+- `tol::Real`: Tolerance for numerical computations, defaults to 1e-8
+
+# Note
+Semi-Markov processes require finer time discretization than Markov processes
+due to the numerical integration involved. The default time step is smaller (4 hours
+vs 1 day for Markov processes).
+
+# Example
+```julia-repl
+julia> std = STD()
+julia> add_states!(std, power = [0u"MW", 100u"MW"], init = [0.0, 1.0])
+julia> add_transitions!(std, distr = [Weibull(1000u"hr", 2.0), 
+                                     LogNormal(log(100u"hr"), 0.5)], 
+                            states = [(2,1), (1,2)])
+julia> solve!(std, SemiMarkovProcess(), tsim=8760u"hr", dt=1u"hr")
+```
+"""
 function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess; 
                 tsim::Number=1.0u"yr", dt::Number=4u"hr", tol::Real=1e-8)
     # get the input
@@ -165,7 +215,25 @@ function solve!(std::AbstractSTD, cls::AbstractSemiMarkovProcess;
     # set the solved status
     set_info!(std, :solved, true)
 end
-""
+"""
+    state_conv(dst::MultiStateSystems.AbstractDistribution, h::Vector, t::StepRangeLen, f::Int)
+
+Compute the convolution between a hazard function `h` and the complementary 
+cumulative distribution function (CCDF) of distribution `dst`. This function
+is used internally in semi-Markov process computations.
+
+# Arguments
+- `dst::AbstractDistribution`: The transition time distribution
+- `h::Vector`: The hazard function values at time points
+- `t::StepRangeLen`: Time range for the computation
+- `f::Int`: Interpolation factor for refined time grid
+
+# Returns
+- `p::Vector`: Convolution result representing renewal probabilities
+
+This function performs interpolation of the hazard function, evaluates the CCDF
+of the distribution, and computes their convolution using FFT-based methods.
+"""
 function state_conv(dst::MultiStateSystems.AbstractDistribution, h::Vector, t::StepRangeLen, f::Int)
     h_int = _INT.cubic_spline_interpolation(t, h)
     time = 0.0 * unit(t[1]):step(t) / f:t[end]

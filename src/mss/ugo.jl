@@ -234,8 +234,32 @@ end
 """
     solve!(ntw::MultiStateSystems.AbstractNetwork)
 
-This function determines the universal generating function related to the output
-of all users `usr` of a network `ntw`.
+Solve a multi-state network system using the Universal Generating Operator (UGO) 
+method. This function determines the universal generating function for each user 
+in the network by analyzing the network structure and computing the power flow 
+from sources to users through components.
+
+The function performs the following steps:
+1. Solves each subnetwork in the system
+2. Computes reliability indices (GRA, EENS) for users when requested
+3. Handles dependent sources by combining their effects
+4. Updates user UGFs and STDs with the final results
+
+# Arguments
+- `ntw::AbstractNetwork`: The network to solve
+
+# Example
+```julia-repl
+julia> ntw = Network()
+julia> add_source!(ntw, node=1, std=STD(...))
+julia> add_component!(ntw, edge=(1,2), std=STD(...))
+julia> add_user!(ntw, node=2, ind=[:EENS, :GRA])
+julia> solve!(ntw)
+```
+
+# Note
+This function modifies the network in-place, updating user properties with 
+computed UGFs, STDs, and reliability indices.
 """
 function solve!(ntw::AbstractNetwork)
     for nn in ntws(ntw) solve_network!(nn) end

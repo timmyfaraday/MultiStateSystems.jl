@@ -12,6 +12,25 @@
 
 # types ########################################################################
 ## abstract types
+"""
+    SteadyStateProcess <: AbstractMarkovProcess
+
+A steady-state stochastic process type for solving state-transition diagrams
+in their steady-state regime. This assumes the system has reached equilibrium
+and state probabilities are constant over time.
+
+Use this process type when you're interested in the long-term behavior of
+the system rather than its time-dependent evolution.
+
+# Example
+```julia-repl
+julia> std = STD()
+julia> add_states!(std, power = [0u"MW", 100u"MW"], init = [0.0, 1.0])
+julia> add_transitions!(std, rate = [0.01u"1/hr", 0.001u"1/hr"], 
+                            states = [(2,1), (1,2)])
+julia> solve!(std, SteadyStateProcess())
+```
+"""
 mutable struct SteadyStateProcess <: AbstractMarkovProcess end 
 
 # constants ####################################################################
@@ -42,7 +61,29 @@ function set_parameters!(std::AbstractSTD, cls::SteadyStateProcess)
 end
 
 ## stochastic process
-""
+"""
+    solve!(std::AbstractSTD, cls::SteadyStateProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+
+Solve a state-transition diagram `std` using the steady-state process `cls`.
+This computes the steady-state probabilities by solving the system of linear
+equations derived from the Markov chain transition matrix.
+
+# Arguments
+- `std::AbstractSTD`: The state-transition diagram to solve
+- `cls::SteadyStateProcess`: The steady-state process instance
+- `tsim::Number`: Simulation time (not used in steady-state, kept for compatibility)
+- `dt::Number`: Time step (not used in steady-state, kept for compatibility)
+- `tol::Real`: Tolerance for numerical computations, defaults to 1e-8
+
+# Example
+```julia-repl
+julia> std = STD()
+julia> add_states!(std, power = [0u"MW", 100u"MW"], init = [0.0, 1.0])
+julia> add_transitions!(std, rate = [0.01u"1/hr", 0.001u"1/hr"], 
+                            states = [(2,1), (1,2)])
+julia> solve!(std, SteadyStateProcess())
+```
+"""
 function solve!(std::AbstractSTD, cls::SteadyStateProcess;
                 tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
     # set the input

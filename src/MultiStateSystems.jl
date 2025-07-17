@@ -53,6 +53,7 @@ include("core/util.jl")
 
 include("dst/exponential.jl")
 include("dst/lognormal.jl")
+include("dst/normal.jl")
 include("dst/weibull.jl")
 
 include("io/dcide.jl")
@@ -75,7 +76,7 @@ include("stp/steady_state_process.jl")
 
 # export
 export  BASE_DIR
-export  Exponential, 𝑬, LogNormal, 𝑳, Weibull, 𝑾
+export  Exponential, 𝑬, LogNormal, 𝑳, Normal, 𝑵, Weibull, 𝑾
 export  UGF
 export  Network, 
         add_bidirectional_component!, add_bidirectional_components!,
