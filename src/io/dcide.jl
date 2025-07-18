@@ -73,7 +73,6 @@ function get_std(component)
     add_transitions!(std, states=[(1, 2), (2, 1)], distr=distr)
     return std
 end
-# TODO - add λ, μ, nom. power, etc.
 
 ## init 
 ""

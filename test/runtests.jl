@@ -28,6 +28,7 @@ const _MSS = MultiStateSystems
     include("distributions.jl")
     include("indices.jl")
     include("universal_generating_function.jl")
+    include("dcide.jl")
 
     # prob
     include("universal_generating_operator.jl")
