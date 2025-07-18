@@ -387,7 +387,7 @@ using MultiStateSystems
         );
         
         # Call the dcide-specific solve! function explicitly
-        @test_nowarn _MSS.solve!(test_json);
+        @test _MSS.solve!(test_json) === nothing;
         
         # The function should add STD information to the JSON
         @test haskey(test_json["componentInstances"][1], "std") ||
