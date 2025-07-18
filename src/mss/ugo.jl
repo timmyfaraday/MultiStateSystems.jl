@@ -199,11 +199,12 @@ function solve_network!(ntw::AbstractNetwork)
             
             for (nc,nu) in enumerate(usr[:eval_dep_ids])
                 expr = ntw.usr[nu][:str]
-                exrp = quote function structure_function(idx,val) $expr end end
+                func_name = gensym("structure_function")
+                exrp = quote function $func_name(idx,val) $expr end end
                 eval(exrp)
 
                 for (ni,id) in enumerate(idx_itr) 
-                    Val[ni,nc] = Base.invokelatest(structure_function,id,vl) 
+                    Val[ni,nc] = Base.invokelatest(eval(func_name),id,vl) 
                 end
             end
 
@@ -219,11 +220,12 @@ function solve_network!(ntw::AbstractNetwork)
             Val = zeros(Number, length(Prb))
 
             expr = usr[:str]
-            exrp = quote function structure_function(idx,val) $expr end end
+            func_name = gensym("structure_function")
+            exrp = quote function $func_name(idx,val) $expr end end
             eval(exrp)
 
             for (ni,id) in enumerate(idx_itr) 
-                Val[ni] = Base.invokelatest(structure_function,id,vl) 
+                Val[ni] = Base.invokelatest(eval(func_name),id,vl) 
             end
 
             usr[:ugf] = UGF(msr, Val, Prb)

@@ -36,7 +36,7 @@ end
 ## stochastic process 
 ""
 function homogeneous_markov_process(du, u, p, t)
-    G, ρ, info = p
+    G, ρ, info = p.graph, p.rate, p.info
     for ns in 1:Graphs.nv(G)
         if isempty(Graphs.outneighbors(G,ns))
             du[ns] = sum(ρ[Graphs.Edge(nt,ns)]*u[nt]
@@ -57,7 +57,7 @@ function homogeneous_markov_process(du, u, p, t)
 end
 ""
 function inhomogeneous_markov_process(du, u, p, t)
-    G, ρ, info = p
+    G, ρ, info = p.graph, p.rate, p.info
     for ns in 1:Graphs.nv(G)
         if info[ns].trapping
             du[ns] = sum(ρ[Graphs.Edge(nt,ns)](t)*u[nt]
@@ -80,7 +80,7 @@ function solve!(std::AbstractSTD, cls::MarkovProcess;
 
     # get the input
     t   = zero(dt):dt:tsim
-    p   = [std.graph, get_tprop(std, :rate), get_sprop(std, :info)]
+    p   = (graph = std.graph, rate = get_tprop(std, :rate), info = get_sprop(std, :info))
     u₀  = get_sprop(std, :init)
     ts  = (zero(tsim), tsim)
 
@@ -95,7 +95,7 @@ function solve!(std::AbstractSTD, cls::MarkovProcess;
     # set the output
     set_prop!(std, :cls, cls)
     set_prop!(std, :time, t)
-    set_prop!(std, states(std), :prob, [sol(t,idxs=ns) for ns in states(std)])
+    set_prop!(std, states(std), :prob, [[sol(ti)[ns] for ti in t] for ns in states(std)])
 
     # set the solved status
     set_info!(std, :solved, true)
