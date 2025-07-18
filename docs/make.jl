@@ -5,7 +5,8 @@ makedocs(
     modules     = [MultiStateSystems],
     format      = Documenter.HTML(mathengine = Documenter.MathJax()),
     sitename    = "MultiStateSystems.jl",
-    authors     = "Tom Van Acker",
+    authors     = "Tom Van Acker, Glenn Emmers",
+    checkdocs   = :none,  # Disable missing docs check
     pages       = [ "Home"              => "index.md",
                     "Getting Started"   => "quickguide.md",
                     "DSL Manual"        =>
@@ -14,11 +15,12 @@ makedocs(
                           "Generating Functions"    => "ugf.md",
                           "Network"                 => "network.md"],
                     "Models Manual"     =>
-                        [ "Dependence"              => "dependence.md"
-                          "Stochastic Processes"    => "processes.md"
+                        [ "Dependence"              => "dependence.md",
+                          "Stochastic Processes"    => "processes.md",
                           "Generating Operators"    => "ugo.md"],
                     "Output"            =>
-                        [ "Indices"                 => "indices.md"]
+                        [ "Indices"                 => "indices.md"],
+                    "API Reference"     => "api_functions.md"
                   ]
 )
 

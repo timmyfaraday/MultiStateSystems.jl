@@ -77,6 +77,44 @@
         @test _MSS.cdf(dst,φ) == ω - _MSS.ccdf(dst,φ)
     end
 
+    @testset "Normal" begin
+        # dummy input 
+        μ, σ, ω, φ = 10.0u"hr", 2.0u"hr", 0.8, 12.0u"hr"
+
+        # constructors
+        @test 𝑵() == Normal() == Normal(0.0,1.0,1.0)
+        @test 𝑵(μ) == Normal(μ) == Normal(μ,oneunit(μ),1.0)
+        @test 𝑵(μ,σ) == Normal(μ,σ) == Normal(μ,σ,1.0)
+        @test 𝑵(μ,σ,ω) == Normal(μ,σ,ω)
+        @test 𝑵(μ,σ,Ω) == Normal(μ,σ,Ω)
+
+        # general functions 
+        dst = Normal(μ,σ,ω)
+
+        @test _MSS.mean(dst) == μ
+        @test _MSS.std(dst) == σ
+        @test _MSS.var(dst) == σ^2
+        @test _MSS.weight(dst) == ω
+        @test _MSS.params(dst) == (μ, σ, ω)  
+
+        @test _MSS.minimum(dst) == -Inf * unit(μ)
+        @test _MSS.maximum(dst) == Inf * unit(μ)
+        @test _MSS.median(dst) == μ
+
+        # quantile functions
+        # For Normal(10, 2), quantile at p=0.6: 10 + 2*invnormcdf(0.6) ≈ 10 + 2*0.2533 ≈ 10.5066
+        @test isapprox(_MSS.quantile(dst,0.6), 10.5066u"hr", atol=1e-3u"hr")
+        @test _MSS.quantile(dst,0.8) == _MSS.cquantile(dst,0.2)
+        @test _MSS.quantile(dst,0.5) == _MSS.median(dst)
+
+        # density functions
+        # For Normal(10, 2) at x=12: z=(12-10)/2=1, pdf = (1/(2*√(2π))) * exp(-1²/2) ≈ 0.1209854
+        @test isapprox(_MSS.pdf(dst,φ), ω * 0.1209854u"1/hr", atol=1e-6u"1/hr")
+        # For Normal(10, 2) at x=12: z=1, cdf = (1 + erf(1/√2))/2 ≈ 0.8413447 
+        @test isapprox(_MSS.cdf(dst,φ), ω * 0.8413447, atol=1e-6)
+        @test _MSS.cdf(dst,φ) == ω - _MSS.ccdf(dst,φ)
+    end
+
     @testset "LogNormal" begin
         # dummy input 
         μ, σ, ω, φ = 1.0u"hr", 0.25u"hr", 0.8, 3.0u"hr"

@@ -31,6 +31,34 @@ struct LogNormalNNF{X<:Number, Y<:Number, Z<:Function} <: AbstractLogNormal{X,Y,
 end
 
 # constructors #################################################################
+"""
+    LogNormal()
+    LogNormal(μ::Number)
+    LogNormal(μ::Number, σ::Number)
+    LogNormal(μ::Number, σ::Number, ω::Real)
+    LogNormal(μ::Number, σ::Number, ω::Function)
+
+Construct a log-normal distribution with parameters `μ` (mean of the underlying 
+normal distribution), `σ` (standard deviation of the underlying normal 
+distribution), and optional weight `ω`.
+
+The log-normal distribution is commonly used in reliability engineering to 
+model failure times when the logarithm of the time follows a normal distribution.
+
+# Arguments
+- `μ::Number`: Mean of the underlying normal distribution, defaults to 1.0
+- `σ::Number`: Standard deviation of the underlying normal distribution, defaults to 1.0
+- `ω::Real`: Weight parameter (0.0 < ω <= 1.0), defaults to 1.0
+- `ω::Function`: Time-dependent weight function ω(t) where 0.0 < ω(t) <= 1.0
+
+# Example
+```julia-repl
+julia> dst₁ = LogNormal()                           # μ=1.0, σ=1.0, ω=1.0
+julia> dst₂ = LogNormal(2.0u"hr")                   # μ=2hr, σ=1hr, ω=1.0
+julia> dst₃ = LogNormal(2.0u"hr", 0.5u"hr")         # μ=2hr, σ=0.5hr, ω=1.0
+julia> dst₄ = LogNormal(2.0u"hr", 0.5u"hr", 0.9)    # μ=2hr, σ=0.5hr, ω=0.9
+```
+"""
 LogNormal() = LogNormalNNR(1.0, 1.0, 1.0)
 LogNormal(μ::X) where {X<:Number} = LogNormalNNR(μ, 1.0unit(μ), 1.0)
 LogNormal(μ::X, σ::Y) where {X<:Number, Y<:Number} = 
@@ -41,6 +69,23 @@ LogNormal(μ::X, σ::Y, ω::Z) where {X<:Number, Y<:Number, Z<:Function}=
     LogNormalNNF(μ, uconvert(unit(μ),σ), ω)
 
 # shortened constructors #######################################################
+"""
+    𝑳()
+    𝑳(μ::Number)
+    𝑳(μ::Number, σ::Number)
+    𝑳(μ::Number, σ::Number, ω::Real)
+    𝑳(μ::Number, σ::Number, ω::Function)
+
+Shortened constructors for log-normal distributions. Equivalent to the 
+`LogNormal()` constructors but with Unicode notation for convenience.
+
+# Example
+```julia-repl
+julia> dst₁ = 𝑳()                            # Same as LogNormal()
+julia> dst₂ = 𝑳(2.0u"hr")                    # Same as LogNormal(2.0u"hr")
+julia> dst₃ = 𝑳(2.0u"hr", 0.5u"hr")          # Same as LogNormal(2.0u"hr", 0.5u"hr")
+```
+"""
 𝑳() = LogNormal()
 𝑳(μ::Number) = LogNormal(μ)
 𝑳(μ::Number, σ::Number) = LogNormal(μ, σ)

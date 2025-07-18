@@ -141,7 +141,22 @@ function add_components!(ntw::AbstractNetwork; kwargs...)
 end
 
 ## component (bidirectional)
-""
+"""
+    add_bidirectional_component!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds a single bidirectional component to the network `ntw` by creating two 
+directional components in opposite directions and fills their corresponding
+`PropDict` with the named arguments `kwargs`.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = Network()
+julia> add_bidirectional_component!(ntwᵖʷʳ, edge = (1,2),
+                                            name = "bidirectional cable 1",
+                                            std  = STD(power = [0u"MW",1500u"MW"],
+                                                       prob  = [0.2,0.8]))
+```
+"""
 function add_bidirectional_component!(ntw::AbstractNetwork; kwargs...)
     haskey(kwargs, :edge) || return false
 
@@ -157,7 +172,26 @@ function add_bidirectional_component!(ntw::AbstractNetwork; kwargs...)
 
     return true
 end
-""
+"""
+    add_bidirectional_components!(ntw::MultiStateSystems.AbstractNetwork; kwargs...)
+
+Adds multiple bidirectional components to the network `ntw` by creating pairs of 
+directional components in opposite directions and fills their corresponding
+`PropDict` with the named arguments `kwargs`. Either uniform arguments are
+given which hold for all components or arrays are given with specific
+arguments for each component.
+
+# Example
+```julia-repl
+julia> ntwᵖʷʳ = Network()
+julia> add_bidirectional_components!(ntwᵖʷʳ, edge = [(1,2),(2,3)],
+                                             name = ["bidirectional cable 1","bidirectional cable 2"],
+                                             std  = [STD(power = [0u"MW",1500u"MW"],
+                                                         prob  = [0.2,0.8]),
+                                                     STD(power = [0u"MW",2000u"MW"],
+                                                         prob  = [0.4,0.6])])
+```
+"""
 function add_bidirectional_components!(ntw::AbstractNetwork; kwargs...)
     (test(kwargs) && haskey(kwargs, :edge)) || return false
 

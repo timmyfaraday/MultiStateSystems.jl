@@ -31,6 +31,33 @@ struct WeibullNRF{X<:Number, Y<:Real, Z<:Function} <: AbstractWeibull{X,Y,Z}
 end
 
 # constructors #################################################################
+"""
+    Weibull()
+    Weibull(θ::Number)
+    Weibull(θ::Number, α::Real)
+    Weibull(θ::Number, α::Real, ω::Real)
+    Weibull(θ::Number, α::Real, ω::Function)
+
+Construct a Weibull distribution with scale parameter `θ`, shape parameter `α`, 
+and optional weight `ω`.
+
+The Weibull distribution is widely used in reliability engineering to model 
+various failure patterns, from early failures (α < 1) to wear-out failures (α > 1).
+
+# Arguments
+- `θ::Number`: Scale parameter (characteristic life), defaults to 1.0
+- `α::Real`: Shape parameter, defaults to 1.0
+- `ω::Real`: Weight parameter (0.0 < ω <= 1.0), defaults to 1.0
+- `ω::Function`: Time-dependent weight function ω(t) where 0.0 < ω(t) <= 1.0
+
+# Example
+```julia-repl
+julia> dst₁ = Weibull()                           # θ=1.0, α=1.0, ω=1.0
+julia> dst₂ = Weibull(1000.0u"hr")                # θ=1000hr, α=1.0, ω=1.0
+julia> dst₃ = Weibull(1000.0u"hr", 2.0)           # θ=1000hr, α=2.0, ω=1.0
+julia> dst₄ = Weibull(1000.0u"hr", 2.0, 0.95)     # θ=1000hr, α=2.0, ω=0.95
+```
+"""
 Weibull() = WeibullNRR(1.0, 1.0, 1.0)
 Weibull(θ::X) where {X<:Number} = WeibullNRR(θ, 1.0, 1.0)
 Weibull(θ::X, α::Y) where {X<:Number, Y<:Real} = WeibullNRR(θ, α, 1.0)
@@ -40,6 +67,23 @@ Weibull(θ::X, α::Y, ω::Z) where {X<:Number, Y<:Real, Z<:Function} =
     WeibullNRF(θ, α, ω)
 
 # shortened constructors #######################################################
+"""
+    𝑾()
+    𝑾(θ::Number)
+    𝑾(θ::Number, α::Real)
+    𝑾(θ::Number, α::Real, ω::Real)
+    𝑾(θ::Number, α::Real, ω::Function)
+
+Shortened constructors for Weibull distributions. Equivalent to the 
+`Weibull()` constructors but with Unicode notation for convenience.
+
+# Example
+```julia-repl
+julia> dst₁ = 𝑾()                            # Same as Weibull()
+julia> dst₂ = 𝑾(1000.0u"hr")                 # Same as Weibull(1000.0u"hr")
+julia> dst₃ = 𝑾(1000.0u"hr", 2.0)            # Same as Weibull(1000.0u"hr", 2.0)
+```
+"""
 𝑾() = Weibull()
 𝑾(θ::Number) = Weibull(θ)
 𝑾(θ::Number, α::Real) = Weibull(θ, α)

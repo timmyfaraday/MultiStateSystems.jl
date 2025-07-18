@@ -12,6 +12,26 @@
 
 # types ########################################################################
 ## abstract types
+"""
+    MarkovProcess <: AbstractMarkovProcess
+
+A time-dependent Markov stochastic process type for solving state-transition 
+diagrams with exponential transition distributions. This process assumes the 
+memoryless property where transition probabilities depend only on the current 
+state and not on the history.
+
+Use this process type when you need to analyze the time-dependent evolution
+of system state probabilities with constant transition rates.
+
+# Example
+```julia-repl
+julia> std = STD()
+julia> add_states!(std, power = [0u"MW", 100u"MW"], init = [0.0, 1.0])
+julia> add_transitions!(std, rate = [0.01u"1/hr", 0.001u"1/hr"], 
+                            states = [(2,1), (1,2)])
+julia> solve!(std, MarkovProcess(), tsim=8760u"hr")
+```
+"""
 mutable struct MarkovProcess <: AbstractMarkovProcess end
 
 # constants ####################################################################
@@ -72,7 +92,29 @@ function inhomogeneous_markov_process(du, u, p, t)
                             if ns ≠ nt)
     end end
 end
-""
+"""
+    solve!(std::AbstractSTD, cls::MarkovProcess; tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
+
+Solve a state-transition diagram `std` using the Markov process `cls`.
+This integrates the system of differential equations derived from the Markov
+chain to compute time-dependent state probabilities.
+
+# Arguments
+- `std::AbstractSTD`: The state-transition diagram to solve
+- `cls::MarkovProcess`: The Markov process instance
+- `tsim::Number`: Total simulation time, defaults to 1 year
+- `dt::Number`: Time step for output, defaults to 1 day
+- `tol::Real`: Tolerance for the ODE solver, defaults to 1e-8
+
+# Example
+```julia-repl
+julia> std = STD()
+julia> add_states!(std, power = [0u"MW", 100u"MW"], init = [0.0, 1.0])
+julia> add_transitions!(std, rate = [0.01u"1/hr", 0.001u"1/hr"], 
+                            states = [(2,1), (1,2)])
+julia> solve!(std, MarkovProcess(), tsim=8760u"hr", dt=24u"hr")
+```
+"""
 function solve!(std::AbstractSTD, cls::MarkovProcess; 
                 tsim::Number=1.0u"yr", dt::Number=1.0u"d", tol::Real=1e-8)
     # set the input
