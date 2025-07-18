@@ -4,7 +4,7 @@
 # reliability engineering.                                                     #
 # See https://github.com/timmyfaraday/MultiStateSystems.jl                     #
 ################################################################################
-# Authors: Tom Van Acker                                                       #
+# Authors: Tom Van Acker, Glenn Emmers                                         #
 ################################################################################
 # Changelog:                                                                   #
 # v0.3.0 - init                                                                #
