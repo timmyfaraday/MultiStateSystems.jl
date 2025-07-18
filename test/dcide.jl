@@ -337,7 +337,7 @@ using MultiStateSystems
             "connections" => [
             Dict{String,Any}("id" => 1, "name" => "Cable1")
             ]
-        )
+        );
         
         # Create mock network with minimal structure
         ntw = Network()
@@ -346,7 +346,7 @@ using MultiStateSystems
         add_component!(ntw, edge = (1,2), std = _MSS.get_std(test_json["connections"][1]), type = "cable", id = 1)
         add_user!(ntw, node = 2, id = 1)
 
-        solve!(ntw)
+        solve!(ntw);
 
         # This should not throw an error
         @test_nowarn _MSS.extend_json!(test_json, ntw)
@@ -384,10 +384,10 @@ using MultiStateSystems
                     "to" => Dict{String,Any}("componentInstanceId" => "Motor1")
                 )
             ]
-        )
+        );
         
         # Call the dcide-specific solve! function explicitly
-        @test_nowarn _MSS.solve!(test_json)
+        @test_nowarn _MSS.solve!(test_json);
         
         # The function should add STD information to the JSON
         @test haskey(test_json["componentInstances"][1], "std") ||
