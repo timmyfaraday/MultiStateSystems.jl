@@ -18,6 +18,8 @@ makedocs(
                         [ "Dependence"              => "dependence.md",
                           "Stochastic Processes"    => "processes.md",
                           "Generating Operators"    => "ugo.md"],
+                    "Integrations"      =>
+                        [ "DCIDE Integration"       => "dcide.md"],
                     "Output"            =>
                         [ "Indices"                 => "indices.md"],
                     "API Reference"     => "api_functions.md"

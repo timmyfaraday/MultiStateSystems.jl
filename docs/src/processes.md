@@ -70,7 +70,88 @@ A semi-Markov process is described by a random variable $X_t$, where $t$ denotes
 the calendar time. The possible values of $X_t$ are represented by the discrete
 state-space 𝓢 of the state transition diagram `std`.
 
-A semi-Markov process...
+Unlike Markov processes, semi-Markov processes do not respect the memoryless 
+property. Instead, they introduce a sojourn time $φ_s ∈ ℝ^+$ following arrival 
+in a certain state $s$, enabling general (non-exponential) transition time 
+distributions. The probability of leaving a state depends on the time already 
+spent in that state, making it suitable for modeling wear-out phenomena, aging 
+effects, and other time-dependent behaviors.
+
+The semi-Markov process is characterized by transition probabilities:
+
+```math
+f_{ij}(φ) = ℙ\{t_n - t_{n-1} ≤ φ ∩ s_n = j | s_{n-1} = i\},
+```
+
+where $s_x ∈ 𝓢$ and $t_x$ denote the current state and arrival calendar time of 
+transition $x$, respectively.
+
+### Mathematical Formulation
+
+The implementation uses a time-inhomogeneous semi-Markov process formulated as 
+an initial value problem through transition frequency densities, following the 
+approach of das Chagas Moura & Droguett (2009). This method scales as $O(N)$ 
+coupled integral equations with one variable rather than $O(N^2)$ coupled 
+integral equations with two variables for classical methods, where $N = |𝓢|$.
+
+The approach is based on transition probability densities rather than transition 
+rates, making it computationally more efficient. The solution involves two main steps:
+
+1. **Solving integral equations for transition frequency densities**: The system 
+   solves a coupled system of Volterra integral equations of the second kind:
+
+```math
+h_i(t) = A_i(t) + ∑_j ∫_0^t h_j(τ) K_{ji}(t-τ) dτ
+```
+
+where $h_i(t)$ represents the transition frequency density for entering state $i$, 
+$A_i(t)$ represents the initial transition terms based on transition probability 
+densities, and $K_{ji}(t)$ represents the convolution kernel derived from the 
+transition probability distributions.
+
+2. **Computing state probabilities**: Once the frequency densities are obtained, 
+   state probabilities are computed through convolution with survival functions:
+
+```math
+p_i(t) = \text{init}_i \cdot S_i(t) + ∫_0^t h_i(τ) S_i(t-τ) dτ
+```
+
+where $\text{init}_i$ is the initial probability of state $i$ and $S_i(t)$ 
+is the survival function (complementary CDF) representing the probability of 
+remaining in state $i$ for time $t$ without transitioning.
+
+### Implementation Details
+
+The numerical solution discretizes time and solves the matrix equation:
+
+```math
+\mathbf{U} \mathbf{H} = \mathbf{A}
+```
+
+where:
+- $\mathbf{U}$ is the convolution matrix built from transition probability distributions
+- $\mathbf{H}$ contains the discretized transition frequency densities  
+- $\mathbf{A}$ contains the initial transition terms based on transition probability densities
+
+This approach uses transition probability distributions directly (e.g., Weibull, 
+LogNormal) rather than transition rates, making it particularly suitable for 
+reliability applications where failure and repair time distributions are known. 
+The method requires finer time discretization than Markov processes due to the 
+numerical integration and convolution operations involved.
+
+The key advantage of this formulation is computational efficiency: instead of 
+solving $N^2$ coupled integral equations with two variables (as in classical 
+semi-Markov approaches), it solves $N$ coupled integral equations with one 
+variable plus $N$ straightforward integrations, for a total computational 
+complexity of $2N$ operations.
+
+### Applications
+
+Semi-Markov processes are particularly useful for:
+- Component aging and wear-out modeling with Weibull distributions
+- Repair processes with general (non-exponential) distributions  
+- Systems where transition rates change over sojourn time
+- Reliability analysis requiring accurate transient behavior modeling
 
 ## Van Acker Process
 
