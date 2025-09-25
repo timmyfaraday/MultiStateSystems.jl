@@ -36,7 +36,44 @@ filter_panel_cmp(cmp) =
             [cmp[key][.!isnothing.(cmp.node) .&& in.(cmp.type, Ref(dcide_bus_types))] for key in keys(cmp) if key ≠ :edge])...)
 
 ## std
-get_std(component) = solvedSTD(prob = [1], power = [(Inf)u"MW"])                # TODO - add λ, μ, nom. power, etc.
+# get_std(component) = solvedSTD(prob = [1], power = [(Inf)u"MW"]) 
+function get_std(component)
+    specs = get(component, "specifications", nothing)
+    if specs === nothing || !haskey(specs, "availability")
+        return solvedSTD(prob = [1], power = [(Inf)u"MW"])
+    end
+
+    ports = get(get(specs, "electrical", Dict()), "ports", [])
+    power = begin
+        if !isempty(ports) && !isempty(ports[1])
+            ac = get(get(get(ports[1], "AC", Dict()), "power", Dict()), "nom", nothing)
+            dc = get(get(get(ports[1], "DC", Dict()), "power", Dict()), "nom", nothing)
+            ac !== nothing ? [ac * u"W", 0.0u"W"] :
+            dc !== nothing ? [dc * u"W", 0.0u"W"] :
+            [Inf * u"W", 0.0u"W"]
+        else
+            [Inf * u"W", 0.0u"W"]
+        end
+    end
+
+    av = specs["availability"]
+    if get(av, :A, nothing) !== nothing
+        return solvedSTD(prob = [av[:A], 1 - av[:A]], power = power)
+    end
+
+    fail = av[:failure]
+    rep = av[:repair]
+    distr = [
+        fail[:k] === nothing ? fail[:distr](fail[:λ]) : fail[:distr](fail[:λ], fail[:k]),
+        rep[:σ] === nothing ? rep[:distr](rep[:μ]) : rep[:distr](rep[:μ], rep[:σ])
+    ]
+
+    std = STD()
+    add_states!(std, name=["Available", "Unavailable"], power=power, init=[1.0, 0.0])
+    add_transitions!(std, states=[(1, 2), (2, 1)], distr=distr)
+    return std
+end
+# TODO - add λ, μ, nom. power, etc.
 
 ## init 
 ""
@@ -167,6 +204,20 @@ function connect_elements!(cmp, src, usr, json)
     end
 end
 
+function solve!(cmp, src)
+    # Check if the stds are already solved
+    for std in Iterators.flatten((cmp.std, src.std))
+        if haskey(std.props, :time)
+        # elseif typeof(std.tprops[Graphs.Edge(1, 2)][:distr]) == typeof(Exponential(0.0u"yr")) && typeof(std.tprops[Graphs.Edge(2, 1)][:distr]) == typeof(Exponential(0.0u"yr"))
+        #     solve!(std, SteadyStateProcess());
+        #     println("Steady state process solved for $std")
+        else
+            solve!(std, SteadyStateProcess());
+            # println("Semi-Markov process solved for $std")
+        end
+    end
+end
+
 ## build
 ""
 function build_network(cmp, src, usr)
@@ -206,11 +257,13 @@ end end
 ""
 function solve!(json::Dict{String,Any})
     # extract cmp, src and usr from json
-    cmp, src, usr = init_elements(json)
+    cmp, src, usr = init_elements(json);
     connect_elements!(cmp, src, usr, json)
+    # TODO - Extract the final value from the solved state transition diagram in case it is solve by a timeseries process.
+    solve!(cmp,src)
 
     # build and solve ntw
-    ntw = build_network(cmp, src, usr)
+    ntw = build_network(cmp, src, usr);
     solve!(ntw)
 
     # extend the json with availability results
