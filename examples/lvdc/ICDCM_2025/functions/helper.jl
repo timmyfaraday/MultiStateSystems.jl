@@ -9,6 +9,8 @@
 using MultiStateSystems
 using Unitful
 
+const _MSS = MultiStateSystems
+
 """
     create_reduced_std!(std::Dict)
 
@@ -69,13 +71,13 @@ function fill_reduced_std(std_sol::Any)
             state_probs[2] .+= vcat(0, prob[2:end])
             state_hazards[2] .+= hazard
         elseif occursin("U2", state_name)
-            corrective_prob = state_conv(LogNormal(log(2.0)u"hr", 0.25u"hr"), hazard, time, 10000)
+            corrective_prob = _MSS.state_conv(LogNormal(log(2.0)u"hr", 0.25u"hr"), hazard, time, 10000)
             state_probs[3] .+= corrective_prob
             state_hazards[3] .+= hazard
             state_probs[4] .+= vcat(0, prob[2:end]) .- corrective_prob
             state_hazards[4] .+= hazard
         elseif occursin("U3", state_name)
-            corrective_prob = state_conv(LogNormal(log(20.0)u"hr", 0.05u"hr"), hazard, time, 10000)
+            corrective_prob = _MSS.state_conv(LogNormal(log(20.0)u"hr", 0.05u"hr"), hazard, time, 10000)
             state_probs[5] .+= corrective_prob
             state_hazards[5] .+= hazard
             state_probs[6] .+= vcat(0, prob[2:end]) .- corrective_prob
