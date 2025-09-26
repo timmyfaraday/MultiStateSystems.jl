@@ -1,3 +1,6 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 MultiStateSystems = "63dd226a-9d27-42a2-9f4c-7f7a071798e0"
+
+[compat]
+Documenter = "1"

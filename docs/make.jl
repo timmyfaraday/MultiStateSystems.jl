@@ -3,10 +3,14 @@ using MultiStateSystems
 
 makedocs(
     modules     = [MultiStateSystems],
-    format      = Documenter.HTML(mathengine = Documenter.MathJax()),
+    format      = Documenter.HTML(
+        mathengine = Documenter.MathJax(),
+        prettyurls = get(ENV, "CI", "false") == "true"
+    ),
     sitename    = "MultiStateSystems.jl",
     authors     = "Tom Van Acker, Glenn Emmers",
-    checkdocs   = :none,  # Disable missing docs check
+    checkdocs   = :exports,  # Check that all exports are documented
+    warnonly    = [:missing_docs, :cross_references],  # Only warn for these issues
     pages       = [ "Home"              => "index.md",
                     "Getting Started"   => "quickguide.md",
                     "DSL Manual"        =>

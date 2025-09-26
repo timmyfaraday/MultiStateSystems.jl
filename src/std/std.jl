@@ -11,7 +11,15 @@
 ################################################################################
 
 # structs ######################################################################
-""
+"""
+    STD{I<:Int} <: AbstractSTD{I}
+
+A state-transition diagram structure containing:
+- `graph`: A directed graph representing state transitions
+- `props`: General properties dictionary
+- `sprops`: State-specific properties dictionary
+- `tprops`: Transition-specific properties dictionary
+"""
 struct STD{I<:Int} <: AbstractSTD{I}
     graph::Graphs.DiGraph{I}
 
@@ -21,7 +29,22 @@ struct STD{I<:Int} <: AbstractSTD{I}
 end
 
 # constructors #################################################################
-""
+"""
+    STD(Ns::Int)
+
+Create a state-transition diagram with `Ns` states.
+
+# Arguments
+- `Ns::Int`: Number of states in the diagram
+
+# Returns
+- `STD`: An initialized state-transition diagram
+
+# Example
+```julia-repl
+julia> std = STD(3)  # Create STD with 3 states
+```
+"""
 function STD(Ns::Int)
     graph = Graphs.DiGraph(Ns)
 
