@@ -3,10 +3,14 @@ using MultiStateSystems
 
 makedocs(
     modules     = [MultiStateSystems],
-    format      = Documenter.HTML(mathengine = Documenter.MathJax()),
+    format      = Documenter.HTML(
+        mathengine = Documenter.MathJax(),
+        prettyurls = get(ENV, "CI", "false") == "true"
+    ),
     sitename    = "MultiStateSystems.jl",
     authors     = "Tom Van Acker, Glenn Emmers",
-    checkdocs   = :none,  # Disable missing docs check
+    checkdocs   = :exports,  # Check that exports are documented
+    warnonly    = [:missing_docs, :cross_references],  # Only warn, don't fail
     pages       = [ "Home"              => "index.md",
                     "Getting Started"   => "quickguide.md",
                     "DSL Manual"        =>
@@ -26,6 +30,9 @@ makedocs(
                   ]
 )
 
+# Use GitHub token authentication instead of SSH keys
 deploydocs(
-     repo = "github.com/timmyfaraday/MultiStateSystems.jl.git"
+    repo = "github.com/timmyfaraday/MultiStateSystems.jl.git",
+    devbranch = "main",
+    push_preview = true
 )

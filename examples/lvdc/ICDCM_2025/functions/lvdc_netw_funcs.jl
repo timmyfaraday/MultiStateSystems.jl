@@ -225,14 +225,14 @@ function create_split_network(std_loads, std_sources, std_ac_grid, Zone_1, Zone_
             # Calculate DC bus availability depending on the availability of the different feeders.
             Uᵦ₁ = sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_1 for state in values(feeder.sprops) if occursin("U", state[:name])) .+
             sum(state[:prob] for state in values(std_sources[key_zone]["SSCB"]["S1"].sprops) if occursin("U", state[:name])) .+
-            (std_bridge == nothing ? 
+            (std_bridge === nothing ? 
                 key_zone * sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_2 for state in values(feeder.sprops) if occursin("U3", state[:name])) :
                 ("C" in Zone_1 ? sum(state[:prob] for state in values(std_bridge[key_zone]["SSCB"]["C"].sprops) if occursin("U", state[:name])) : (1 .- std_bridge[key_zone]["SSCB"]["C"].sprops[1][:prob])))
                 
     
             Uᵦ₂ = sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_2 for state in values(feeder.sprops) if occursin("U", state[:name])) .+
             sum(state[:prob] for state in values(std_sources[key_zone]["SSCB"]["S2"].sprops) if occursin("U", state[:name])) .+
-            (std_bridge == nothing ? 
+            (std_bridge === nothing ? 
                 key_zone * sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_1 for state in values(feeder.sprops) if occursin("U3", state[:name])) :
                 ("C" in Zone_2 ? sum(state[:prob] for state in values(std_bridge[key_zone]["SSCB"]["C"].sprops) if occursin("U", state[:name])) : (1 .- std_bridge[key_zone]["SSCB"]["C"].sprops[1][:prob])))    
             
