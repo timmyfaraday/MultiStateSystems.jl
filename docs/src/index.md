@@ -2,7 +2,7 @@
 
 ## Overview
 
-MultiStateSystems.jl is a Julia package (v1.8+) to solve multi-state systems,
+MultiStateSystems.jl is a Julia package (v1.11+) to solve multi-state systems,
 often found in reliability engineering.
 
 ## Installation
@@ -25,7 +25,7 @@ In order to test whether the package works, run:
 This documentation is organized as follows:
 - **Getting Started**: Quick introduction and basic examples
 - **DSL Manual**: Domain-specific language components (STDs, distributions, networks)
-- **Models Manual**: Advanced modeling features (dependence, stochastic processes)
+- **Models Manual**: Advanced modeling features (stochastic processes)
 - **Integrations**: External tool integrations (DCIDE integration)
 - **Output**: Reliability indices and result interpretation
 - **API Reference**: Complete function reference with examples
