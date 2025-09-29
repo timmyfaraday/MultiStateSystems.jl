@@ -60,9 +60,9 @@ dp_i(t)/dt = - ∑_j ρ_{ij}(t)p_i(t) + ∑_j ρ_{ji}(t)p_j(t),  ∀ i ∈ 𝓢.
 ```
 
 ## Semi-Markov Process
-* 'das Chagas Moura, M., & Droguett, E. L. (2009). Mathematical formulation and numerical treatment based on transition frequency densities and quadrature methods for non-homogeneous semi-Markov processes. Reliability Engineering & System Safety, 94(2), 342-349.'
+* `das Chagas Moura, M., & Droguett, E. L. (2009). Mathematical formulation and numerical treatment based on transition frequency densities and quadrature methods for non-homogeneous semi-Markov processes. Reliability Engineering & System Safety, 94(2), 342-349.`
 
-* 'Emmers, G., Van Acker, T., & Driesen, J. (2024). A semi-Markovian approach to evaluate the availability of low voltage direct current systems with integrated battery storage. Reliability Engineering & System Safety, 243, 109811.'
+* `Emmers, G., Van Acker, T., & Driesen, J. (2024). A semi-Markovian approach to evaluate the availability of low voltage direct current systems with integrated battery storage. Reliability Engineering & System Safety, 243, 109811.`
 
 | Spaces      |             	| Properties  |             |
 | :---------- | :-------------- | :---------- | :---------- |
