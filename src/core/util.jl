@@ -42,8 +42,37 @@ set_eval_dep!(prop_dict::PropDict, ni::Int, eval_dep_ids) =
     end
 
 ## dst
-eval(ω::Number,t::Number) = ω
-eval(ω::Function,t::Number) = ω(t) |> u"s/s" 
+"""
+    eval_param(ω::Number, t::Number)
+    eval_param(ω::Function, t::Number)
+
+Evaluate a distribution parameter `ω` at time `t`. 
+
+For numeric parameters, returns the parameter value unchanged.
+For function parameters, evaluates the function at time `t` and ensures dimensionless result.
+
+# Arguments
+- `ω::Number`: Numeric parameter value
+- `ω::Function`: Time-dependent parameter function
+- `t::Number`: Time at which to evaluate (for function parameters)
+
+# Returns
+- For numeric `ω`: returns `ω` unchanged
+- For function `ω`: returns `ω(t)` converted to dimensionless units
+
+# Examples
+```julia
+# Numeric parameter
+ω_const = 0.95
+result = eval_param(ω_const, 10.0)  # Returns 0.95
+
+# Function parameter  
+ω_func = t -> 0.9 + 0.05 * exp(-t/100)
+result = eval_param(ω_func, 10.0)   # Returns ω_func(10.0) in dimensionless units
+```
+"""
+eval_param(ω::Number,t::Number) = ω
+eval_param(ω::Function,t::Number) = ω(t) |> u"s/s" 
 
 ## integral 
 weights(N::Int, p::Int) = p == 1 || p == N ? 0.5 : 1.0 ;

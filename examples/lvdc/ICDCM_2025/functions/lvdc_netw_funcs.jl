@@ -225,14 +225,14 @@ function create_split_network(std_loads, std_sources, std_ac_grid, Zone_1, Zone_
             # Calculate DC bus availability depending on the availability of the different feeders.
             Uᵦ₁ = sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_1 for state in values(feeder.sprops) if occursin("U", state[:name])) .+
             sum(state[:prob] for state in values(std_sources[key_zone]["SSCB"]["S1"].sprops) if occursin("U", state[:name])) .+
-            (std_bridge == nothing ? 
+            (std_bridge === nothing ? 
                 key_zone * sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_2 for state in values(feeder.sprops) if occursin("U3", state[:name])) :
                 ("C" in Zone_1 ? sum(state[:prob] for state in values(std_bridge[key_zone]["SSCB"]["C"].sprops) if occursin("U", state[:name])) : (1 .- std_bridge[key_zone]["SSCB"]["C"].sprops[1][:prob])))
                 
     
             Uᵦ₂ = sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_2 for state in values(feeder.sprops) if occursin("U", state[:name])) .+
             sum(state[:prob] for state in values(std_sources[key_zone]["SSCB"]["S2"].sprops) if occursin("U", state[:name])) .+
-            (std_bridge == nothing ? 
+            (std_bridge === nothing ? 
                 key_zone * sum(state[:prob] for (key, feeder) in std_feeder if key in Zone_1 for state in values(feeder.sprops) if occursin("U3", state[:name])) :
                 ("C" in Zone_2 ? sum(state[:prob] for state in values(std_bridge[key_zone]["SSCB"]["C"].sprops) if occursin("U", state[:name])) : (1 .- std_bridge[key_zone]["SSCB"]["C"].sprops[1][:prob])))    
             
@@ -242,7 +242,7 @@ function create_split_network(std_loads, std_sources, std_ac_grid, Zone_1, Zone_
             add_component!(netw, node = 4, std = stdᵇ²)
 
             # create std of the SSCB connecting zone 1 and zone 2
-            if std_bridge == nothing
+            if std_bridge === nothing
                 std_bridge_close = solvedSTD(prob = [ones(length(std_sources[1.0]["SSCB"]["S1"].props[:time]))], power = [(Inf)u"MW"], time = collect(std_sources[1.0]["SSCB"]["S1"].props[:time]))
                 add_components!(netw, edge = [(3,4), (4,3)], 
                                   std = [std_bridge_close, std_bridge_close])

@@ -108,7 +108,7 @@ function pdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ)
-        eval(ω,t) * (1/θ) * exp(-y/θ)
+        eval_param(ω,t) * (1/θ) * exp(-y/θ)
     else
         zero(1/θ)
 end end
@@ -118,7 +118,7 @@ function cdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ)
-        eval(ω,t) * (1 - exp(-y/θ))
+        eval_param(ω,t) * (1 - exp(-y/θ))
     else
         zero(Number)
 end end
@@ -128,7 +128,7 @@ function ccdf(dst::AbstractExponential, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ)
-        eval(ω,t) * exp(-y/θ)
+        eval_param(ω,t) * exp(-y/θ)
     else
-        eval(ω,t)
+        eval_param(ω,t)
 end end

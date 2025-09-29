@@ -1,7 +1,7 @@
 name: Documentation
 on:
   push:
-    branches: [master, main]
+    branches: [main]  # Changed from master to main
     tags: '*'
   pull_request:
     types: [opened, synchronize, reopened]
@@ -11,11 +11,13 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write  # Changed from read to write for deployment
       statuses: write
+      pages: write     # Added for GitHub Pages
+      id-token: write  # Added for GitHub Pages
     steps:
       - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@latest
         with:
           version: '1'
       - name: Install Dependencies
@@ -23,5 +25,5 @@ jobs:
       - name: Build and Deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          # Removed DOCUMENTER_KEY - using GitHub token instead
         run: julia --project=docs docs/make.jl

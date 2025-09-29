@@ -115,7 +115,7 @@ function pdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = (uconvert(unit(θ),φ) + eps(θ)) / θ
-        eval(ω,t) * (α / θ) * y^(α - 1) * exp(-y^α)
+        eval_param(ω,t) * (α / θ) * y^(α - 1) * exp(-y^α)
     else
         zero(1/θ)
 end end
@@ -125,7 +125,7 @@ function cdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ) / θ
-        ustrip(eval(ω,t) * (1 - exp(-y^α)))
+        ustrip(eval_param(ω,t) * (1 - exp(-y^α)))
     else
         zero(Number)
 end end
@@ -135,7 +135,7 @@ function ccdf(dst::AbstractWeibull, φ::Number, t::Number=zero(φ))
     dimension(θ)==dimension(φ)==dimension(t) || return false
     if φ >= zero(θ)
         y = uconvert(unit(θ),φ) / θ
-        eval(ω,t) * exp(-y^α)
+        eval_param(ω,t) * exp(-y^α)
     else
-        eval(ω,t)
+        eval_param(ω,t)
 end end

@@ -9,8 +9,8 @@ makedocs(
     ),
     sitename    = "MultiStateSystems.jl",
     authors     = "Tom Van Acker, Glenn Emmers",
-    checkdocs   = :exports,  # Check that all exports are documented
-    warnonly    = [:missing_docs, :cross_references],  # Only warn for these issues
+    checkdocs   = :exports,  # Check that exports are documented
+    warnonly    = [:missing_docs, :cross_references],  # Only warn, don't fail
     pages       = [ "Home"              => "index.md",
                     "Getting Started"   => "quickguide.md",
                     "DSL Manual"        =>
@@ -30,6 +30,9 @@ makedocs(
                   ]
 )
 
+# Use GitHub token authentication instead of SSH keys
 deploydocs(
-     repo = "github.com/timmyfaraday/MultiStateSystems.jl.git"
+    repo = "github.com/timmyfaraday/MultiStateSystems.jl.git",
+    devbranch = "main",
+    push_preview = true
 )
