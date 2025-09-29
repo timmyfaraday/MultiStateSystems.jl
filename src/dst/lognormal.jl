@@ -120,7 +120,7 @@ function pdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
         x = ustrip(unit(μ), σ)
         y = uconvert(unit(μ), φ)
         z = uconvert(unit(μ/μ),(log(y) - μ)^2 / (2 * σ^2))
-        eval(ω,t) / (sqrt(2 * pi) * x * y) * exp(-z)
+        eval_param(ω,t) / (sqrt(2 * pi) * x * y) * exp(-z)
     else
         zero(1/φ)
 end end
@@ -131,7 +131,7 @@ function cdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     if φ >= zero(μ)
         x = uconvert(unit(μ), φ)
         y = uconvert(unit(μ/μ),(log(x) - μ) / (sqrt(2) * σ))
-        eval(ω,t) / 2 * _SF.erfc(-y)
+        eval_param(ω,t) / 2 * _SF.erfc(-y)
     else
         zero(Number)
 end end
@@ -142,7 +142,7 @@ function ccdf(dst::AbstractLogNormal, φ::Number, t::Number=zero(φ))
     if φ >= zero(μ)
         x = uconvert(unit(μ), φ)
         y = uconvert(unit(μ/μ),(log(x) - μ) / (sqrt(2) * σ))
-        eval(ω,t) * (1 - _SF.erfc(-y) / 2)
+        eval_param(ω,t) * (1 - _SF.erfc(-y) / 2)
     else
-        eval(ω,t)
+        eval_param(ω,t)
 end end

@@ -119,7 +119,7 @@ function pdf(dst::AbstractNormal, φ::Number, t::Number=zero(φ))
     dimension(μ)==dimension(φ)==dimension(t) || return false
     y = uconvert(unit(μ), φ)
     z = (y - μ) / σ
-    eval(ω, t) * (1 / (σ * √(2π))) * exp(-z^2 / 2)
+    eval_param(ω, t) * (1 / (σ * √(2π))) * exp(-z^2 / 2)
 end
 
 ""
@@ -128,7 +128,7 @@ function cdf(dst::AbstractNormal, φ::Number, t::Number=zero(φ))
     dimension(μ)==dimension(φ)==dimension(t) || return false
     y = uconvert(unit(μ), φ)
     z = (y - μ) / σ
-    eval(ω, t) * (1 + _SF.erf(z / √2)) / 2
+    eval_param(ω, t) * (1 + _SF.erf(z / √2)) / 2
 end
 
 ""
@@ -137,5 +137,5 @@ function ccdf(dst::AbstractNormal, φ::Number, t::Number=zero(φ))
     dimension(μ)==dimension(φ)==dimension(t) || return false
     y = uconvert(unit(μ), φ)
     z = (y - μ) / σ
-    eval(ω, t) * (1 - _SF.erf(z / √2)) / 2
+    eval_param(ω, t) * (1 - _SF.erf(z / √2)) / 2
 end
