@@ -242,7 +242,7 @@ function create_split_network(std_loads, std_sources, std_ac_grid, Zone_1, Zone_
             add_component!(netw, node = 4, std = stdᵇ²)
 
             # create std of the SSCB connecting zone 1 and zone 2
-            if std_bridge == nothing
+            if std_bridge === nothing
                 std_bridge_close = solvedSTD(prob = [ones(length(std_sources[1.0]["SSCB"]["S1"].props[:time]))], power = [(Inf)u"MW"], time = collect(std_sources[1.0]["SSCB"]["S1"].props[:time]))
                 add_components!(netw, edge = [(3,4), (4,3)], 
                                   std = [std_bridge_close, std_bridge_close])
