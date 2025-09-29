@@ -19,8 +19,7 @@ makedocs(
                           "Generating Functions"    => "ugf.md",
                           "Network"                 => "network.md"],
                     "Models Manual"     =>
-                        [ "Dependence"              => "dependence.md",
-                          "Stochastic Processes"    => "processes.md",
+                        [ "Stochastic Processes"    => "processes.md",
                           "Generating Operators"    => "ugo.md"],
                     "Integrations"      =>
                         [ "DCIDE Integration"       => "dcide.md"],
